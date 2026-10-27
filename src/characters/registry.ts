@@ -27,26 +27,6 @@ const SPECIAL_EXTRA = {
 } as const satisfies Record<SpecialType, readonly string[]>;
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
-const PALETTE_KEYS = ['secondary', 'accent', 'skin', 'dark'] as const;
-const COLOR_TOKENS = new Set<string>(['primary', ...PALETTE_KEYS]);
-const LOOK_SHAPES = new Set<string>(['rect', 'ellipse', 'triangle']);
-const ANCHORS = new Set<string>(['head', 'torso', 'back', 'handFront', 'handBack', 'feet']);
-const HAIR_STYLES = new Set<string>(['bald', 'short', 'messy', 'slick', 'long', 'bun', 'volume', 'braid']);
-const PROPORTION_KEYS = [
-  'legLength',
-  'torsoHeight',
-  'neck',
-  'headWidth',
-  'headHeight',
-  'shoulderWidth',
-  'waistWidth',
-  'hipWidth',
-  'upperArm',
-  'foreArm',
-  'armWidth',
-  'legWidth',
-  'footLength',
-] as const;
 const POSE_NUMBERS = ['lean', 'headTilt', 'bobAmp', 'bobSpeed', 'sway'] as const;
 const POSE_PAIRS = ['frontArm', 'backArm', 'frontLeg', 'backLeg'] as const;
 const STATIC_POSE_NAMES = ['idle', 'victory', 'lose', 'jump', 'block', 'hit', 'ko'] as const;
@@ -54,7 +34,6 @@ const PHASED_POSE_NAMES = ['punch', 'kick', 'special'] as const;
 const PHASES = ['startup', 'active', 'recovery'] as const;
 
 const isNumber = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
-const isColor = (v: unknown): boolean => typeof v === 'string' && (COLOR_TOKENS.has(v) || HEX.test(v));
 
 function validate(d: FighterData): string | null {
   if (typeof d?.id !== 'string' || typeof d.name !== 'string') return 'id and name must be strings';
@@ -80,10 +59,8 @@ function validateFlavour(d: FighterData): string | null {
   if (d.taunts !== undefined && (!Array.isArray(d.taunts) || d.taunts.some((t) => typeof t !== 'string'))) {
     return 'taunts must be an array of strings';
   }
-  if (d.palette) {
-    for (const k of PALETTE_KEYS) if (!HEX.test(d.palette[k] ?? '')) return `palette.${k} must be "#rrggbb"`;
-  }
-  return validateLook(d) ?? validateSvg(d);
+  if (!isNumber(d.previewHeight) || d.previewHeight <= 0) return 'previewHeight must be a positive number';
+  return validatePoses(d) ?? validateSvg(d);
 }
 
 const isPair = (v: unknown): boolean => Array.isArray(v) && v.length === 2 && v.every(isNumber);
@@ -94,7 +71,7 @@ const SVG_CLOTH = ['windSwing', 'swing', 'speed', 'lag', 'breeze'] as const;
 
 function validateSvg(d: FighterData): string | null {
   const svg = d.svg;
-  if (!svg) return null;
+  if (!svg) return 'svg is required';
   if (typeof svg.id !== 'string' || svg.id === '') return 'svg.id must be a string';
   if (!isNumber(svg.scale) || svg.scale <= 0) return 'svg.scale must be a positive number';
   for (const k of SVG_PIVOTS) if (!isPair(svg.pivots?.[k])) return `svg.pivots.${k} must be [x, y]`;
@@ -126,55 +103,21 @@ function validatePose(pose: unknown, path: string): string | null {
   return null;
 }
 
-function validateLook(d: FighterData): string | null {
-  const look = d.look;
-  if (!look) return null;
-  if (!d.palette) return 'look requires a palette';
-  const prop = look.proportions as unknown as Record<string, unknown> | undefined;
-  for (const k of PROPORTION_KEYS) if (!isNumber(prop?.[k])) return `look.proportions.${k} must be a number`;
-  const p = look.proportions;
-  const total = p.legLength + p.torsoHeight + p.neck + p.headHeight;
-  if (Math.abs(total - d.body.height) > 8) {
-    return `look.proportions heights add up to ${total} but body.height is ${d.body.height}`;
-  }
-  if (!HAIR_STYLES.has(look.hair?.style) || !isColor(look.hair?.color)) return 'look.hair needs a valid style and colour';
-  if (look.hair.streak !== undefined && !isColor(look.hair.streak)) return 'look.hair.streak must be a colour';
-  const face = look.face;
-  if (!['round', 'narrow', 'wide'].includes(face?.eyes)) return 'look.face.eyes must be round, narrow or wide';
-  if (!['flat', 'smile', 'smirk', 'open'].includes(face?.mouth)) return 'look.face.mouth must be flat, smile, smirk or open';
-  if (!isNumber(face.brows?.thickness) || !isColor(face.brows?.color)) return 'look.face.brows needs thickness and colour';
-  for (const k of ['top', 'pants', 'shoes', 'sleeveColor'] as const) {
-    if (look.base?.[k] !== undefined && !isColor(look.base[k])) return `look.base.${k} must be a colour`;
-  }
-  for (const [i, layer] of (look.outfit ?? []).entries()) {
-    const at = `look.outfit[${i}]`;
-    if (!isColor(layer.color)) return `${at}.color must be a palette name or #rrggbb`;
-    if (layer.type === 'shape') {
-      if (!LOOK_SHAPES.has(layer.shape) || !ANCHORS.has(layer.anchor)) return `${at} needs a valid shape and anchor`;
-      for (const k of ['x', 'y', 'width', 'height'] as const) if (!isNumber(layer[k])) return `${at}.${k} must be a number`;
-    } else if (layer.type === 'kurta') {
-      if (!isNumber(layer.length)) return `${at}.length must be a number`;
-    } else if (layer.type === 'shawl' || layer.type === 'scarf') {
-      if (!isNumber(layer.tail)) return `${at}.tail must be a number`;
-    } else if (layer.type === 'checks') {
-      if (!isNumber(layer.rows) || !isNumber(layer.cols)) return `${at}.rows and cols must be numbers`;
-    } else if (!['vest', 'cap', 'beard', 'moustache', 'glasses'].includes(layer.type)) {
-      return `${at}.type is not a known outfit layer`;
-    }
-  }
+function validatePoses(d: FighterData): string | null {
+  const poses = d.poses;
   for (const name of STATIC_POSE_NAMES) {
-    const pose = look.poses?.[name];
+    const pose = poses?.[name];
     if (pose !== undefined) {
-      const err = validatePose(pose, `look.poses.${name}`);
+      const err = validatePose(pose, `poses.${name}`);
       if (err) return err;
     }
   }
   for (const name of PHASED_POSE_NAMES) {
-    const phased = look.poses?.[name];
+    const phased = poses?.[name];
     for (const phase of PHASES) {
       const pose = phased?.[phase];
       if (pose !== undefined) {
-        const err = validatePose(pose, `look.poses.${name}.${phase}`);
+        const err = validatePose(pose, `poses.${name}.${phase}`);
         if (err) return err;
       }
     }

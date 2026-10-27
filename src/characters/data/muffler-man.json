@@ -4,34 +4,12 @@
   "name": "Muffler Man",
   "faction": "Gathbandhan Alliance",
   "color": "#5b6f94",
-  "palette": { "secondary": "#e0a526", "accent": "#b8332e", "skin": "#d29a6a", "dark": "#4a3322" },
-  "look": {
-    "proportions": {
-      "legLength": 62, "torsoHeight": 46, "neck": 4, "headWidth": 34, "headHeight": 34,
-      "shoulderWidth": 40, "waistWidth": 34, "hipWidth": 14,
-      "upperArm": 26, "foreArm": 24, "armWidth": 10, "legWidth": 12, "footLength": 19
-    },
-    "hair": { "style": "messy", "color": "#5a3a22" },
-    "face": { "eyes": "narrow", "brows": { "thickness": 3.5, "color": "dark", "tilt": 10 }, "mouth": "flat", "tired": true },
-    "base": { "top": "#d8c9a8", "pants": "dark", "shoes": "#2b2b2b", "sleeves": "long" },
-    "outfit": [
-      { "type": "shape", "anchor": "handBack", "shape": "rect", "x": 0, "y": 22, "width": 5, "height": 110, "color": "dark" },
-      { "type": "checks", "color": "#8a5a3a", "rows": 6, "cols": 5, "thickness": 1.6 },
-      { "type": "vest", "color": "primary", "trim": "secondary", "length": 0.8 },
-      { "type": "scarf", "color": "secondary", "band": "#c98a1c", "tail": 40, "thickness": 19 },
-      { "type": "cap", "style": "woolen", "color": "accent", "trim": "#8f2622" },
-      { "type": "glasses", "style": "round", "color": "dark", "thickness": 3.4 },
-      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 8, "y": 14, "width": 32, "height": 26, "color": "secondary" },
-      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 8, "y": 14, "width": 22, "height": 4, "color": "accent" },
-      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 8, "y": 22, "width": 16, "height": 4, "color": "accent" }
-    ],
-    "poses": {
-      "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.4, "bobSpeed": 1.7, "sway": 2 },
-      "victory": { "lean": -4, "frontArm": [172, 8], "backArm": [150, 10], "bobAmp": 5, "bobSpeed": 2.2, "sway": 3 },
-      "special": {
-        "startup": { "lean": -2, "headTilt": -6, "frontArm": [112, 55], "backArm": [20, 100] },
-        "active": { "lean": 12, "headTilt": 2, "frontArm": [96, 4], "backArm": [-18, 70] }
-      }
+  "poses": {
+    "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.4, "bobSpeed": 1.7, "sway": 2 },
+    "victory": { "lean": -4, "frontArm": [172, 8], "backArm": [150, 10], "bobAmp": 5, "bobSpeed": 2.2, "sway": 3 },
+    "special": {
+      "startup": { "lean": -2, "headTilt": -6, "frontArm": [112, 55], "backArm": [20, 100] },
+      "active": { "lean": 12, "headTilt": 2, "frontArm": [96, 4], "backArm": [-18, 70] }
     }
   },
   "svg": {
@@ -48,6 +26,7 @@
   },
   "stats": { "maxHealth": 100, "walkSpeed": 235, "jumpVelocity": 900 },
   "body": { "width": 66, "height": 146 },
+  "previewHeight": 162,
   "taunts": ["Cough, cough... that was strategic.", "I'm sitting here until you apologise."],
   "winQuote": "Sit-in successful. Demand: one more rematch.",
   "moves": {

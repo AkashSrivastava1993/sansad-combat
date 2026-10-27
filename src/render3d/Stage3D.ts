@@ -1,17 +1,13 @@
 import * as THREE from 'three';
 import type { FighterData } from '../characters/types';
 import { GAME_HEIGHT, GAME_WIDTH, GROUND_Y } from '../config';
-import { hasSvg } from '../rig/svg/atlas';
 import type { Projectile } from '../systems/combat/Projectile';
 import type { FighterPuppet, ScreenPoint } from '../ui/FighterView';
 import { buildArena, type Arena } from './arena';
 import { CutoutFighter } from './CutoutFighter';
-import { ModelFighter } from './ModelFighter';
 import { Projectiles3D } from './Projectiles3D';
 import type { Puppet3D } from './Puppet3D';
 import { DEG, PX, worldX, worldY } from './space';
-
-export type FighterStyle3D = 'cutout' | 'model';
 
 const ASPECT = GAME_WIDTH / GAME_HEIGHT;
 /** Half the view height in game px when the whole arena is framed. */
@@ -42,7 +38,7 @@ export class Stage3D {
       try {
         Stage3D.instance = new Stage3D();
       } catch (err) {
-        console.warn('[3d] WebGL unavailable; falling back to 2D.', err);
+        console.warn('[3d] WebGL unavailable.', err);
         Stage3D.instance = null;
       }
     }
@@ -98,12 +94,9 @@ export class Stage3D {
     this.puppets.length = 0;
   }
 
-  /** Cut-out style needs SVG art; fighters without it get a model. */
-  addFighter(data: FighterData, style: FighterStyle3D): FighterPuppet {
-    const puppet =
-      style === 'cutout' && data.svg && hasSvg(data.id)
-        ? new CutoutFighter(this.scene, data, this.puppets.length)
-        : new ModelFighter(this.scene, data);
+  /** Adds a fighter drawn from their layered SVG art. */
+  addFighter(data: FighterData): FighterPuppet {
+    const puppet = new CutoutFighter(this.scene, data, this.puppets.length);
     this.puppets.push(puppet);
     return puppet;
   }

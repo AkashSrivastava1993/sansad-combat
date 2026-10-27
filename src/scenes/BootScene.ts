@@ -10,7 +10,7 @@ export class BootScene extends Phaser.Scene {
 
   // Queue asset loading here once sprites and audio exist.
   create(): void {
-    // Fighters whose SVG art fails to load simply keep the procedural rig.
+    // A fighter whose SVG art fails to load is logged by the loader and left without art.
     void loadSvgAtlas(this, getFighters()).finally(() => this.scene.start(SceneKey.Menu));
   }
 }

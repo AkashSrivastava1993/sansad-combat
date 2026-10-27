@@ -1,4 +1,3 @@
-import { getLook } from '../characters/look';
 import type { FighterData, PhasedPose, Pose, SpecialType, StaticPose } from '../characters/types';
 import { IDLE_POSE, KICK_POSE, PUNCH_POSE, SPECIAL_POSES, STATIC_POSES } from './defaults';
 
@@ -78,7 +77,7 @@ const cache = new WeakMap<FighterData, ResolvedPoses>();
 export function resolvePoses(data: FighterData): ResolvedPoses {
   const hit = cache.get(data);
   if (hit) return hit;
-  const o = getLook(data).poses;
+  const o = data.poses;
   const statics = {
     idle: staticEntry('idle', o?.idle),
     victory: staticEntry('victory', o?.victory),

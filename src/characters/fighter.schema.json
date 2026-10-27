@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Fighter",
   "type": "object",
-  "required": ["id", "name", "faction", "color", "stats", "body", "moves", "special"],
+  "required": ["id", "name", "faction", "color", "stats", "body", "previewHeight", "moves", "special", "svg"],
   "additionalProperties": false,
   "properties": {
     "$schema": { "type": "string" },
@@ -10,18 +10,24 @@
     "name": { "type": "string", "minLength": 1 },
     "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
     "faction": { "type": "string", "minLength": 1 },
-    "palette": {
+    "poses": {
+      "description": "Per-character overrides of the default poses; anything omitted uses the defaults.",
       "type": "object",
-      "required": ["secondary", "accent", "skin", "dark"],
       "additionalProperties": false,
       "properties": {
-        "secondary": { "$ref": "#/definitions/hex" },
-        "accent": { "$ref": "#/definitions/hex" },
-        "skin": { "$ref": "#/definitions/hex" },
-        "dark": { "$ref": "#/definitions/hex" }
+        "idle": { "$ref": "#/definitions/pose" },
+        "victory": { "$ref": "#/definitions/pose" },
+        "lose": { "$ref": "#/definitions/pose" },
+        "jump": { "$ref": "#/definitions/pose" },
+        "block": { "$ref": "#/definitions/pose" },
+        "hit": { "$ref": "#/definitions/pose" },
+        "ko": { "$ref": "#/definitions/pose" },
+        "punch": { "$ref": "#/definitions/phasedPose" },
+        "kick": { "$ref": "#/definitions/phasedPose" },
+        "special": { "$ref": "#/definitions/phasedPose" }
       }
     },
-    "look": { "$ref": "#/definitions/look" },
+    "previewHeight": { "description": "Height in px used to scale the fighter on the select screen and result card.", "type": "number", "exclusiveMinimum": 0 },
     "taunts": { "type": "array", "items": { "type": "string", "minLength": 1 } },
     "winQuote": { "type": "string", "minLength": 1 },
     "stats": {
@@ -108,12 +114,17 @@
         }
       }
     },
-    "hex": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
-    "colorRef": {
-      "description": "primary, secondary, accent, skin, dark, or #rrggbb",
-      "type": "string",
-      "pattern": "^(primary|secondary|accent|skin|dark|#[0-9a-fA-F]{6})$"
+    "burn": {
+      "description": "Damage over time left by an unblocked hit.",
+      "type": "object",
+      "required": ["damagePerSec", "durationMs"],
+      "additionalProperties": false,
+      "properties": {
+        "damagePerSec": { "type": "number", "minimum": 0 },
+        "durationMs": { "type": "number", "minimum": 0 }
+      }
     },
+    "hex": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
     "pair": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
     "pose": {
       "description": "Degrees from straight down, forward positive. Arms are [shoulder, elbow]; legs are [hip, knee].",
@@ -139,121 +150,6 @@
         "active": { "$ref": "#/definitions/pose" },
         "recovery": { "$ref": "#/definitions/pose" }
       }
-    },
-    "look": {
-      "type": "object",
-      "required": ["proportions", "hair", "face"],
-      "additionalProperties": false,
-      "properties": {
-        "proportions": {
-          "description": "legLength + torsoHeight + neck + headHeight should equal body.height",
-          "type": "object",
-          "required": [
-            "legLength", "torsoHeight", "neck", "headWidth", "headHeight", "shoulderWidth", "waistWidth",
-            "hipWidth", "upperArm", "foreArm", "armWidth", "legWidth", "footLength"
-          ],
-          "additionalProperties": { "type": "number", "minimum": 0 }
-        },
-        "head": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": { "shape": { "enum": ["oval", "round", "square"] } }
-        },
-        "hair": {
-          "type": "object",
-          "required": ["style", "color"],
-          "additionalProperties": false,
-          "properties": {
-            "style": { "enum": ["bald", "short", "messy", "slick", "long", "bun", "volume", "braid"] },
-            "color": { "$ref": "#/definitions/colorRef" },
-            "streak": { "$ref": "#/definitions/colorRef" }
-          }
-        },
-        "face": {
-          "type": "object",
-          "required": ["eyes", "brows", "mouth"],
-          "additionalProperties": false,
-          "properties": {
-            "eyes": { "enum": ["round", "narrow", "wide"] },
-            "mouth": { "enum": ["flat", "smile", "smirk", "open"] },
-            "tired": { "type": "boolean" },
-            "brows": {
-              "type": "object",
-              "required": ["thickness", "color"],
-              "additionalProperties": false,
-              "properties": {
-                "thickness": { "type": "number", "exclusiveMinimum": 0 },
-                "color": { "$ref": "#/definitions/colorRef" },
-                "tilt": { "type": "number" }
-              }
-            }
-          }
-        },
-        "base": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "top": { "$ref": "#/definitions/colorRef" },
-            "pants": { "$ref": "#/definitions/colorRef" },
-            "shoes": { "$ref": "#/definitions/colorRef" },
-            "sleeveColor": { "$ref": "#/definitions/colorRef" },
-            "sleeves": { "enum": ["long", "short", "none"] }
-          }
-        },
-        "outfit": { "type": "array", "items": { "$ref": "#/definitions/outfitLayer" } },
-        "poses": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "idle": { "$ref": "#/definitions/pose" },
-            "victory": { "$ref": "#/definitions/pose" },
-            "lose": { "$ref": "#/definitions/pose" },
-            "jump": { "$ref": "#/definitions/pose" },
-            "block": { "$ref": "#/definitions/pose" },
-            "hit": { "$ref": "#/definitions/pose" },
-            "ko": { "$ref": "#/definitions/pose" },
-            "punch": { "$ref": "#/definitions/phasedPose" },
-            "kick": { "$ref": "#/definitions/phasedPose" },
-            "special": { "$ref": "#/definitions/phasedPose" }
-          }
-        }
-      }
-    },
-    "outfitLayer": {
-      "type": "object",
-      "required": ["type", "color"],
-      "properties": {
-        "type": { "enum": ["kurta", "vest", "shawl", "scarf", "cap", "beard", "moustache", "glasses", "shape", "checks"] },
-        "color": { "$ref": "#/definitions/colorRef" },
-        "trim": { "$ref": "#/definitions/colorRef" },
-        "band": { "$ref": "#/definitions/colorRef" },
-        "style": { "type": "string" },
-        "length": { "type": "number" },
-        "flare": { "type": "number" },
-        "tail": { "type": "number" },
-        "size": { "type": "number" },
-        "wind": { "type": "number", "minimum": -1, "maximum": 1 },
-        "thickness": { "type": "number", "exclusiveMinimum": 0 },
-        "rows": { "type": "integer", "minimum": 2 },
-        "cols": { "type": "integer", "minimum": 2 },
-        "anchor": { "enum": ["head", "torso", "back", "handFront", "handBack", "feet"] },
-        "layer": { "enum": ["behind", "front"] },
-        "shape": { "enum": ["rect", "ellipse", "triangle"] },
-        "x": { "type": "number" },
-        "y": { "type": "number" },
-        "width": { "type": "number", "exclusiveMinimum": 0 },
-        "height": { "type": "number", "exclusiveMinimum": 0 },
-        "angle": { "type": "number" },
-        "alpha": { "type": "number", "minimum": 0, "maximum": 1 }
-      },
-      "allOf": [
-        { "if": { "properties": { "type": { "const": "kurta" } } }, "then": { "required": ["length"] } },
-        { "if": { "properties": { "type": { "enum": ["shawl", "scarf"] } } }, "then": { "required": ["tail"] } },
-        {
-          "if": { "properties": { "type": { "const": "shape" } } },
-          "then": { "required": ["anchor", "shape", "x", "y", "width", "height"] }
-        }
-      ]
     },
     "hitbox": {
       "type": "object",
@@ -283,16 +179,7 @@
         "blockstunMs": { "type": "number", "minimum": 0 },
         "knockback": { "type": "number" },
         "guardBreak": { "type": "boolean" },
-        "burn": {
-          "description": "Damage over time left by an unblocked hit.",
-          "type": "object",
-          "required": ["damagePerSec", "durationMs"],
-          "additionalProperties": false,
-          "properties": {
-            "damagePerSec": { "type": "number", "minimum": 0 },
-            "durationMs": { "type": "number", "minimum": 0 }
-          }
-        },
+        "burn": { "$ref": "#/definitions/burn" },
         "color": { "$ref": "#/definitions/hex" },
         "knockdown": { "type": "boolean", "description": "A clean hit floors the defender for the hitstun." },
         "impact": { "type": "string", "description": "Comic-book word shown on a clean hit." },
@@ -322,7 +209,8 @@
             "blockstunMs": { "type": "number", "minimum": 0 },
             "knockback": { "type": "number" },
             "knockdown": { "type": "boolean" },
-            "impact": { "type": "string" }
+            "impact": { "type": "string" },
+            "burn": { "$ref": "#/definitions/burn" }
           }
         },
         "reflectRatio": { "type": "number", "minimum": 0 },

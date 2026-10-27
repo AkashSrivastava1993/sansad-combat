@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { lookHeight } from '../characters/look';
 import { factionOf, getFactionGroups, getFighter, getFighters } from '../characters/registry';
 import type { FighterData } from '../characters/types';
 import {
@@ -10,7 +9,7 @@ import {
   SPECIAL_TYPE_LABELS,
 } from '../config';
 import { RigAnimator } from '../rig/animator';
-import { createFighterRig } from '../ui/FighterRig';
+import { SvgRig } from '../rig/svg/SvgRig';
 import { createButton, textStyle } from '../ui/ui';
 import { SceneKey, type CharacterSelectData, type Difficulty, type FightData, type GameMode } from './sceneData';
 
@@ -108,9 +107,9 @@ export class CharacterSelectScene extends Phaser.Scene {
   private addCard(fighter: FighterData, x: number, y: number, factionColor: number): void {
     const card = this.add.rectangle(x, y, CARD_W, CARD_H, 0x1d2233).setStrokeStyle(3, factionColor);
 
-    const rig = createFighterRig(this, fighter);
+    const rig = new SvgRig(this, fighter);
     rig.render(RigAnimator.still(fighter, 'idle'));
-    rig.root.setPosition(x, y + CARD_H / 2 - 48).setScale(Math.min(0.55, MAX_LOOK_PX / lookHeight(fighter)));
+    rig.root.setPosition(x, y + CARD_H / 2 - 48).setScale(Math.min(0.55, MAX_LOOK_PX / fighter.previewHeight));
 
     const label = this.add
       .text(x, y + CARD_H / 2 - 6, fighter.name, {

@@ -4,26 +4,12 @@
   "name": "Padyatri Yuvraj",
   "faction": "Gathbandhan Alliance",
   "color": "#27407a",
-  "palette": { "secondary": "#f2f2f2", "accent": "#d23a3a", "skin": "#dca584", "dark": "#3a3a42" },
-  "look": {
-    "proportions": {
-      "legLength": 72, "torsoHeight": 46, "neck": 4, "headWidth": 31, "headHeight": 30,
-      "shoulderWidth": 52, "waistWidth": 40, "hipWidth": 16,
-      "upperArm": 29, "foreArm": 27, "armWidth": 11, "legWidth": 13, "footLength": 22
-    },
-    "hair": { "style": "messy", "color": "#4a2f1e" },
-    "face": { "eyes": "round", "brows": { "thickness": 3.5, "color": "#2a1a12", "tilt": -2 }, "mouth": "flat" },
-    "base": { "top": "secondary", "sleeveColor": "secondary", "pants": "#c9b283", "shoes": "#2a2a31", "sleeves": "short" },
-    "outfit": [
-      { "type": "beard", "style": "full", "color": "#52453b" }
-    ],
-    "poses": {
-      "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 2, "bobSpeed": 1.8, "sway": 3 },
-      "victory": { "lean": -6, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 5, "bobSpeed": 2, "sway": 6 },
-      "special": {
-        "startup": { "lean": -6, "headTilt": -12, "frontArm": [168, 8], "backArm": [-14, 30], "frontLeg": [16, 8], "backLeg": [-18, 8] },
-        "active": { "lean": 14, "headTilt": 4, "frontArm": [92, 4], "backArm": [-30, 40], "frontLeg": [30, 20], "backLeg": [-28, 10] }
-      }
+  "poses": {
+    "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 2, "bobSpeed": 1.8, "sway": 3 },
+    "victory": { "lean": -6, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 5, "bobSpeed": 2, "sway": 6 },
+    "special": {
+      "startup": { "lean": -6, "headTilt": -12, "frontArm": [168, 8], "backArm": [-14, 30], "frontLeg": [16, 8], "backLeg": [-18, 8] },
+      "active": { "lean": 14, "headTilt": 4, "frontArm": [92, 4], "backArm": [-30, 40], "frontLeg": [30, 20], "backLeg": [-28, 10] }
     }
   },
   "svg": {
@@ -40,6 +26,7 @@
   },
   "stats": { "maxHealth": 112, "walkSpeed": 190, "jumpVelocity": 800 },
   "body": { "width": 74, "height": 152 },
+  "previewHeight": 152,
   "taunts": ["I'll walk 4,000 km just to hit you.", "Slow and steady wins. Eventually. Probably."],
   "winQuote": "I walked here. Slowly. You're welcome.",
   "moves": {

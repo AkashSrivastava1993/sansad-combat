@@ -5,7 +5,6 @@ import {
   FIGHT_BANNER_MS,
   GAME_HEIGHT,
   GAME_WIDTH,
-  GROUND_Y,
   HIT_SHAKE,
   KNOCKDOWN_FLASH_MS,
   KNOCKDOWN_SHAKE,
@@ -30,23 +29,14 @@ import { Fighter, type FighterState } from '../systems/combat/Fighter';
 import { KeyboardInput, P1_KEYS, P2_KEYS } from '../systems/input/KeyboardInput';
 import { CompositeInput, emptyInput, type InputSource } from '../systems/input/InputState';
 import { touchControls } from '../systems/input/TouchControls';
-import { FighterView, phaserPuppet, type ScreenPoint } from '../ui/FighterView';
+import { FighterView, type ScreenPoint } from '../ui/FighterView';
 import { HitSparks } from '../ui/HitSparks';
 import { Hud } from '../ui/Hud';
-import { ProjectileLayer } from '../ui/ProjectileLayer';
 import { createSpecialFx } from '../ui/specials';
 import type { SpecialFx } from '../ui/specials/kit';
 import { showTaunt } from '../ui/TauntBubble';
 import { textStyle } from '../ui/ui';
-import {
-  SceneKey,
-  VIEW_MODE_KEY,
-  VIEW_MODES,
-  type CharacterSelectData,
-  type FightData,
-  type ResultData,
-  type ViewMode,
-} from './sceneData';
+import { SceneKey, type CharacterSelectData, type FightData, type ResultData } from './sceneData';
 
 type Phase = 'intro' | 'fight' | 'over';
 
@@ -59,7 +49,6 @@ export class FightScene extends Phaser.Scene {
   private specialFx: SpecialFx[] = [];
   private inputs!: [InputSource, InputSource];
   private hud!: Hud;
-  private projectileLayer!: ProjectileLayer;
   private sparks!: HitSparks;
   private banner!: Phaser.GameObjects.Text;
   private readonly combat = new CombatSystem();
@@ -67,15 +56,14 @@ export class FightScene extends Phaser.Scene {
   private timeLeft = ROUND_TIME_MS;
   private slowMoMs = 0;
   private prevStates: FighterState[] = ['idle', 'idle'];
-  private stage: Stage3D | null = null;
+  private stage!: Stage3D;
 
   constructor() {
     super(SceneKey.Fight);
   }
 
-  /** Screen position of a point on the fight plane; identity in 2D. */
-  private readonly toScreen = (x: number, y: number): ScreenPoint =>
-    this.stage ? this.stage.project(x, y) : { x, y, zoom: 1 };
+  /** Screen position of a point on the fight plane. */
+  private readonly toScreen = (x: number, y: number): ScreenPoint => this.stage.project(x, y);
 
   init(data: FightData): void {
     this.config = data;
@@ -101,27 +89,24 @@ export class FightScene extends Phaser.Scene {
       return;
     }
 
-    const viewMode = (this.registry.get(VIEW_MODE_KEY) as ViewMode | undefined) ?? VIEW_MODES[0]!;
-    this.stage = viewMode === '2d' ? null : Stage3D.get();
-    if (this.stage) {
-      this.stage.begin(this.game.canvas);
-      // Darkens the busy backdrop behind the health bars.
-      this.add.graphics().fillGradientStyle(0x07080d, 0x07080d, 0x07080d, 0x07080d, 0.85, 0.85, 0, 0).fillRect(0, 0, GAME_WIDTH, 120);
-    } else {
-      this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x141a2b);
-      this.add.rectangle(GAME_WIDTH / 2, GROUND_Y + (GAME_HEIGHT - GROUND_Y) / 2, GAME_WIDTH, GAME_HEIGHT - GROUND_Y, 0x2a3148);
+    const stage = Stage3D.get();
+    if (!stage) {
+      this.add
+        .text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Fights need WebGL, which this browser has turned off.', { ...textStyle(24, '#ffd0d0'), align: 'center' })
+        .setOrigin(0.5);
+      this.time.delayedCall(2500, () => this.scene.start(SceneKey.Menu));
+      return;
     }
+    this.stage = stage;
+    stage.begin(this.game.canvas);
+    // Darkens the busy backdrop behind the health bars.
+    this.add.graphics().fillGradientStyle(0x07080d, 0x07080d, 0x07080d, 0x07080d, 0.85, 0.85, 0, 0).fillRect(0, 0, GAME_WIDTH, 120);
 
     const p1 = new Fighter(p1Data, P1_START_X, 1);
     const p2 = new Fighter(p2Data, P2_START_X, -1);
     this.fighters = [p1, p2];
-    const style = viewMode === '3d-models' ? 'model' : 'cutout';
-    this.views = this.fighters.map(
-      (f) =>
-        new FighterView(this, f, this.stage ? this.stage.addFighter(f.data, style) : phaserPuppet(this, f.data), this.toScreen),
-    );
+    this.views = this.fighters.map((f) => new FighterView(this, f, stage.addFighter(f.data), this.toScreen));
     this.specialFx = this.fighters.flatMap((f) => createSpecialFx(this, f, this.toScreen) ?? []);
-    this.projectileLayer = new ProjectileLayer(this);
     this.sparks = new HitSparks(this);
     this.hud = new Hud(this, this.fighters, this.wins);
 
@@ -158,7 +143,7 @@ export class FightScene extends Phaser.Scene {
       unbindSfx();
       touchControls.hide();
       this.inputs.forEach((i) => i.destroy?.());
-      this.stage?.end();
+      this.stage.end();
     });
   }
 
@@ -193,12 +178,8 @@ export class FightScene extends Phaser.Scene {
 
     this.views.forEach((v) => v.update());
     for (const fx of this.specialFx) fx.update(this.time.now, this.combat.projectiles);
-    if (this.stage) {
-      this.stage.updateProjectiles(this.combat.projectiles);
-      this.stage.render(this.fighters.map((f) => ({ x: f.x, top: f.y - f.data.body.height })), delta);
-    } else {
-      this.projectileLayer.update(this.combat.projectiles);
-    }
+    this.stage.updateProjectiles(this.combat.projectiles);
+    this.stage.render(this.fighters.map((f) => ({ x: f.x, top: f.y - f.data.body.height })), delta);
     this.hud.update(this.timeLeft);
   }
 
@@ -224,14 +205,13 @@ export class FightScene extends Phaser.Scene {
         this.shake(KNOCKDOWN_SHAKE.ms, KNOCKDOWN_SHAKE.intensity, true);
         this.cameras.main.flash(KNOCKDOWN_FLASH_MS, 255, 244, 214);
       }
-      this.stage?.cheer(ev.hit.damage / 40);
+      this.stage.cheer(ev.hit.damage / 40);
     }
     playSfx(kind, { damage: ev.hit.damage });
   }
 
   private shake(ms: number, intensity: number, force = false): void {
-    if (this.stage) this.stage.shake(ms, intensity, force);
-    else this.cameras.main.shake(ms, intensity, force);
+    this.stage.shake(ms, intensity, force);
   }
 
   private showBanner(text: string, color = '#ffffff'): void {
@@ -247,7 +227,7 @@ export class FightScene extends Phaser.Scene {
     this.shake(KO_SHAKE.ms, KO_SHAKE.intensity, true);
     cam.flash(KO_FLASH_MS, 255, 255, 255);
     this.slowMoMs = KO_SLOWMO_MS;
-    this.stage?.cheer(1);
+    this.stage.cheer(1);
     for (const f of this.fighters) {
       if (f.health > 0) continue;
       const at = this.toScreen(f.x, f.y - f.data.body.height / 2);

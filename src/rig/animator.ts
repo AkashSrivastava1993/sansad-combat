@@ -2,7 +2,21 @@ import type { FighterData, Pose, SpecialType } from '../characters/types';
 import { RIG } from './defaults';
 import type { Expression } from './expression';
 import { fullPose, lerpPose, phasePose, resolvePoses, type StaticEntry } from './pose';
-import type { RigFrame } from './draw';
+
+/** Everything a renderer needs to draw a fighter for one frame. */
+export interface RigFrame {
+  pose: Pose;
+  expression: Expression;
+  /** Seconds; drives cloth sway. */
+  time: number;
+  /** -1..1: how hard cloth trails behind (1 = moving forward at full speed). */
+  wind: number;
+  /** Feet are planted on the ground; otherwise the pose floats freely. */
+  grounded: boolean;
+  /** Extra lift in px, e.g. the idle bounce. */
+  bob: number;
+  aura?: { color: string; alpha: number };
+}
 
 export type Outcome = 'win' | 'lose' | null;
 

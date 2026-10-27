@@ -4,37 +4,12 @@
   "name": "Baba Bulldozer",
   "faction": "Rashtriya Morcha",
   "color": "#8a4520",
-  "palette": { "secondary": "#b07a3a", "accent": "#f2c230", "skin": "#a9724a", "dark": "#1d1a18" },
-  "look": {
-    "proportions": {
-      "legLength": 50, "torsoHeight": 72, "neck": 2, "headWidth": 36, "headHeight": 36,
-      "shoulderWidth": 80, "waistWidth": 68, "hipWidth": 26,
-      "upperArm": 30, "foreArm": 28, "armWidth": 17, "legWidth": 21, "footLength": 24
-    },
-    "head": { "shape": "square" },
-    "hair": { "style": "bald", "color": "dark" },
-    "face": { "eyes": "narrow", "brows": { "thickness": 5, "color": "dark", "tilt": 14 }, "mouth": "flat" },
-    "base": { "top": "primary", "pants": "dark", "shoes": "dark", "sleeves": "short" },
-    "outfit": [
-      { "type": "kurta", "color": "primary", "trim": "accent", "length": 36, "flare": 10 },
-      { "type": "shawl", "color": "accent", "trim": "secondary", "tail": 34 },
-      { "type": "beard", "style": "full", "color": "dark", "size": 1.2 },
-      { "type": "cap", "style": "hardhat", "color": "accent", "trim": "secondary" },
-      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": -12, "y": 66, "width": 7, "height": 7, "color": "#5a3a22" },
-      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": -7, "y": 60, "width": 7, "height": 7, "color": "#5a3a22" },
-      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": 0, "y": 56, "width": 8, "height": 8, "color": "#5a3a22" },
-      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": 8, "y": 60, "width": 7, "height": 7, "color": "#5a3a22" },
-      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": 13, "y": 66, "width": 7, "height": 7, "color": "#5a3a22" },
-      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 16, "y": 8, "width": 18, "height": 96, "color": "accent" },
-      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 26, "y": 8, "width": 4, "height": 96, "color": "secondary" }
-    ],
-    "poses": {
-      "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1, "bobSpeed": 1.2, "sway": 2 },
-      "victory": { "lean": -4, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 3, "bobSpeed": 1.6, "sway": 2 },
-      "special": {
-        "startup": { "lean": -4, "headTilt": -8, "frontArm": [150, 10], "backArm": [20, 90] },
-        "active": { "lean": 8, "headTilt": 0, "frontArm": [92, 0], "backArm": [10, 100] }
-      }
+  "poses": {
+    "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1, "bobSpeed": 1.2, "sway": 2 },
+    "victory": { "lean": -4, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 3, "bobSpeed": 1.6, "sway": 2 },
+    "special": {
+      "startup": { "lean": -4, "headTilt": -8, "frontArm": [150, 10], "backArm": [20, 90] },
+      "active": { "lean": 8, "headTilt": 0, "frontArm": [92, 0], "backArm": [10, 100] }
     }
   },
   "svg": {
@@ -51,6 +26,7 @@
   },
   "stats": { "maxHealth": 115, "walkSpeed": 190, "jumpVelocity": 780 },
   "body": { "width": 86, "height": 160 },
+  "previewHeight": 167.2,
   "taunts": ["Dialogue? I only speak in horsepower.", "Beep, beep. Reversing into your plans."],
   "winQuote": "Arena cleared. Zero paperwork.",
   "moves": {

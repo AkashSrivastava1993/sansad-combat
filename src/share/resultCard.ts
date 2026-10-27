@@ -1,11 +1,7 @@
-import { lookHeight } from '../characters/look';
 import type { FighterData } from '../characters/types';
 import { FONT_FAMILY } from '../config';
 import { factionOf } from '../characters/registry';
 import { RigAnimator } from '../rig/animator';
-import { drawRig } from '../rig/draw';
-import { CanvasPainter } from '../rig/painter';
-import { hasSvg } from '../rig/svg/atlas';
 import { drawSvgRig } from '../rig/svg/canvas';
 
 const CARD_SIZE = 1080;
@@ -55,8 +51,7 @@ function drawFighter(
   ctx.translate(cx, baseY);
   ctx.scale(mirror ? -scale : scale, scale);
   const frame = RigAnimator.still(f, pose);
-  if (f.svg && hasSvg(f.id)) drawSvgRig(ctx, f, frame);
-  else drawRig(new CanvasPainter(ctx), f, frame);
+  drawSvgRig(ctx, f, frame);
   ctx.restore();
 }
 
@@ -94,13 +89,13 @@ export function renderResultCard(data: CardData): HTMLCanvasElement {
   ctx.fillStyle = '#2a3148';
   ctx.fillRect(80, baseY, CARD_SIZE - 160, 6);
   if (data.winner) {
-    drawFighter(ctx, data.winner, cx, baseY, Math.min(2.2, MAX_FIGHTER_PX / lookHeight(data.winner)), 'victory');
+    drawFighter(ctx, data.winner, cx, baseY, Math.min(2.2, MAX_FIGHTER_PX / data.winner.previewHeight), 'victory');
   } else {
     for (const [f, dx, mirror] of [
       [data.fighters[0], -170, false],
       [data.fighters[1], 170, true],
     ] as const) {
-      drawFighter(ctx, f, cx + dx, baseY, Math.min(1.8, MAX_FIGHTER_PX / lookHeight(f)), 'idle', mirror);
+      drawFighter(ctx, f, cx + dx, baseY, Math.min(1.8, MAX_FIGHTER_PX / f.previewHeight), 'idle', mirror);
     }
   }
 

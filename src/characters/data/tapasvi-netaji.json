@@ -4,34 +4,12 @@
   "name": "Tapasvi Netaji",
   "faction": "Gathbandhan Alliance",
   "color": "#7a4fb5",
-  "palette": { "secondary": "#efe6d0", "accent": "#7fb8e6", "skin": "#c68e5f", "dark": "#2a2a35" },
-  "look": {
-    "proportions": {
-      "legLength": 68, "torsoHeight": 46, "neck": 4, "headWidth": 30, "headHeight": 32,
-      "shoulderWidth": 42, "waistWidth": 34, "hipWidth": 14,
-      "upperArm": 28, "foreArm": 26, "armWidth": 9, "legWidth": 11, "footLength": 19
-    },
-    "hair": { "style": "short", "color": "#c0c4cc" },
-    "face": { "eyes": "narrow", "brows": { "thickness": 4, "color": "#c0c4cc", "tilt": 8 }, "mouth": "open" },
-    "base": { "top": "secondary", "pants": "#e6dfcc", "shoes": "dark", "sleeves": "long" },
-    "outfit": [
-      { "type": "shape", "anchor": "handBack", "shape": "rect", "x": 0, "y": 8, "width": 4, "height": 128, "color": "#8a8f99" },
-      { "type": "shape", "anchor": "handBack", "shape": "ellipse", "x": 0, "y": 78, "width": 13, "height": 17, "color": "#c0c4cc" },
-      { "type": "shape", "anchor": "handBack", "shape": "rect", "x": 0, "y": 76, "width": 13, "height": 4, "color": "dark" },
-      { "type": "kurta", "color": "secondary", "trim": "accent", "length": 34, "flare": 4 },
-      { "type": "vest", "color": "accent", "trim": "primary", "length": 0.8 },
-      { "type": "shawl", "color": "#c0c4cc", "trim": "primary", "tail": 30 },
-      { "type": "moustache", "style": "handlebar", "color": "#c0c4cc" },
-      { "type": "cap", "style": "turban", "color": "primary", "trim": "#8f6ac8", "tail": 34 },
-      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 9, "y": 1, "width": 12, "height": 3.5, "color": "skin" }
-    ],
-    "poses": {
-      "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.6, "bobSpeed": 1.8, "sway": 3 },
-      "victory": { "lean": -6, "headTilt": -8, "frontArm": [165, 10], "backArm": [150, 20], "bobAmp": 4, "bobSpeed": 2, "sway": 8 },
-      "special": {
-        "startup": { "lean": -4, "headTilt": -10, "frontArm": [165, 15], "backArm": [160, 15] },
-        "active": { "lean": 14, "headTilt": 2, "frontArm": [100, 0], "backArm": [70, 20], "frontLeg": [30, 20], "backLeg": [-25, 10] }
-      }
+  "poses": {
+    "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.6, "bobSpeed": 1.8, "sway": 3 },
+    "victory": { "lean": -6, "headTilt": -8, "frontArm": [165, 10], "backArm": [150, 20], "bobAmp": 4, "bobSpeed": 2, "sway": 8 },
+    "special": {
+      "startup": { "lean": -4, "headTilt": -10, "frontArm": [165, 15], "backArm": [160, 15] },
+      "active": { "lean": 14, "headTilt": 2, "frontArm": [100, 0], "backArm": [70, 20], "frontLeg": [30, 20], "backLeg": [-25, 10] }
     }
   },
   "svg": {
@@ -48,6 +26,7 @@
   },
   "stats": { "maxHealth": 95, "walkSpeed": 215, "jumpVelocity": 880 },
   "body": { "width": 70, "height": 150 },
+  "previewHeight": 177.5,
   "taunts": ["Brothers and sisters, I have 3 hours of speech prepared!", "I promise a punch in every pocket!"],
   "winQuote": "This victory is dedicated to everyone who clapped at the wrong time.",
   "moves": {

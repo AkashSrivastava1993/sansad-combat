@@ -124,6 +124,4 @@ export const RIG = {
   koBlendMs: 180,
   /** Extra backward lean that decays right after a hit lands. */
   hitRecoil: { lean: -12, decayMs: 120 },
-  /** Cloth swing speed (rad/s) and size (deg). */
-  cloth: { speed: 2.3, swing: 5, windSwing: 22 },
 } as const;

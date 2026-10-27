@@ -4,32 +4,12 @@
   "name": "Filmi Queen",
   "faction": "Rashtriya Morcha",
   "color": "#b3407a",
-  "palette": { "secondary": "#f2c14e", "accent": "#6a2fa0", "skin": "#e0a98a", "dark": "#1f1a2a" },
-  "look": {
-    "proportions": {
-      "legLength": 66, "torsoHeight": 42, "neck": 4, "headWidth": 36, "headHeight": 36,
-      "shoulderWidth": 36, "waistWidth": 28, "hipWidth": 12,
-      "upperArm": 26, "foreArm": 24, "armWidth": 9, "legWidth": 11, "footLength": 20
-    },
-    "hair": { "style": "volume", "color": "dark", "streak": "#c9ced8" },
-    "face": { "eyes": "wide", "brows": { "thickness": 2.5, "color": "dark", "tilt": -5 }, "mouth": "smirk" },
-    "base": { "top": "primary", "pants": "dark", "shoes": "secondary", "sleeves": "none" },
-    "outfit": [
-      { "type": "shawl", "color": "accent", "trim": "secondary", "tail": 56, "wind": 0.8 },
-      { "type": "kurta", "color": "primary", "trim": "secondary", "length": 36, "flare": 10 },
-      { "type": "glasses", "style": "pushed", "color": "dark" },
-      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 8, "y": 8, "width": 24, "height": 14, "color": "secondary" },
-      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 8, "y": 14, "width": 24, "height": 3, "color": "dark" },
-      { "type": "shape", "anchor": "handFront", "shape": "ellipse", "x": 8, "y": 8, "width": 7, "height": 7, "color": "accent" },
-      { "type": "shape", "anchor": "handFront", "shape": "ellipse", "x": 17, "y": 8, "width": 4, "height": 4, "color": "#ffffff" }
-    ],
-    "poses": {
-      "idle": { "lean": 2, "headTilt": -2, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [10, 6], "backLeg": [-8, 6], "bobAmp": 1.2, "bobSpeed": 1.5, "sway": 3 },
-      "victory": { "lean": -8, "headTilt": 10, "frontArm": [150, 20], "backArm": [-130, 20], "bobAmp": 4, "bobSpeed": 2, "sway": 5 },
-      "special": {
-        "startup": { "lean": -7, "headTilt": -10, "frontArm": [168, 14], "backArm": [18, 105] },
-        "active": { "lean": 12, "headTilt": 2, "frontArm": [102, 6], "backArm": [14, 100] }
-      }
+  "poses": {
+    "idle": { "lean": 2, "headTilt": -2, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [10, 6], "backLeg": [-8, 6], "bobAmp": 1.2, "bobSpeed": 1.5, "sway": 3 },
+    "victory": { "lean": -8, "headTilt": 10, "frontArm": [150, 20], "backArm": [-130, 20], "bobAmp": 4, "bobSpeed": 2, "sway": 5 },
+    "special": {
+      "startup": { "lean": -7, "headTilt": -10, "frontArm": [168, 14], "backArm": [18, 105] },
+      "active": { "lean": 12, "headTilt": 2, "frontArm": [102, 6], "backArm": [14, 100] }
     }
   },
   "svg": {
@@ -46,6 +26,7 @@
   },
   "stats": { "maxHealth": 88, "walkSpeed": 255, "jumpVelocity": 950 },
   "body": { "width": 60, "height": 148 },
+  "previewHeight": 148,
   "taunts": ["My entry music is longer than your career.", "Cut! Retake. Lose again, darling."],
   "winQuote": "And that's a wrap! Autographs after the show.",
   "moves": {

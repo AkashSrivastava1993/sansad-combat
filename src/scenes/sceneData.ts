@@ -10,11 +10,6 @@ export const SceneKey = {
 
 export type GameMode = 'cpu' | 'local';
 
-/** How fights are drawn; kept in the game registry under VIEW_MODE_KEY. */
-export type ViewMode = '3d-art' | '3d-models' | '2d';
-export const VIEW_MODES: readonly ViewMode[] = ['3d-art', '3d-models', '2d'];
-export const VIEW_MODE_KEY = 'viewMode';
-
 export type { Difficulty };
 
 export interface CharacterSelectData {

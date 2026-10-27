@@ -1,14 +1,12 @@
 import Phaser from 'phaser';
 import type { FighterData, SvgLayerId } from '../../characters/types';
-import type { FighterRigView } from '../../ui/FighterRig';
-import type { RigFrame } from '../draw';
+import type { RigFrame } from '../animator';
 import { svgArt, svgTextureKey, SVG_DRAW_ORDER, TEXTURE_SCALE } from './atlas';
 import { clothTarget, layoutSvg } from './layout';
 
-/** Skeletal puppet of layered SVG textures; pivots and animation values come from the character JSON. */
-export class SvgRig implements FighterRigView {
+/** Skeletal puppet of layered SVG textures for menus; pivots and animation values come from the character JSON. */
+export class SvgRig {
   readonly root: Phaser.GameObjects.Container;
-  private readonly aura: Phaser.GameObjects.Graphics;
   private readonly sprites = new Map<SvgLayerId, Phaser.GameObjects.Image>();
   private readonly present = new Set<SvgLayerId>();
   private cloth = 0;
@@ -18,9 +16,8 @@ export class SvgRig implements FighterRigView {
     scene: Phaser.Scene,
     private readonly data: FighterData,
   ) {
-    const cfg = data.svg!;
-    this.aura = scene.add.graphics();
-    this.root = scene.add.container(0, 0, [this.aura]);
+    const cfg = data.svg;
+    this.root = scene.add.container(0, 0);
     for (const layer of SVG_DRAW_ORDER) {
       const key = svgTextureKey(data.id, layer);
       if (!scene.textures.exists(key)) continue;
@@ -32,7 +29,7 @@ export class SvgRig implements FighterRigView {
   }
 
   render(frame: RigFrame): void {
-    const cfg = this.data.svg!;
+    const cfg = this.data.svg;
     const art = svgArt();
 
     const dt = this.lastTime === null ? 0 : Math.min(0.1, Math.max(0, frame.time - this.lastTime));
@@ -58,12 +55,5 @@ export class SvgRig implements FighterRigView {
     const head = this.sprites.get('head');
     if (frame.expression === 'hurt' || frame.expression === 'ko') head?.setTint(0xffb4b4);
     else head?.clearTint();
-
-    this.aura.clear();
-    if (frame.aura) {
-      const { width, height } = this.data.body;
-      this.aura.fillStyle(parseInt(frame.aura.color.slice(1), 16), frame.aura.alpha);
-      this.aura.fillEllipse(0, -height / 2, width * 1.7, height * 1.15);
-    }
   }
 }

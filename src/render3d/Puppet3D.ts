@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import type { FighterData } from '../characters/types';
-import type { RigFrame } from '../rig/draw';
+import type { RigFrame } from '../rig/animator';
 import type { FighterPuppet } from '../ui/FighterView';
 import { DEG, PX, worldX, worldY } from './space';
 
@@ -48,16 +48,12 @@ export abstract class Puppet3D implements FighterPuppet {
 
   abstract render(frame: RigFrame): void;
   protected abstract setOpacity(alpha: number): void;
-  /** Extra yaw so the body is turned towards the camera; 0 for flat art. */
-  protected turn(_facing: 1 | -1): number {
-    return 0;
-  }
 
   place(x: number, y: number, facing: 1 | -1, angle: number, alpha: number, spin = 1): void {
     const wy = worldY(y);
     this.root.position.set(worldX(x), wy, 0);
     this.root.scale.x = facing * spin;
-    this.root.rotation.set(0, this.turn(facing), -angle * DEG);
+    this.root.rotation.set(0, 0, -angle * DEG);
 
     // The contact shadow shrinks and fades as the fighter leaves the floor.
     const k = 1 / (1 + Math.max(0, wy) * 1.5);

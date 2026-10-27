@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import type { FighterData, SvgLayerId } from '../characters/types';
-import type { RigFrame } from '../rig/draw';
+import type { RigFrame } from '../rig/animator';
 import { svgArt, svgImage, SVG_DRAW_ORDER } from '../rig/svg/atlas';
 import { clothTarget, layoutSvg } from '../rig/svg/layout';
 import { Puppet3D, shared } from './Puppet3D';
@@ -50,7 +50,7 @@ export class CutoutFighter extends Puppet3D {
   constructor(parent: THREE.Object3D, data: FighterData, drawOrder: number) {
     super(parent, data);
     const [cw, ch] = svgArt().canvas;
-    const s = data.svg!.scale * PX;
+    const s = data.svg.scale * PX;
 
     this.aura = new THREE.Mesh(
       auraGeometry,
@@ -85,7 +85,7 @@ export class CutoutFighter extends Puppet3D {
   }
 
   render(frame: RigFrame): void {
-    const cfg = this.data.svg!;
+    const cfg = this.data.svg;
     const art = svgArt();
     const s = cfg.scale * PX;
 

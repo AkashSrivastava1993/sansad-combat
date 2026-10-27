@@ -54,11 +54,9 @@ interface Manifest extends SvgArt {
 }
 
 let art: SvgArt = { canvas: [256, 512], anchor: [128, 500] };
-const ready = new Set<string>();
 const images = new Map<string, HTMLImageElement>();
 
 export const svgArt = (): SvgArt => art;
-export const hasSvg = (fighterId: string): boolean => ready.has(fighterId);
 export const svgTextureKey = (fighterId: string, layer: SvgLayerId): string => `svg:${fighterId}:${layer}`;
 export const svgImage = (fighterId: string, layer: SvgLayerId): HTMLImageElement | undefined =>
   images.get(svgTextureKey(fighterId, layer));
@@ -117,10 +115,9 @@ async function loadFighter(scene: Phaser.Scene, data: FighterData, file: string)
     images.set(key, img);
     if (!scene.textures.exists(key)) scene.textures.addImage(key, img);
   }
-  ready.add(data.id);
 }
 
-/** Loads every fighter that has an `svg` block; any that fail stay on the procedural rig. */
+/** Loads every fighter's art; one that fails is logged and left without art. */
 export async function loadSvgAtlas(scene: Phaser.Scene, fighters: readonly FighterData[]): Promise<void> {
   let manifest: Manifest;
   try {
@@ -128,7 +125,7 @@ export async function loadSvgAtlas(scene: Phaser.Scene, fighters: readonly Fight
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     manifest = (await res.json()) as Manifest;
   } catch (err) {
-    console.warn('[svg] No character manifest; using the procedural rig.', err);
+    console.warn('[svg] No character manifest; fighters will have no art.', err);
     return;
   }
   art = { canvas: manifest.canvas, anchor: manifest.anchor };
@@ -136,16 +133,15 @@ export async function loadSvgAtlas(scene: Phaser.Scene, fighters: readonly Fight
 
   await Promise.all(
     fighters.map(async (f) => {
-      if (!f.svg) return;
       const file = files.get(f.svg.id);
       if (!file) {
-        console.warn(`[svg] ${f.id}: "${f.svg.id}" is not in the manifest; using the procedural rig.`);
+        console.warn(`[svg] ${f.id}: "${f.svg.id}" is not in the manifest.`);
         return;
       }
       try {
         await loadFighter(scene, f, file);
       } catch (err) {
-        console.warn(`[svg] ${f.id}: falling back to the procedural rig.`, err);
+        console.warn(`[svg] ${f.id}: art failed to load.`, err);
       }
     }),
   );

@@ -4,42 +4,13 @@
   "name": "Chai-wala Champion",
   "faction": "Rashtriya Morcha",
   "color": "#e8dcc0",
-  "palette": { "secondary": "#b8672a", "accent": "#c0392b", "skin": "#bd8860", "dark": "#4a2e1f" },
-  "look": {
-    "proportions": {
-      "legLength": 60, "torsoHeight": 52, "neck": 3, "headWidth": 34, "headHeight": 33,
-      "shoulderWidth": 48, "waistWidth": 42, "hipWidth": 16,
-      "upperArm": 25, "foreArm": 23, "armWidth": 12, "legWidth": 14, "footLength": 19
-    },
-    "head": { "shape": "round" },
-    "hair": { "style": "short", "color": "dark" },
-    "face": { "eyes": "round", "brows": { "thickness": 3.5, "color": "dark", "tilt": -2 }, "mouth": "smile" },
-    "base": { "top": "primary", "pants": "#6b4a32", "shoes": "dark", "sleeves": "short" },
-    "outfit": [
-      { "type": "shape", "anchor": "back", "shape": "rect", "x": -30, "y": 36, "width": 16, "height": 17, "color": "#cfe3ea" },
-      { "type": "shape", "anchor": "back", "shape": "rect", "x": -30, "y": 54, "width": 16, "height": 17, "color": "#cfe3ea" },
-      { "type": "shape", "anchor": "back", "shape": "rect", "x": -30, "y": 72, "width": 16, "height": 17, "color": "#cfe3ea" },
-      { "type": "kurta", "color": "primary", "trim": "accent", "length": 22 },
-      { "type": "vest", "color": "#f4efe2", "trim": "secondary", "length": 1 },
-      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": 6, "y": 22, "width": 12, "height": 9, "color": "#8a5a3a", "alpha": 0.6 },
-      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": -8, "y": 14, "width": 9, "height": 7, "color": "#8a5a3a", "alpha": 0.5 },
-      { "type": "moustache", "style": "thick", "color": "dark" },
-      { "type": "cap", "style": "topi", "color": "accent", "trim": "#f4f4f4" },
-      { "type": "shape", "anchor": "handFront", "shape": "ellipse", "x": 6, "y": 6, "width": 34, "height": 30, "color": "secondary" },
-      { "type": "shape", "anchor": "handFront", "shape": "triangle", "x": 26, "y": 12, "width": 12, "height": 15, "color": "secondary", "angle": 90 },
-      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 6, "y": 24, "width": 26, "height": 4, "color": "dark" },
-      { "type": "shape", "anchor": "handFront", "shape": "ellipse", "x": 34, "y": 28, "width": 7, "height": 7, "color": "#f0f0f0", "alpha": 0.6 },
-      { "type": "shape", "anchor": "handFront", "shape": "ellipse", "x": 38, "y": 37, "width": 8, "height": 8, "color": "#f0f0f0", "alpha": 0.5 },
-      { "type": "shape", "anchor": "handFront", "shape": "ellipse", "x": 34, "y": 47, "width": 9, "height": 9, "color": "#f0f0f0", "alpha": 0.4 }
-    ],
-    "poses": {
-      "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 2.2, "bobSpeed": 2.2, "sway": 3 },
-      "victory": { "lean": -8, "headTilt": -10, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 5, "bobSpeed": 2.4, "sway": 4 },
-      "jump": { "lean": 0, "headTilt": -4, "frontArm": [100, 60], "backArm": [60, 60], "frontLeg": [55, 85], "backLeg": [-5, 75] },
-      "special": {
-        "startup": { "lean": -6, "headTilt": -10, "frontArm": [168, 12], "backArm": [22, 105] },
-        "active": { "lean": -3, "headTilt": -6, "frontArm": [176, 6], "backArm": [16, 100] }
-      }
+  "poses": {
+    "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 2.2, "bobSpeed": 2.2, "sway": 3 },
+    "victory": { "lean": -8, "headTilt": -10, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 5, "bobSpeed": 2.4, "sway": 4 },
+    "jump": { "lean": 0, "headTilt": -4, "frontArm": [100, 60], "backArm": [60, 60], "frontLeg": [55, 85], "backLeg": [-5, 75] },
+    "special": {
+      "startup": { "lean": -6, "headTilt": -10, "frontArm": [168, 12], "backArm": [22, 105] },
+      "active": { "lean": -3, "headTilt": -6, "frontArm": [176, 6], "backArm": [16, 100] }
     }
   },
   "svg": {
@@ -56,6 +27,7 @@
   },
   "stats": { "maxHealth": 105, "walkSpeed": 230, "jumpVelocity": 900 },
   "body": { "width": 68, "height": 148 },
+  "previewHeight": 154.6,
   "taunts": ["Chai pe charcha? More like chai pe chaos.", "Careful, I'm served piping hot."],
   "winQuote": "Sugar, spice and a total knockout.",
   "moves": {

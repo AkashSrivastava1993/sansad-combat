@@ -1,12 +1,9 @@
 import Phaser from 'phaser';
-import type { FighterData } from '../characters/types';
 import { GROUND_Y, KNOCKDOWN_FALL_MS, KNOCKDOWN_LAUNCH_HEIGHT, KNOCKDOWN_RISE_MS, KO_FALL_MS, KO_LAUNCH_HEIGHT } from '../config';
-import { type Outcome, RigAnimator, type RigSnapshot } from '../rig/animator';
-import type { RigFrame } from '../rig/draw';
+import { type Outcome, RigAnimator, type RigFrame, type RigSnapshot } from '../rig/animator';
 import type { Fighter } from '../systems/combat/Fighter';
-import { createFighterRig } from './FighterRig';
 
-/** A drawn fighter, in Phaser or in the 3D stage. Positions are game px at the feet; angle is clockwise degrees. */
+/** A drawn fighter in the 3D stage. Positions are game px at the feet; angle is clockwise degrees. */
 export interface FighterPuppet {
   render(frame: RigFrame): void;
   /** `spin` squashes the width (-1..1) to fake turning on the spot. */
@@ -24,15 +21,6 @@ export type ToScreen = (x: number, y: number) => ScreenPoint;
 
 const EMBER_EVERY_MS = 40;
 const EMBER_COLORS = [0xff3d0f, 0xff7a1a, 0xffb21a, 0xffe066];
-
-export function phaserPuppet(scene: Phaser.Scene, data: FighterData): FighterPuppet {
-  const rig = createFighterRig(scene, data);
-  return {
-    render: (frame) => rig.render(frame),
-    place: (x, y, facing, angle, alpha, spin = 1) =>
-      rig.root.setPosition(x, y).setScale(facing * spin, 1).setAngle(angle).setAlpha(alpha),
-  };
-}
 
 export class FighterView {
   private readonly animator: RigAnimator;

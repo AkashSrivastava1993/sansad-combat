@@ -4,37 +4,12 @@
   "name": "Rannitikar",
   "faction": "Rashtriya Morcha",
   "color": "#5a1a28",
-  "palette": { "secondary": "#17171f", "accent": "#d4a84a", "skin": "#b98258", "dark": "#0f0f16" },
-  "look": {
-    "proportions": {
-      "legLength": 64, "torsoHeight": 46, "neck": 4, "headWidth": 28, "headHeight": 31,
-      "shoulderWidth": 40, "waistWidth": 32, "hipWidth": 14,
-      "upperArm": 26, "foreArm": 24, "armWidth": 10, "legWidth": 11, "footLength": 19
-    },
-    "hair": { "style": "slick", "color": "dark" },
-    "face": { "eyes": "narrow", "brows": { "thickness": 3, "color": "dark", "tilt": 9 }, "mouth": "smirk" },
-    "base": { "top": "primary", "pants": "dark", "shoes": "dark", "sleeves": "long" },
-    "outfit": [
-      { "type": "shape", "anchor": "handBack", "shape": "rect", "x": 0, "y": 16, "width": 4, "height": 96, "color": "dark" },
-      { "type": "shape", "anchor": "handBack", "shape": "rect", "x": 0, "y": -30, "width": 5, "height": 8, "color": "accent" },
-      { "type": "shawl", "color": "secondary", "trim": "accent", "tail": 60 },
-      { "type": "kurta", "color": "secondary", "trim": "accent", "length": 40, "flare": 4 },
-      { "type": "vest", "color": "primary", "trim": "accent", "length": 0.9 },
-      { "type": "beard", "style": "goatee", "color": "dark", "size": 0.7 },
-      { "type": "shape", "anchor": "torso", "shape": "rect", "x": 0, "y": 44, "width": 16, "height": 8, "color": "primary" },
-      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": 8, "y": 34, "width": 5, "height": 5, "color": "accent" },
-      { "type": "shape", "anchor": "handFront", "shape": "ellipse", "x": 4, "y": 20, "width": 34, "height": 34, "color": "accent", "alpha": 0.3 },
-      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 4, "y": 8, "width": 14, "height": 4, "color": "accent" },
-      { "type": "shape", "anchor": "handFront", "shape": "triangle", "x": 4, "y": 18, "width": 12, "height": 16, "color": "accent" },
-      { "type": "shape", "anchor": "handFront", "shape": "triangle", "x": 8, "y": 28, "width": 10, "height": 8, "color": "accent", "angle": 70 }
-    ],
-    "poses": {
-      "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.4, "bobSpeed": 1.6, "sway": 2 },
-      "victory": { "lean": -6, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 3, "bobSpeed": 1.8, "sway": 4 },
-      "special": {
-        "startup": { "lean": -2, "headTilt": -6, "frontArm": [140, 145], "backArm": [150, 20] },
-        "active": { "lean": 8, "headTilt": 0, "frontArm": [95, 0], "backArm": [30, 60] }
-      }
+  "poses": {
+    "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.4, "bobSpeed": 1.6, "sway": 2 },
+    "victory": { "lean": -6, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 3, "bobSpeed": 1.8, "sway": 4 },
+    "special": {
+      "startup": { "lean": -2, "headTilt": -6, "frontArm": [140, 145], "backArm": [150, 20] },
+      "active": { "lean": 8, "headTilt": 0, "frontArm": [95, 0], "backArm": [30, 60] }
     }
   },
   "svg": {
@@ -51,6 +26,7 @@
   },
   "stats": { "maxHealth": 90, "walkSpeed": 265, "jumpVelocity": 960 },
   "body": { "width": 62, "height": 145 },
+  "previewHeight": 151,
   "taunts": ["Every move is strategy. Mostly, I'm just behind you.", "I planned your defeat. And my alibi."],
   "winQuote": "Checkmate. I also rewrote the rulebook afterwards.",
   "moves": {
