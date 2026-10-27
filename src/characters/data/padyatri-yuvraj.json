@@ -4,22 +4,18 @@
   "name": "Padyatri Yuvraj",
   "faction": "Gathbandhan Alliance",
   "color": "#27407a",
-  "palette": { "secondary": "#f2f2f2", "accent": "#d23a3a", "skin": "#c99468", "dark": "#3a3a42" },
+  "palette": { "secondary": "#f2f2f2", "accent": "#d23a3a", "skin": "#dca584", "dark": "#3a3a42" },
   "look": {
     "proportions": {
       "legLength": 72, "torsoHeight": 46, "neck": 4, "headWidth": 31, "headHeight": 30,
       "shoulderWidth": 52, "waistWidth": 40, "hipWidth": 16,
       "upperArm": 29, "foreArm": 27, "armWidth": 11, "legWidth": 13, "footLength": 22
     },
-    "hair": { "style": "short", "color": "dark" },
-    "face": { "eyes": "round", "brows": { "thickness": 3.5, "color": "dark", "tilt": -2 }, "mouth": "smile" },
-    "base": { "top": "secondary", "sleeveColor": "primary", "pants": "#b9a98a", "shoes": "#e6e6e6", "sleeves": "long" },
+    "hair": { "style": "messy", "color": "#4a2f1e" },
+    "face": { "eyes": "round", "brows": { "thickness": 3.5, "color": "#2a1a12", "tilt": -2 }, "mouth": "flat" },
+    "base": { "top": "secondary", "sleeveColor": "secondary", "pants": "#c9b283", "shoes": "#2a2a31", "sleeves": "short" },
     "outfit": [
-      { "type": "shape", "anchor": "back", "shape": "rect", "x": -26, "y": 26, "width": 20, "height": 40, "color": "#8a7a5a" },
-      { "type": "shape", "anchor": "back", "shape": "rect", "x": -30, "y": 66, "width": 4, "height": 90, "color": "dark" },
-      { "type": "shape", "anchor": "back", "shape": "triangle", "x": -19, "y": 96, "width": 22, "height": 26, "color": "accent", "angle": 90 },
-      { "type": "vest", "color": "primary", "trim": "secondary", "length": 1 },
-      { "type": "beard", "style": "stubble", "color": "dark" }
+      { "type": "beard", "style": "full", "color": "#52453b" }
     ],
     "poses": {
       "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 2, "bobSpeed": 1.8, "sway": 3 },
@@ -31,7 +27,7 @@
     }
   },
   "svg": {
-    "id": "padyatri_yuvraj_v2",
+    "id": "padyatri_yuvraj_v3",
     "scale": 0.364,
     "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [56, 498], "footFront": [214, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
     "propFollows": "arm-front",
