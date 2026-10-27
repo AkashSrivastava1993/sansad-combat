@@ -2,7 +2,7 @@
   "$schema": "../fighter.schema.json",
   "id": "muffler-man",
   "name": "Muffler Man",
-  "faction": "Gathbandhan Alliance",
+  "faction": "INDI Alliance",
   "color": "#5b6f94",
   "poses": {
     "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.4, "bobSpeed": 1.7, "sway": 2 },
@@ -13,7 +13,7 @@
     }
   },
   "svg": {
-    "id": "muffler_man_v2",
+    "id": "muffler_man",
     "scale": 0.35,
     "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [56, 498], "footFront": [214, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
     "propFollows": "arm-front",

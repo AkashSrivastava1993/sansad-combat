@@ -2,7 +2,7 @@
   "$schema": "../fighter.schema.json",
   "id": "chai-wala-champion",
   "name": "Chai-wala Champion",
-  "faction": "Rashtriya Morcha",
+  "faction": "NDA",
   "color": "#e8dcc0",
   "poses": {
     "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 2.2, "bobSpeed": 2.2, "sway": 3 },
@@ -14,7 +14,7 @@
     }
   },
   "svg": {
-    "id": "tapri_titan_v4",
+    "id": "tapri_titan",
     "scale": 0.355,
     "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [56, 498], "footFront": [214, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
     "propFollows": "arm-front",

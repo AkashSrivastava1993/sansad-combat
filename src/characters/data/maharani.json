@@ -2,7 +2,7 @@
   "$schema": "../fighter.schema.json",
   "id": "maharani",
   "name": "Maharani",
-  "faction": "Gathbandhan Alliance",
+  "faction": "INDI Alliance",
   "color": "#a01c2e",
   "poses": {
     "idle": { "lean": 2, "headTilt": -2, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [10, 6], "backLeg": [-8, 6], "bobAmp": 0.8, "bobSpeed": 1.2, "sway": 1.5 },
@@ -13,7 +13,7 @@
     }
   },
   "svg": {
-    "id": "maharani_v2",
+    "id": "maharani",
     "scale": 0.364,
     "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [88, 498], "footFront": [186, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
     "propFollows": "arm-front",

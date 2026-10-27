@@ -64,8 +64,8 @@ export interface FactionStyle {
 }
 
 export const FACTIONS: Record<string, FactionStyle> = {
-  'Gathbandhan Alliance': { color: '#2b8c8c', blurb: 'Many parties, one very long press conference' },
-  'Rashtriya Morcha': { color: '#b5452c', blurb: 'One front, zero dissent (officially)' },
+  'INDI Alliance': { color: '#2b8c8c', blurb: 'Many parties, one very long press conference' },
+  'NDA': { color: '#b5452c', blurb: 'One front, zero dissent (officially)' },
 };
 /** Banner style for a faction missing from FACTIONS. */
 export const DEFAULT_FACTION_STYLE: FactionStyle = { color: '#5a6490', blurb: '' };

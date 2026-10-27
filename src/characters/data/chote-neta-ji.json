@@ -1,8 +1,8 @@
 {
   "$schema": "../fighter.schema.json",
-  "id": "tapasvi-netaji",
-  "name": "Tapasvi Netaji",
-  "faction": "Gathbandhan Alliance",
+  "id": "chote-neta-ji",
+  "name": "Chote Neta Ji",
+  "faction": "INDI Alliance",
   "color": "#7a4fb5",
   "poses": {
     "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.6, "bobSpeed": 1.8, "sway": 3 },
@@ -13,7 +13,7 @@
     }
   },
   "svg": {
-    "id": "tapasvi_netaji_v2",
+    "id": "chote_neta_ji",
     "scale": 0.359,
     "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [56, 498], "footFront": [214, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
     "propFollows": "arm-front",

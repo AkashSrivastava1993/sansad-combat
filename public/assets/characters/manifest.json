@@ -19,44 +19,44 @@
   ],
   "fighters": [
     {
-      "id": "mistri_baba_v2",
-      "name": "Mistri Baba v2",
-      "file": "mistri_baba_v2.svg"
+      "id": "mistri_baba",
+      "name": "Mistri Baba",
+      "file": "mistri_baba.svg"
     },
     {
-      "id": "tapri_titan_v4",
-      "name": "Tapri Titan v4",
-      "file": "tapri_titan_v4.svg"
+      "id": "tapri_titan",
+      "name": "Tapri Titan",
+      "file": "tapri_titan.svg"
     },
     {
-      "id": "rannitikar_v2",
-      "name": "Rannitikar v2",
-      "file": "rannitikar_v2.svg"
+      "id": "tadipaar_don",
+      "name": "Tadipaar Don",
+      "file": "tadipaar_don.svg"
     },
     {
-      "id": "padyatri_yuvraj_v3",
-      "name": "Padyatri Yuvraj v3",
-      "file": "padyatri_yuvraj_v3.svg"
+      "id": "padyatri_yuvraj",
+      "name": "Padyatri Yuvraj",
+      "file": "padyatri_yuvraj.svg"
     },
     {
-      "id": "muffler_man_v2",
-      "name": "Muffler Man v2",
-      "file": "muffler_man_v2.svg"
+      "id": "muffler_man",
+      "name": "Muffler Man",
+      "file": "muffler_man.svg"
     },
     {
-      "id": "filmi_queen_v2",
-      "name": "Filmi Queen v2",
-      "file": "filmi_queen_v2.svg"
+      "id": "filmi_queen",
+      "name": "Filmi Queen",
+      "file": "filmi_queen.svg"
     },
     {
-      "id": "maharani_v2",
-      "name": "Maharani v2",
-      "file": "maharani_v2.svg"
+      "id": "maharani",
+      "name": "Maharani",
+      "file": "maharani.svg"
     },
     {
-      "id": "tapasvi_netaji_v2",
-      "name": "Tapasvi Netaji v2",
-      "file": "tapasvi_netaji_v2.svg"
+      "id": "chote_neta_ji",
+      "name": "Chote Neta Ji",
+      "file": "chote_neta_ji.svg"
     }
   ]
 }
