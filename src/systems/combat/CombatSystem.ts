@@ -78,11 +78,13 @@ export class CombatSystem {
 
       const shield = defender.currentSpecial;
       if (defender.shieldActive && shield?.type === 'shield') {
+        if (projectile) projectile.blocked = true;
         attacker.takeReflect(Math.round(shield.damage + (shield.reflectRatio ?? 0) * hit.damage));
         events.push({ attacker, defender, hit, blocked: true, shielded: true, ...point });
         continue;
       }
       const blocked = defender.state === 'block' && !hit.guardBreak;
+      if (projectile) projectile.blocked = blocked;
       const dealt = defender.takeHit(hit, dir, blocked);
       if (hit.burn && !blocked && defender.state !== 'ko') defender.ignite(hit.burn);
       attacker.gainEnergy(dealt * ENERGY_PER_DAMAGE_DEALT);

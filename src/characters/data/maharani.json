@@ -28,7 +28,11 @@
     ],
     "poses": {
       "idle": { "lean": 2, "headTilt": -2, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [10, 6], "backLeg": [-8, 6], "bobAmp": 0.8, "bobSpeed": 1.2, "sway": 1.5 },
-      "victory": { "lean": -2, "headTilt": 4, "frontArm": [150, 15], "backArm": [10, 20], "bobAmp": 2, "bobSpeed": 1.5, "sway": 6 }
+      "victory": { "lean": -2, "headTilt": 4, "frontArm": [150, 15], "backArm": [10, 20], "bobAmp": 2, "bobSpeed": 1.5, "sway": 6 },
+      "special": {
+        "startup": { "lean": -4, "headTilt": -8, "frontArm": [118, 30], "backArm": [12, 100] },
+        "active": { "lean": 6, "headTilt": -2, "frontArm": [96, 4], "backArm": [10, 90] }
+      }
     }
   },
   "svg": {
@@ -70,23 +74,27 @@
     }
   },
   "special": {
-    "type": "summon",
-    "name": "Parivaar Assist",
-    "description": "Calls a relative who appears beside the opponent and lands one big strike after a short delay.",
+    "type": "projectile",
+    "name": "Panja Power: High Command",
+    "label": "Energy hand",
+    "description": "Conjures a giant glowing hand and thrusts it at the opponent. On contact it bursts into a palm shockwave that floors them. Jump it or block it.",
+    "fx": "panja",
+    "impact": "PANJA!",
     "cost": 55,
     "cooldownMs": 5000,
     "damage": 18,
-    "startupMs": 320,
-    "activeMs": 80,
-    "recoveryMs": 280,
-    "hitstunMs": 500,
-    "blockstunMs": 250,
-    "knockback": 450,
-    "offsetX": 75,
-    "width": 100,
-    "height": 130,
-    "y": 130,
-    "strikeDelayMs": 450,
-    "lifetimeMs": 750
+    "startupMs": 700,
+    "activeMs": 60,
+    "recoveryMs": 520,
+    "hitstunMs": 1100,
+    "blockstunMs": 340,
+    "knockback": 700,
+    "knockdown": true,
+    "speed": 520,
+    "width": 84,
+    "height": 96,
+    "y": 112,
+    "spawnX": 72,
+    "lifetimeMs": 1150
   }
 }

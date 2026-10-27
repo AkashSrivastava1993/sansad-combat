@@ -30,6 +30,8 @@ export class Projectile {
   age = 0;
   /** Hits landed, for effects that react to contact. */
   hitsLanded = 0;
+  /** Whether the last hit was blocked or reflected, for effects that react to contact. */
+  blocked = false;
   volleyPhase: VolleyPhase = 'enter';
   /** Time spent striking during a volley. */
   holdMs = 0;
