@@ -23,13 +23,14 @@ import {
 import { Stage3D } from '../render3d/Stage3D';
 import { AIController } from '../systems/ai/AIController';
 import { AI_PROFILES } from '../systems/ai/difficulty';
-import { bindPhaserSfx, playSfx } from '../systems/audio/sfx';
+import { bindPhaserSfx, playSfx, preloadVoice } from '../systems/audio/sfx';
 import { CombatSystem, type HitEvent } from '../systems/combat/CombatSystem';
 import { Fighter, type FighterState } from '../systems/combat/Fighter';
 import { KeyboardInput, P1_KEYS, P2_KEYS } from '../systems/input/KeyboardInput';
 import { CompositeInput, emptyInput, type InputSource } from '../systems/input/InputState';
 import { touchControls } from '../systems/input/TouchControls';
 import { FighterView, type ScreenPoint } from '../ui/FighterView';
+import { gameChrome } from '../ui/GameChrome';
 import { HitSparks } from '../ui/HitSparks';
 import { Hud } from '../ui/Hud';
 import { createSpecialFx } from '../ui/specials';
@@ -105,6 +106,10 @@ export class FightScene extends Phaser.Scene {
     const p1 = new Fighter(p1Data, P1_START_X, 1);
     const p2 = new Fighter(p2Data, P2_START_X, -1);
     this.fighters = [p1, p2];
+    this.fighters.forEach((f) => {
+      preloadVoice(f.data.id);
+      preloadVoice(`${f.data.id}-win`);
+    });
     this.views = this.fighters.map((f) => new FighterView(this, f, stage.addFighter(f.data), this.toScreen));
     this.specialFx = this.fighters.flatMap((f) => createSpecialFx(this, f, this.toScreen) ?? []);
     this.sparks = new HitSparks(this);
@@ -139,9 +144,25 @@ export class FightScene extends Phaser.Scene {
 
     const unbindSfx = bindPhaserSfx(this);
     touchControls.show();
+    gameChrome.enterFight({
+      pause: () => {
+        this.scene.pause();
+        touchControls.hide();
+      },
+      resume: () => {
+        this.scene.resume();
+        touchControls.show();
+      },
+      quit: () =>
+        this.scene.start(SceneKey.CharacterSelect, {
+          mode: this.config.mode,
+          difficulty: this.config.difficulty,
+        } satisfies CharacterSelectData),
+    });
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       unbindSfx();
       touchControls.hide();
+      gameChrome.leaveFight();
       this.inputs.forEach((i) => i.destroy?.());
       this.stage.end();
     });
@@ -187,7 +208,7 @@ export class FightScene extends Phaser.Scene {
     const prev = this.prevStates[index];
     if (f.state !== prev) {
       if (f.state === 'attack') playSfx('attack');
-      else if (f.state === 'special') playSfx('special');
+      else if (f.state === 'special') playSfx('special', { fighterId: f.data.id });
     }
     this.prevStates[index] = f.state;
   }

@@ -1,10 +1,15 @@
 import type Phaser from 'phaser';
+import { synthPlay } from './synth';
 
-export type SfxName = 'roundStart' | 'fight' | 'attack' | 'special' | 'hit' | 'block' | 'shield' | 'ko' | 'timeUp';
+export { preloadVoice } from './synth';
+
+export type SfxName = 'roundStart' | 'fight' | 'attack' | 'special' | 'hit' | 'block' | 'shield' | 'ko' | 'timeUp' | 'win';
 
 export interface SfxInfo {
   /** Damage of the move involved, for scaling volume or picking a variant. */
   damage?: number;
+  /** Fighter whose voice clip (if any) accompanies a special or a match win. */
+  fighterId?: string;
 }
 
 export type SfxHandler = (name: SfxName, info: SfxInfo) => void;
@@ -18,6 +23,7 @@ function onSfx(handler: SfxHandler): () => void {
 }
 
 export function playSfx(name: SfxName, info: SfxInfo = {}): void {
+  synthPlay(name, info);
   handlers.forEach((h) => h(name, info));
 }
 

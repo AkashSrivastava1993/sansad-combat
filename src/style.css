@@ -101,3 +101,76 @@ body {
 .tc-btn.active {
   background: rgba(255, 255, 255, 0.45);
 }
+
+#game-chrome {
+  position: fixed;
+  z-index: 20;
+  display: flex;
+  gap: 8px;
+  top: max(8px, env(safe-area-inset-top));
+  right: max(8px, env(safe-area-inset-right));
+}
+
+#game-chrome.fight {
+  top: auto;
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: max(10px, env(safe-area-inset-bottom));
+}
+
+#game-chrome:not(.fight) .gc-fight-only {
+  display: none;
+}
+
+.gc-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(36px, 9vmin, 48px);
+  height: clamp(36px, 9vmin, 48px);
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font: bold clamp(14px, 4vmin, 20px) sans-serif;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gc-btn[hidden] {
+  display: none;
+}
+
+#pause-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(7, 8, 13, 0.8);
+}
+
+#pause-overlay[hidden] {
+  display: none;
+}
+
+.po-title {
+  color: #fff;
+  font: bold clamp(28px, 8vmin, 48px) sans-serif;
+}
+
+.po-btn {
+  min-width: min(320px, 70vw);
+  padding: 14px 20px;
+  border: 3px solid #8fa0ff;
+  border-radius: 8px;
+  background: #2b3350;
+  color: #fff;
+  font: bold clamp(16px, 4.5vmin, 24px) sans-serif;
+  touch-action: manipulation;
+}

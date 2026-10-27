@@ -4,11 +4,12 @@ import { GAME_HEIGHT } from '../config';
 import { randomDrawQuote, randomWinnerQuote } from '../share/quotes';
 import { canvasToBlob, renderResultCard } from '../share/resultCard';
 import { downloadBlob, shareToWhatsApp } from '../share/share';
+import { playSfx } from '../systems/audio/sfx';
 import { createButton, textStyle } from '../ui/ui';
 import { SceneKey, type CharacterSelectData, type FightData, type ResultData } from './sceneData';
 
 const CARD_TEXTURE = 'result-card';
-const CARD_FILE = 'fight-night-result.png';
+const CARD_FILE = 'sansad-combat-result.png';
 const PREVIEW_SIZE = 440;
 const PREVIEW_X = 270;
 const BUTTON_X = 730;
@@ -54,6 +55,7 @@ export class ResultScene extends Phaser.Scene {
 
     if (this.textures.exists(CARD_TEXTURE)) this.textures.remove(CARD_TEXTURE);
     this.textures.addCanvas(CARD_TEXTURE, canvas);
+    if (winnerData) playSfx('win', { fighterId: winnerData.id });
     this.add.rectangle(PREVIEW_X, GAME_HEIGHT / 2, PREVIEW_SIZE + 8, PREVIEW_SIZE + 8, 0x8fa0ff);
     this.add.image(PREVIEW_X, GAME_HEIGHT / 2, CARD_TEXTURE).setDisplaySize(PREVIEW_SIZE, PREVIEW_SIZE);
 

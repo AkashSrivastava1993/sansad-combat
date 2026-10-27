@@ -134,7 +134,7 @@ export function buildArena(scene: THREE.Scene): Arena {
 
   const banner = new THREE.Mesh(
     new THREE.PlaneGeometry(7, 1.9),
-    new THREE.MeshBasicMaterial({ map: bannerTexture('FIGHT NIGHT', 'LIVE FROM THE RALLY GROUND', '#e5483f', 1024, 278), toneMapped: false }),
+    new THREE.MeshBasicMaterial({ map: bannerTexture('SANSAD COMBAT', 'LIVE FROM THE RALLY GROUND', '#e5483f', 1024, 278), toneMapped: false }),
   );
   banner.position.set(0, 3.5, -11);
   scene.add(banner);

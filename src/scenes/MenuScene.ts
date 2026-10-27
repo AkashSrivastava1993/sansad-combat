@@ -17,7 +17,7 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     const cx = GAME_WIDTH / 2;
-    this.add.text(cx, 110, 'FIGHT NIGHT', textStyle(72)).setOrigin(0.5);
+    this.add.text(cx, 110, 'SANSAD COMBAT', textStyle(72)).setOrigin(0.5);
 
     const start = (mode: CharacterSelectData['mode']) => () =>
       this.scene.start(SceneKey.CharacterSelect, { mode, difficulty: this.difficulty } satisfies CharacterSelectData);

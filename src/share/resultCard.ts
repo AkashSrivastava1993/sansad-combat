@@ -79,7 +79,7 @@ export function renderResultCard(data: CardData): HTMLCanvasElement {
 
   ctx.fillStyle = '#aab2d5';
   ctx.font = font(44);
-  ctx.fillText('FIGHT NIGHT', cx, 95);
+  ctx.fillText('SANSAD COMBAT', cx, 95);
 
   ctx.fillStyle = '#ffffff';
   ctx.font = font(120);

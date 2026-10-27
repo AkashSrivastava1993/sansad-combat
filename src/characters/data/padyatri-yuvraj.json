@@ -13,7 +13,7 @@
     }
   },
   "svg": {
-    "id": "padyatri_yuvraj",
+    "id": "padyatri_yuvraj_v2",
     "scale": 0.364,
     "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [56, 498], "footFront": [214, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
     "propFollows": "arm-front",
@@ -60,7 +60,7 @@
     "impact": "BOOM!",
     "cost": 60,
     "cooldownMs": 5500,
-    "damage": 20,
+    "damage": 26,
     "startupMs": 720,
     "activeMs": 60,
     "recoveryMs": 600,
