@@ -300,7 +300,7 @@
         "spinTurns": { "type": "number", "minimum": 0 },
         "spawnFrom": { "enum": ["self", "edge"] },
         "pierce": { "type": "boolean" },
-        "fx": { "enum": ["constitution", "bulldozer", "cycle", "lathi", "panja", "broom"] },
+        "fx": { "enum": ["constitution", "bulldozer", "cycle", "lathi", "panja", "broom", "mic"] },
         "volley": {
           "type": "object",
           "required": ["standOffX", "strikes", "beatMs"],

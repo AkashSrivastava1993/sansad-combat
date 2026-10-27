@@ -25,7 +25,11 @@
     ],
     "poses": {
       "idle": { "lean": 2, "headTilt": -2, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [10, 6], "backLeg": [-8, 6], "bobAmp": 1.2, "bobSpeed": 1.5, "sway": 3 },
-      "victory": { "lean": -8, "headTilt": 10, "frontArm": [150, 20], "backArm": [-130, 20], "bobAmp": 4, "bobSpeed": 2, "sway": 5 }
+      "victory": { "lean": -8, "headTilt": 10, "frontArm": [150, 20], "backArm": [-130, 20], "bobAmp": 4, "bobSpeed": 2, "sway": 5 },
+      "special": {
+        "startup": { "lean": -7, "headTilt": -10, "frontArm": [168, 14], "backArm": [18, 105] },
+        "active": { "lean": 12, "headTilt": 2, "frontArm": [102, 6], "backArm": [14, 100] }
+      }
     }
   },
   "svg": {
@@ -67,18 +71,27 @@
     }
   },
   "special": {
-    "type": "stun",
-    "name": "Spotlight Stun",
-    "description": "A blinding spotlight stuns everyone nearby for a full second. Jump it or block it.",
-    "cost": 45,
-    "cooldownMs": 4500,
-    "damage": 7,
-    "startupMs": 300,
-    "activeMs": 150,
-    "recoveryMs": 450,
-    "hitstunMs": 1000,
-    "blockstunMs": 300,
-    "knockback": 80,
-    "area": { "width": 400, "height": 120 }
+    "type": "projectile",
+    "name": "Mic Drop: Queen of Controversy",
+    "label": "Soundwave",
+    "description": "Raises the mic, gathers a storm of bubbles and hurls a giant soundwave that floors whoever it reaches, then drops the mic. Jump it or block it.",
+    "fx": "mic",
+    "impact": "MIC DROP!",
+    "cost": 50,
+    "cooldownMs": 5000,
+    "damage": 16,
+    "startupMs": 700,
+    "activeMs": 60,
+    "recoveryMs": 520,
+    "hitstunMs": 1100,
+    "blockstunMs": 320,
+    "knockback": 680,
+    "knockdown": true,
+    "speed": 620,
+    "width": 96,
+    "height": 96,
+    "y": 112,
+    "spawnX": 66,
+    "lifetimeMs": 1700
   }
 }

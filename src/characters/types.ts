@@ -59,7 +59,7 @@ interface SpecialBase {
 }
 
 /** Special-move effects that draw their own projectiles; see src/ui/specials. */
-export type SpecialFxId = 'constitution' | 'bulldozer' | 'cycle' | 'lathi' | 'panja' | 'broom';
+export type SpecialFxId = 'constitution' | 'bulldozer' | 'cycle' | 'lathi' | 'panja' | 'broom' | 'mic';
 
 /** Optional behaviour shared by projectile specials and the entities they spawn. */
 export interface ProjectileExtras {
