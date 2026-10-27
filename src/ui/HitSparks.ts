@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { SPARK_BASE_COUNT, SPARK_COUNT_PER_DAMAGE, SPARK_LIFETIME_MS } from '../config';
+import { FONT_FAMILY, SPARK_BASE_COUNT, SPARK_COUNT_PER_DAMAGE, SPARK_LIFETIME_MS } from '../config';
 
 export type SparkKind = 'hit' | 'block' | 'shield' | 'ko';
 
@@ -11,9 +11,51 @@ const COLORS: Record<SparkKind, number> = {
 };
 
 const DEPTH = 10;
+const COMIC_DEPTH = 14;
+const COMIC_MS = 650;
+const COMIC_POINTS = 12;
 
 export class HitSparks {
   constructor(private readonly scene: Phaser.Scene) {}
+
+  /** Comic-book starburst with a word, e.g. "BOOM!"; `size` scales it. */
+  comic(x: number, y: number, word: string, color: number, size = 1): void {
+    const r = 62 * size;
+    const g = this.scene.add.graphics();
+    const pts: Phaser.Types.Math.Vector2Like[] = [];
+    for (let i = 0; i < COMIC_POINTS * 2; i++) {
+      const a = (i / (COMIC_POINTS * 2)) * Math.PI * 2;
+      const k = i % 2 === 0 ? 1 : 0.58 + Math.random() * 0.08;
+      pts.push({ x: Math.cos(a) * r * k, y: Math.sin(a) * r * k * 0.8 });
+    }
+    g.fillStyle(0xffffff).fillPoints(pts, true);
+    g.fillStyle(color).fillPoints(pts.map((p) => ({ x: p.x * 0.84, y: p.y * 0.84 })), true);
+    g.lineStyle(4, 0x111111).strokePoints(pts, true);
+    const label = this.scene.add
+      .text(0, 0, word, {
+        fontFamily: FONT_FAMILY,
+        fontSize: `${Math.round(30 * size)}px`,
+        fontStyle: 'bold italic',
+        color: '#ffffff',
+        stroke: '#111111',
+        strokeThickness: Math.max(4, 6 * size),
+      })
+      .setOrigin(0.5);
+    const burst = this.scene.add
+      .container(x, y - 30 * size, [g, label])
+      .setDepth(COMIC_DEPTH)
+      .setScale(0.2)
+      .setAngle(Phaser.Math.Between(-12, 12));
+    this.scene.tweens.add({ targets: burst, scale: 1, duration: 140, ease: 'Back.easeOut' });
+    this.scene.tweens.add({
+      targets: burst,
+      alpha: 0,
+      y: burst.y - 18,
+      delay: COMIC_MS - 220,
+      duration: 220,
+      onComplete: () => burst.destroy(),
+    });
+  }
 
   /** `dir` is the direction the hit travels; shards fan out around it (all around for K.O.). */
   burst(x: number, y: number, kind: SparkKind, dir: 1 | -1, damage: number): void {

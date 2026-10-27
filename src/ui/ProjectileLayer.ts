@@ -11,6 +11,7 @@ export class ProjectileLayer {
   update(projectiles: readonly Projectile[]): void {
     this.gfx.clear();
     for (const p of projectiles) {
+      if (p.data.fx) continue;
       const { x, y, width, height } = p.hitbox;
       const color = Phaser.Display.Color.HexStringToColor(p.color).color;
       if (p.kind === 'helper') {

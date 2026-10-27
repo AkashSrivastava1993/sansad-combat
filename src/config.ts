@@ -48,6 +48,13 @@ export const KO_SLOWMO_SCALE = 0.25;
 export const KO_FALL_MS = 700;
 export const KO_LAUNCH_HEIGHT = 50;
 
+// Knockdowns from special moves: fall, lie for the rest of the hitstun, then spring back up.
+export const KNOCKDOWN_FALL_MS = 420;
+export const KNOCKDOWN_RISE_MS = 320;
+export const KNOCKDOWN_LAUNCH_HEIGHT = 36;
+export const KNOCKDOWN_SHAKE = { ms: 260, intensity: 0.012 };
+export const KNOCKDOWN_FLASH_MS = 90;
+
 export const FONT_FAMILY = 'Arial, Helvetica, sans-serif';
 
 // Factions shown as banners on the character select screen; list order is display order.

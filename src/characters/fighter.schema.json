@@ -294,6 +294,35 @@
           }
         },
         "color": { "$ref": "#/definitions/hex" },
+        "knockdown": { "type": "boolean", "description": "A clean hit floors the defender for the hitstun." },
+        "impact": { "type": "string", "description": "Comic-book word shown on a clean hit." },
+        "label": { "type": "string", "description": "Replaces the special-type label on character select." },
+        "spinTurns": { "type": "number", "minimum": 0 },
+        "spawnFrom": { "enum": ["self", "edge"] },
+        "pierce": { "type": "boolean" },
+        "fx": { "enum": ["constitution", "bulldozer", "cycle", "lathi"] },
+        "volley": {
+          "type": "object",
+          "required": ["standOffX", "strikes", "beatMs"],
+          "additionalProperties": false,
+          "properties": {
+            "standOffX": { "type": "number" },
+            "strikes": { "type": "integer", "minimum": 1 },
+            "beatMs": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "finisher": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "damage": { "type": "number", "minimum": 0 },
+            "hitstunMs": { "type": "number", "minimum": 0 },
+            "blockstunMs": { "type": "number", "minimum": 0 },
+            "knockback": { "type": "number" },
+            "knockdown": { "type": "boolean" },
+            "impact": { "type": "string" }
+          }
+        },
         "reflectRatio": { "type": "number", "minimum": 0 },
         "behindOffset": { "type": "number" },
         "offsetX": { "type": "number" },

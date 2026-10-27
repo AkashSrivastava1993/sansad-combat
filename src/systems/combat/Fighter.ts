@@ -48,6 +48,8 @@ export class Fighter {
   /** Fractional burn damage not yet taken. */
   private burnCarry = 0;
   private flightFromX = 0;
+  /** Length of the current knockdown; 0 when the hitstun is an ordinary one. */
+  private downMs = 0;
   private prev: InputState = emptyInput();
   private opponentX = 0;
 
@@ -116,6 +118,25 @@ export class Fighter {
     return this.state === 'special' && this.currentSpecial?.type === 'pour';
   }
 
+  /** Floored by a knockdown hit and getting back up. */
+  get downed(): boolean {
+    return this.state === 'hitstun' && this.downMs > 0;
+  }
+
+  /** 0-1 through the current knockdown. */
+  get downProgress(): number {
+    return this.downed ? Math.min(1, 1 - this.stunTime / this.downMs) : 0;
+  }
+
+  get downDurationMs(): number {
+    return this.downMs;
+  }
+
+  /** Hits pass through: airborne specials and fighters who are down. */
+  get untouchable(): boolean {
+    return this.flying || this.downed;
+  }
+
   /** Direction the defender is launched; area stuns push away from the user. */
   knockbackDir(defenderX: number): 1 | -1 {
     const s = this.currentSpecial;
@@ -163,6 +184,7 @@ export class Fighter {
     }
     this.state = 'hitstun';
     this.stunTime = blocked ? hit.blockstunMs : hit.hitstunMs;
+    this.downMs = hit.knockdown && !blocked ? this.stunTime : 0;
     return dealt;
   }
 
@@ -321,7 +343,13 @@ export class Fighter {
     const s = this.currentSpecial;
     if (!s) return;
     if (s.type === 'projectile') {
-      this.spawned.push(new Projectile(this, s, this.x + this.facing * s.spawnX, this.facing));
+      const edge = this.facing === 1 ? -s.width / 2 : GAME_WIDTH + s.width / 2;
+      const x = s.spawnFrom === 'edge' ? edge : this.x + this.facing * s.spawnX;
+      const half = s.width / 2;
+      const haltX = s.volley
+        ? Math.min(GAME_WIDTH - half, Math.max(half, this.opponentX - this.facing * s.volley.standOffX))
+        : x;
+      this.spawned.push(new Projectile(this, s, x, this.facing, 'projectile', haltX));
     } else if (s.type === 'teleport') {
       this.teleportBehind(s.behindOffset);
     } else if (s.type === 'summon') {

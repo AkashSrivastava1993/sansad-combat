@@ -23,7 +23,11 @@
     ],
     "poses": {
       "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 2, "bobSpeed": 1.8, "sway": 3 },
-      "victory": { "lean": -6, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 5, "bobSpeed": 2, "sway": 6 }
+      "victory": { "lean": -6, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 5, "bobSpeed": 2, "sway": 6 },
+      "special": {
+        "startup": { "lean": -6, "headTilt": -12, "frontArm": [168, 8], "backArm": [-14, 30], "frontLeg": [16, 8], "backLeg": [-18, 8] },
+        "active": { "lean": 14, "headTilt": 4, "frontArm": [92, 4], "backArm": [-30, 40], "frontLeg": [30, 20], "backLeg": [-28, 10] }
+      }
     }
   },
   "svg": {
@@ -65,19 +69,27 @@
     }
   },
   "special": {
-    "type": "dash",
-    "name": "Yatra Rush",
-    "description": "A very slow, very obvious charge that hits for massive damage. Dodge it or pay.",
+    "type": "projectile",
+    "name": "Constitution Shockwave",
+    "label": "Ground wave",
+    "description": "Raises the Constitution; its glowing pages release a ground shockwave that floors whoever it reaches. Jump it or block it.",
+    "fx": "constitution",
+    "impact": "BOOM!",
     "cost": 60,
     "cooldownMs": 5500,
-    "damage": 26,
-    "startupMs": 600,
-    "activeMs": 520,
-    "recoveryMs": 650,
-    "hitstunMs": 750,
-    "blockstunMs": 350,
-    "knockback": 720,
-    "speed": 430,
-    "hitbox": { "x": 20, "y": 148, "width": 85, "height": 140 }
+    "damage": 20,
+    "startupMs": 720,
+    "activeMs": 60,
+    "recoveryMs": 600,
+    "hitstunMs": 1100,
+    "blockstunMs": 320,
+    "knockback": 640,
+    "knockdown": true,
+    "speed": 560,
+    "width": 90,
+    "height": 70,
+    "y": 70,
+    "spawnX": 60,
+    "lifetimeMs": 1900
   }
 }

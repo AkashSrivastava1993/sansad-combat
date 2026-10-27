@@ -19,7 +19,9 @@ export class Projectiles3D {
 
   constructor(private readonly parent: THREE.Object3D) {}
 
-  update(list: readonly Projectile[], timeSec: number): void {
+  update(all: readonly Projectile[], timeSec: number): void {
+    // Projectiles with a bespoke special effect are drawn by that effect.
+    const list = all.filter((p) => !p.data.fx);
     const alive = new Set(list);
     for (const [p, vis] of this.visuals) {
       if (!alive.has(p)) this.remove(p, vis);

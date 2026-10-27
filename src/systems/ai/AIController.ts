@@ -67,6 +67,7 @@ export class AIController implements InputSource {
     const s = this.self.data.special;
     switch (s.type) {
       case 'projectile':
+        if (s.spawnFrom === 'edge' || s.volley) return c.dist > 90;
         return c.dist > 220 && c.dist < (s.speed * s.lifetimeMs) / 1000;
       case 'dash': {
         const reach = (s.speed * s.activeMs) / 1000 + s.hitbox.x + s.hitbox.width;

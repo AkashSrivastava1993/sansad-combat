@@ -210,6 +210,31 @@ function validateSpecial(s: FighterData['special'] | undefined): string | null {
   if (s.type === 'stun' && (!isNumber(s.area?.width) || !isNumber(s.area?.height))) {
     return 'special.area.width/height must be numbers';
   }
+  return validateSpecialExtras(record);
+}
+
+const FX_IDS = new Set<string>(['constitution', 'bulldozer', 'cycle', 'lathi']);
+const HIT_NUMBERS = ['damage', 'hitstunMs', 'blockstunMs', 'knockback'] as const;
+
+function validateSpecialExtras(r: Record<string, unknown>): string | null {
+  for (const k of ['knockdown', 'pierce']) {
+    if (r[k] !== undefined && typeof r[k] !== 'boolean') return `special.${k} must be a boolean`;
+  }
+  for (const k of ['impact', 'label']) if (r[k] !== undefined && typeof r[k] !== 'string') return `special.${k} must be a string`;
+  if (r.spinTurns !== undefined && !isNumber(r.spinTurns)) return 'special.spinTurns must be a number';
+  if (r.spawnFrom !== undefined && r.spawnFrom !== 'self' && r.spawnFrom !== 'edge') return 'special.spawnFrom must be self or edge';
+  if (r.fx !== undefined && !FX_IDS.has(r.fx as string)) return `special.fx must be one of ${[...FX_IDS].join(', ')}`;
+  if (r.volley !== undefined) {
+    const v = r.volley as Record<string, unknown> | null;
+    for (const k of ['standOffX', 'strikes', 'beatMs']) if (!isNumber(v?.[k])) return `special.volley.${k} must be a number`;
+  }
+  if (r.finisher !== undefined) {
+    const fin = r.finisher as Record<string, unknown> | null;
+    if (typeof fin !== 'object' || fin === null) return 'special.finisher must be an object';
+    for (const k of HIT_NUMBERS) if (fin[k] !== undefined && !isNumber(fin[k])) return `special.finisher.${k} must be a number`;
+    if (fin.knockdown !== undefined && typeof fin.knockdown !== 'boolean') return 'special.finisher.knockdown must be a boolean';
+    if (fin.impact !== undefined && typeof fin.impact !== 'string') return 'special.finisher.impact must be a string';
+  }
   return null;
 }
 

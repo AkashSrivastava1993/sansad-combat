@@ -7,6 +7,8 @@ import {
   GAME_WIDTH,
   GROUND_Y,
   HIT_SHAKE,
+  KNOCKDOWN_FLASH_MS,
+  KNOCKDOWN_SHAKE,
   KO_FLASH_MS,
   KO_SHAKE,
   KO_SLOWMO_MS,
@@ -32,6 +34,8 @@ import { FighterView, phaserPuppet, type ScreenPoint } from '../ui/FighterView';
 import { HitSparks } from '../ui/HitSparks';
 import { Hud } from '../ui/Hud';
 import { ProjectileLayer } from '../ui/ProjectileLayer';
+import { createSpecialFx } from '../ui/specials';
+import type { SpecialFx } from '../ui/specials/kit';
 import { showTaunt } from '../ui/TauntBubble';
 import { textStyle } from '../ui/ui';
 import {
@@ -52,6 +56,7 @@ export class FightScene extends Phaser.Scene {
   private wins: [number, number] = [0, 0];
   private fighters!: [Fighter, Fighter];
   private views: FighterView[] = [];
+  private specialFx: SpecialFx[] = [];
   private inputs!: [InputSource, InputSource];
   private hud!: Hud;
   private projectileLayer!: ProjectileLayer;
@@ -81,6 +86,7 @@ export class FightScene extends Phaser.Scene {
     this.slowMoMs = 0;
     this.prevStates = ['idle', 'idle'];
     this.views = [];
+    this.specialFx = [];
     this.combat.projectiles.length = 0;
   }
 
@@ -114,6 +120,7 @@ export class FightScene extends Phaser.Scene {
       (f) =>
         new FighterView(this, f, this.stage ? this.stage.addFighter(f.data, style) : phaserPuppet(this, f.data), this.toScreen),
     );
+    this.specialFx = this.fighters.flatMap((f) => createSpecialFx(this, f, this.toScreen) ?? []);
     this.projectileLayer = new ProjectileLayer(this);
     this.sparks = new HitSparks(this);
     this.hud = new Hud(this, this.fighters, this.wins);
@@ -179,9 +186,13 @@ export class FightScene extends Phaser.Scene {
       for (const hit of this.combat.resolve(a, b, dt)) this.onHit(hit);
       this.timeLeft -= dt;
       if (a.health <= 0 || b.health <= 0 || this.timeLeft <= 0) this.endRound();
+    } else if (this.phase === 'over') {
+      // Summoned objects finish their exit but can no longer hit.
+      this.combat.coast(a, b, dt);
     }
 
     this.views.forEach((v) => v.update());
+    for (const fx of this.specialFx) fx.update(this.time.now, this.combat.projectiles);
     if (this.stage) {
       this.stage.updateProjectiles(this.combat.projectiles);
       this.stage.render(this.fighters.map((f) => ({ x: f.x, top: f.y - f.data.body.height })), delta);
@@ -207,7 +218,14 @@ export class FightScene extends Phaser.Scene {
     this.shake(shake.ms, shake.intensity * scale);
     const at = this.toScreen(ev.x, ev.y);
     this.sparks.burst(at.x, at.y, kind, ev.defender.x >= ev.attacker.x ? 1 : -1, ev.hit.damage);
-    if (kind === 'hit') this.stage?.cheer(ev.hit.damage / 40);
+    if (kind === 'hit') {
+      if (ev.hit.impact) this.sparks.comic(at.x, at.y, ev.hit.impact, Phaser.Display.Color.HexStringToColor(ev.attacker.data.color).color, ev.hit.knockdown ? 1.2 : 0.8);
+      if (ev.defender.downed) {
+        this.shake(KNOCKDOWN_SHAKE.ms, KNOCKDOWN_SHAKE.intensity, true);
+        this.cameras.main.flash(KNOCKDOWN_FLASH_MS, 255, 244, 214);
+      }
+      this.stage?.cheer(ev.hit.damage / 40);
+    }
     playSfx(kind, { damage: ev.hit.damage });
   }
 

@@ -36,15 +36,14 @@ export class CombatSystem {
     ] as const) {
       burner.gainEnergy(burned.tickBurn(dt) * ENERGY_PER_DAMAGE_DEALT);
     }
-    for (const f of [a, b]) this.projectiles.push(...f.spawned.splice(0));
-    for (const p of this.projectiles) p.update(dt);
+    this.advance(a, b, dt);
 
     const candidates: Candidate[] = [];
     for (const [attacker, defender] of [
       [a, b],
       [b, a],
     ] as const) {
-      if (defender.state === 'ko' || defender.flying) continue;
+      if (defender.state === 'ko' || defender.untouchable) continue;
       const hitbox = attacker.hitbox;
       const hit = attacker.activeHit;
       if (hitbox && hit && !attacker.hasHit && overlaps(hitbox, defender.hurtbox)) {
@@ -58,12 +57,12 @@ export class CombatSystem {
         });
       }
       for (const projectile of this.projectiles) {
-        if (projectile.owner !== attacker || projectile.dead || !projectile.armed) continue;
+        if (projectile.owner !== attacker || !projectile.canHit) continue;
         if (overlaps(projectile.hitbox, defender.hurtbox)) {
           candidates.push({
             attacker,
             defender,
-            hit: projectile.data,
+            hit: projectile.hit,
             dir: projectile.dir,
             projectile,
             point: overlapCenter(projectile.hitbox, defender.hurtbox),
@@ -74,7 +73,7 @@ export class CombatSystem {
 
     const events: HitEvent[] = [];
     for (const { attacker, defender, hit, dir, projectile, point } of candidates) {
-      if (projectile) projectile.dead = true;
+      if (projectile) projectile.registerHit();
       else attacker.hasHit = true;
 
       const shield = defender.currentSpecial;
@@ -90,10 +89,25 @@ export class CombatSystem {
       events.push({ attacker, defender, hit, blocked, shielded: false, ...point });
     }
 
+    this.prune();
+    return events;
+  }
+
+  /** Moves projectiles without letting them hit, e.g. while a finished round winds down. */
+  coast(a: Fighter, b: Fighter, dt: number): void {
+    this.advance(a, b, dt);
+    this.prune();
+  }
+
+  private advance(a: Fighter, b: Fighter, dt: number): void {
+    for (const f of [a, b]) this.projectiles.push(...f.spawned.splice(0));
+    for (const p of this.projectiles) p.update(dt);
+  }
+
+  private prune(): void {
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       if (this.projectiles[i]!.dead) this.projectiles.splice(i, 1);
     }
-    return events;
   }
 
   /** Pushes overlapping bodies apart horizontally. */

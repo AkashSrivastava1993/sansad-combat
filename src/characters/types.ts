@@ -25,6 +25,10 @@ export interface HitProps {
   /** Ignores blocking: the hit lands for full damage and stun even against a blocker. */
   guardBreak?: boolean;
   burn?: BurnEffect;
+  /** A clean hit floors the defender for the hitstun; they cannot be hit again until they are up. */
+  knockdown?: boolean;
+  /** Comic-book word shown at the point of a clean hit. */
+  impact?: string;
 }
 
 export interface MoveData extends HitProps {
@@ -40,6 +44,10 @@ interface SpecialBase {
   name: string;
   /** One-line player-facing explanation shown on the character select screen. */
   description: string;
+  /** Replaces the special-type label on the character select screen. */
+  label?: string;
+  /** Full turns the fighter spins on the spot during startup. */
+  spinTurns?: number;
   /** Energy spent on use. */
   cost: number;
   /** Lockout after use, counted from the moment it starts. */
@@ -50,7 +58,21 @@ interface SpecialBase {
   recoveryMs: number;
 }
 
-export interface ProjectileSpecial extends SpecialBase, HitProps {
+/** Special-move effects that draw their own projectiles; see src/ui/specials. */
+export type SpecialFxId = 'constitution' | 'bulldozer' | 'cycle' | 'lathi';
+
+/** Optional behaviour shared by projectile specials and the entities they spawn. */
+export interface ProjectileExtras {
+  /** Keeps travelling after its hit (it still hits only once) until it leaves the arena. */
+  pierce?: boolean;
+  /** Stops `standOffX` short of the opponent, strikes `strikes` times on a `beatMs` rhythm, then runs back out. */
+  volley?: { standOffX: number; strikes: number; beatMs: number };
+  /** Overrides for a volley's last strike. */
+  finisher?: Partial<HitProps>;
+  fx?: SpecialFxId;
+}
+
+export interface ProjectileSpecial extends SpecialBase, HitProps, ProjectileExtras {
   type: 'projectile';
   /** px/s */
   speed: number;
@@ -60,6 +82,8 @@ export interface ProjectileSpecial extends SpecialBase, HitProps {
   y: number;
   /** Distance forward from the body centre where it spawns. */
   spawnX: number;
+  /** `edge`: enters from the arena edge behind the user instead of from their hand. */
+  spawnFrom?: 'self' | 'edge';
   lifetimeMs: number;
   /** "#rrggbb"; defaults to the fighter's colour. */
   color?: string;

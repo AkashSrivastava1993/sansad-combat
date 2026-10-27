@@ -53,10 +53,10 @@ export abstract class Puppet3D implements FighterPuppet {
     return 0;
   }
 
-  place(x: number, y: number, facing: 1 | -1, angle: number, alpha: number): void {
+  place(x: number, y: number, facing: 1 | -1, angle: number, alpha: number, spin = 1): void {
     const wy = worldY(y);
     this.root.position.set(worldX(x), wy, 0);
-    this.root.scale.x = facing;
+    this.root.scale.x = facing * spin;
     this.root.rotation.set(0, this.turn(facing), -angle * DEG);
 
     // The contact shadow shrinks and fades as the fighter leaves the floor.

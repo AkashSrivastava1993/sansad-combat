@@ -1,16 +1,16 @@
 import Phaser from 'phaser';
 import type { FighterData } from '../characters/types';
-import { KO_FALL_MS, KO_LAUNCH_HEIGHT, GROUND_Y } from '../config';
+import { GROUND_Y, KNOCKDOWN_FALL_MS, KNOCKDOWN_LAUNCH_HEIGHT, KNOCKDOWN_RISE_MS, KO_FALL_MS, KO_LAUNCH_HEIGHT } from '../config';
 import { type Outcome, RigAnimator, type RigSnapshot } from '../rig/animator';
 import type { RigFrame } from '../rig/draw';
 import type { Fighter } from '../systems/combat/Fighter';
 import { createFighterRig } from './FighterRig';
-import { PourFx } from './PourFx';
 
 /** A drawn fighter, in Phaser or in the 3D stage. Positions are game px at the feet; angle is clockwise degrees. */
 export interface FighterPuppet {
   render(frame: RigFrame): void;
-  place(x: number, y: number, facing: 1 | -1, angle: number, alpha: number): void;
+  /** `spin` squashes the width (-1..1) to fake turning on the spot. */
+  place(x: number, y: number, facing: 1 | -1, angle: number, alpha: number, spin?: number): void;
 }
 
 export interface ScreenPoint {
@@ -29,14 +29,14 @@ export function phaserPuppet(scene: Phaser.Scene, data: FighterData): FighterPup
   const rig = createFighterRig(scene, data);
   return {
     render: (frame) => rig.render(frame),
-    place: (x, y, facing, angle, alpha) => rig.root.setPosition(x, y).setScale(facing, 1).setAngle(angle).setAlpha(alpha),
+    place: (x, y, facing, angle, alpha, spin = 1) =>
+      rig.root.setPosition(x, y).setScale(facing * spin, 1).setAngle(angle).setAlpha(alpha),
   };
 }
 
 export class FighterView {
   private readonly animator: RigAnimator;
   private readonly hitbox: Phaser.GameObjects.Rectangle;
-  private readonly pourFx: PourFx | null;
   private koStart: number | null = null;
   private outcome: Outcome = null;
   private nextEmber = 0;
@@ -49,7 +49,6 @@ export class FighterView {
   ) {
     this.animator = new RigAnimator(fighter.data);
     this.hitbox = scene.add.rectangle(0, 0, 1, 1, 0xffffff, 0.35).setOrigin(0, 0).setVisible(false);
-    this.pourFx = fighter.data.special.type === 'pour' ? new PourFx(scene, fighter, toScreen) : null;
     this.update();
   }
 
@@ -73,9 +72,17 @@ export class FighterView {
     } else {
       this.koStart = null;
     }
+    if (f.downed) {
+      // Falls with a bounce, lies flat, then springs back up at the end of the hitstun.
+      const elapsed = f.downProgress * f.downDurationMs;
+      const fall = Math.min(1, elapsed / KNOCKDOWN_FALL_MS);
+      const rise = Math.min(1, (f.downDurationMs - elapsed) / KNOCKDOWN_RISE_MS);
+      angle = -f.facing * 90 * Phaser.Math.Easing.Bounce.Out(fall) * Phaser.Math.Easing.Sine.Out(rise);
+      lift = Math.sin(fall * Math.PI) * KNOCKDOWN_LAUNCH_HEIGHT;
+    }
 
     const snapshot: RigSnapshot = {
-      state: f.state,
+      state: f.downed ? 'ko' : f.state,
       phase: f.phase,
       progress: f.phaseProgress,
       heavy: f.currentMove !== null && f.currentMove === f.data.moves.heavy,
@@ -94,12 +101,15 @@ export class FighterView {
     this.puppet.render({ ...this.animator.update(snapshot, this.outcome, now), aura });
 
     const vanished = f.state === 'special' && f.phase === 'startup' && f.currentSpecial?.type === 'teleport';
-    this.puppet.place(f.x, f.y - lift, f.facing, angle, vanished ? 0.2 : 1);
+    const turns = f.state === 'special' && f.phase === 'startup' ? (f.currentSpecial?.spinTurns ?? 0) : 0;
+    const raw = turns > 0 ? Math.cos(f.phaseProgress * turns * Math.PI * 2) : 1;
+    // Never fully zero: a flat 3D transform cannot be inverted for lighting.
+    const spin = Math.abs(raw) < 0.05 ? (raw < 0 ? -0.05 : 0.05) : raw;
+    this.puppet.place(f.x, f.y - lift, f.facing, angle, vanished ? 0.2 : 1, spin);
     if (f.burning && now >= this.nextEmber) {
       this.nextEmber = now + EMBER_EVERY_MS;
       this.emitEmber();
     }
-    this.pourFx?.update(now);
 
     const hb = f.hitbox;
     this.hitbox.setVisible(hb !== null);

@@ -146,7 +146,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     const s = f.special;
     const burn = s.type !== 'shield' && s.burn ? ` + burn ${Math.round((s.burn.damagePerSec * s.burn.durationMs) / 1000)} over ${(s.burn.durationMs / 1000).toFixed(0)}s` : '';
     this.info.setText(
-      `${f.name.toUpperCase()}  \u00B7  SPECIAL: ${s.name} (${SPECIAL_TYPE_LABELS[s.type]})\n` +
+      `${f.name.toUpperCase()}  \u00B7  SPECIAL: ${s.name} (${s.label ?? SPECIAL_TYPE_LABELS[s.type]})\n` +
         `${s.description}\n` +
         `Cost ${s.cost}  \u00B7  Cooldown ${(s.cooldownMs / 1000).toFixed(1)}s  \u00B7  Damage ${s.damage}${burn}`,
     );
