@@ -27,7 +27,11 @@
     ],
     "poses": {
       "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.4, "bobSpeed": 1.7, "sway": 2 },
-      "victory": { "lean": -4, "frontArm": [172, 8], "backArm": [150, 10], "bobAmp": 5, "bobSpeed": 2.2, "sway": 3 }
+      "victory": { "lean": -4, "frontArm": [172, 8], "backArm": [150, 10], "bobAmp": 5, "bobSpeed": 2.2, "sway": 3 },
+      "special": {
+        "startup": { "lean": -2, "headTilt": -6, "frontArm": [112, 55], "backArm": [20, 100] },
+        "active": { "lean": 12, "headTilt": 2, "frontArm": [96, 4], "backArm": [-18, 70] }
+      }
     }
   },
   "svg": {
@@ -69,15 +73,28 @@
     }
   },
   "special": {
-    "type": "shield",
-    "name": "Dharna Shield",
-    "description": "Sits down and absorbs every hit for 0.9s, reflecting damage back at the attacker.",
-    "cost": 35,
-    "cooldownMs": 5000,
-    "damage": 4,
-    "reflectRatio": 0.8,
-    "startupMs": 60,
-    "activeMs": 900,
-    "recoveryMs": 300
+    "type": "projectile",
+    "name": "Jhaadu Storm",
+    "label": "Broom cyclone",
+    "description": "Spins his broom into a cyclone of a hundred brooms that sweeps the opponent with five quick hits, then a giant broom sweep floors them.",
+    "fx": "broom",
+    "impact": "SWISH!",
+    "cost": 55,
+    "cooldownMs": 6000,
+    "damage": 3,
+    "startupMs": 650,
+    "activeMs": 60,
+    "recoveryMs": 420,
+    "hitstunMs": 300,
+    "blockstunMs": 160,
+    "knockback": 40,
+    "volley": { "standOffX": 0, "strikes": 6, "beatMs": 230, "vanish": true },
+    "finisher": { "damage": 9, "hitstunMs": 1100, "blockstunMs": 300, "knockback": 700, "knockdown": true, "impact": "SWEEP!" },
+    "speed": 950,
+    "width": 200,
+    "height": 190,
+    "y": 190,
+    "spawnX": 40,
+    "lifetimeMs": 3500
   }
 }

@@ -213,7 +213,7 @@ function validateSpecial(s: FighterData['special'] | undefined): string | null {
   return validateSpecialExtras(record);
 }
 
-const FX_IDS = new Set<string>(['constitution', 'bulldozer', 'cycle', 'lathi', 'panja']);
+const FX_IDS = new Set<string>(['constitution', 'bulldozer', 'cycle', 'lathi', 'panja', 'broom']);
 const HIT_NUMBERS = ['damage', 'hitstunMs', 'blockstunMs', 'knockback'] as const;
 
 function validateSpecialExtras(r: Record<string, unknown>): string | null {
@@ -227,6 +227,7 @@ function validateSpecialExtras(r: Record<string, unknown>): string | null {
   if (r.volley !== undefined) {
     const v = r.volley as Record<string, unknown> | null;
     for (const k of ['standOffX', 'strikes', 'beatMs']) if (!isNumber(v?.[k])) return `special.volley.${k} must be a number`;
+    if (v?.vanish !== undefined && typeof v.vanish !== 'boolean') return 'special.volley.vanish must be a boolean';
   }
   if (r.finisher !== undefined) {
     const fin = r.finisher as Record<string, unknown> | null;

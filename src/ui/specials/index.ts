@@ -3,6 +3,7 @@ import type { Fighter } from '../../systems/combat/Fighter';
 import type { ToScreen } from '../FighterView';
 import { PourFx } from '../PourFx';
 import { BulldozerFx } from './BulldozerFx';
+import { BroomStormFx } from './BroomStormFx';
 import { ConstitutionFx } from './ConstitutionFx';
 import { CycleFx } from './CycleFx';
 import type { SpecialFx } from './kit';
@@ -25,5 +26,7 @@ export function createSpecialFx(scene: Phaser.Scene, fighter: Fighter, toScreen:
       return new LathiFx(scene, fighter, toScreen);
     case 'panja':
       return new PanjaFx(scene, fighter, toScreen);
+    case 'broom':
+      return new BroomStormFx(scene, fighter, toScreen);
   }
 }

@@ -105,8 +105,12 @@ export class Projectile {
         this.strikesDone++;
       }
       if (this.holdMs >= v.strikes * v.beatMs) {
-        this.volleyPhase = 'leave';
-        this.dir = this.dir === 1 ? -1 : 1;
+        if (v.vanish) {
+          this.dead = true;
+        } else {
+          this.volleyPhase = 'leave';
+          this.dir = this.dir === 1 ? -1 : 1;
+        }
       }
     } else {
       this.x += this.dir * step * LEAVE_SPEED_SCALE;

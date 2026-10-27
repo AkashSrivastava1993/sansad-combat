@@ -59,14 +59,14 @@ interface SpecialBase {
 }
 
 /** Special-move effects that draw their own projectiles; see src/ui/specials. */
-export type SpecialFxId = 'constitution' | 'bulldozer' | 'cycle' | 'lathi' | 'panja';
+export type SpecialFxId = 'constitution' | 'bulldozer' | 'cycle' | 'lathi' | 'panja' | 'broom';
 
 /** Optional behaviour shared by projectile specials and the entities they spawn. */
 export interface ProjectileExtras {
   /** Keeps travelling after its hit (it still hits only once) until it leaves the arena. */
   pierce?: boolean;
-  /** Stops `standOffX` short of the opponent, strikes `strikes` times on a `beatMs` rhythm, then runs back out. */
-  volley?: { standOffX: number; strikes: number; beatMs: number };
+  /** Stops `standOffX` short of the opponent, strikes `strikes` times on a `beatMs` rhythm, then runs back out (or ends on the spot when `vanish`). */
+  volley?: { standOffX: number; strikes: number; beatMs: number; vanish?: boolean };
   /** Overrides for a volley's last strike. */
   finisher?: Partial<HitProps>;
   fx?: SpecialFxId;
