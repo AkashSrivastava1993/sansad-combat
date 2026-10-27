@@ -80,5 +80,4 @@ export const SPECIAL_TYPE_LABELS: Record<SpecialType, string> = {
   stun: 'Area stun',
   teleport: 'Teleport strike',
   summon: 'Summon',
-  pour: 'Divine pour',
 };

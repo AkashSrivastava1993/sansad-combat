@@ -14,7 +14,6 @@ import type {
   HitProps,
   MoveData,
   MoveName,
-  PourSpecial,
   SpecialData,
 } from '../../characters/types';
 import { emptyInput, type InputState } from '../input/InputState';
@@ -47,7 +46,6 @@ export class Fighter {
   private burnDps = 0;
   /** Fractional burn damage not yet taken. */
   private burnCarry = 0;
-  private flightFromX = 0;
   /** Length of the current knockdown; 0 when the hitstun is an ordinary one. */
   private downMs = 0;
   private prev: InputState = emptyInput();
@@ -74,10 +72,6 @@ export class Fighter {
     const s = this.currentSpecial;
     if (this.state !== 'special' || !s) return null;
     if (s.type === 'dash' || s.type === 'teleport') return this.forwardBox(s.hitbox);
-    if (s.type === 'pour') {
-      const top = this.y - s.spoutY;
-      return { x: this.x + this.facing * s.spoutX - s.width / 2, y: top, width: s.width, height: Math.max(0, GROUND_Y - top) };
-    }
     if (s.type === 'stun') {
       return { x: this.x - s.area.width / 2, y: this.y - s.area.height, width: s.area.width, height: s.area.height };
     }
@@ -88,7 +82,7 @@ export class Fighter {
   get activeHit(): HitProps | null {
     if (!this.hitbox) return null;
     const s = this.currentSpecial;
-    if (s && (s.type === 'dash' || s.type === 'stun' || s.type === 'teleport' || s.type === 'pour')) return s;
+    if (s && (s.type === 'dash' || s.type === 'stun' || s.type === 'teleport')) return s;
     return this.currentMove;
   }
 
@@ -113,11 +107,6 @@ export class Fighter {
     return this.burnMs > 0 && this.state !== 'ko';
   }
 
-  /** Airborne during a pour special: out of reach and free of gravity. */
-  get flying(): boolean {
-    return this.state === 'special' && this.currentSpecial?.type === 'pour';
-  }
-
   /** Floored by a knockdown hit and getting back up. */
   get downed(): boolean {
     return this.state === 'hitstun' && this.downMs > 0;
@@ -132,16 +121,15 @@ export class Fighter {
     return this.downMs;
   }
 
-  /** Hits pass through: airborne specials and fighters who are down. */
+  /** Hits pass through a fighter who is down. */
   get untouchable(): boolean {
-    return this.flying || this.downed;
+    return this.downed;
   }
 
   /** Direction the defender is launched; area stuns push away from the user. */
   knockbackDir(defenderX: number): 1 | -1 {
     const s = this.currentSpecial;
     if (s?.type === 'stun') return defenderX >= this.x ? 1 : -1;
-    if (s?.type === 'pour') return defenderX >= this.x + this.facing * s.spoutX ? 1 : -1;
     return this.facing;
   }
 
@@ -158,14 +146,13 @@ export class Fighter {
       this.slide(sec);
     } else if (this.state === 'attack' || this.state === 'special') {
       this.advanceAction(dt);
-      if (!this.dashing && !this.flying) this.slide(sec);
+      if (!this.dashing) this.slide(sec);
     } else {
       this.facing = opponentX >= this.x ? 1 : -1;
       this.handleFreeInput(input);
     }
 
-    if (this.flying) this.clampToStage();
-    else this.integrate(sec);
+    this.integrate(sec);
     this.prev = { ...input };
   }
 
@@ -290,7 +277,6 @@ export class Fighter {
     this.phaseTime = 0;
     this.hasHit = false;
     this.vx = 0;
-    this.flightFromX = this.x;
   }
 
   /** Steps the current attack or special through startup, active and recovery. */
@@ -316,27 +302,6 @@ export class Fighter {
       this.currentSpecial = null;
     }
     if (this.dashing && this.currentSpecial?.type === 'dash') this.vx = this.facing * this.currentSpecial.speed;
-    if (this.currentSpecial?.type === 'pour') this.fly(this.currentSpecial, dt);
-  }
-
-  /** Rises while gliding over the opponent, hovers and tracks them while pouring, then floats down. */
-  private fly(s: PourSpecial, dt: number): void {
-    const half = this.data.body.width / 2;
-    const target = Math.min(GAME_WIDTH - half, Math.max(half, this.opponentX - this.facing * s.spoutX));
-    const t = this.phaseProgress;
-    const ease = t * t * (3 - 2 * t);
-    if (this.phase === 'startup') {
-      this.x = this.flightFromX + (target - this.flightFromX) * ease;
-      this.y = GROUND_Y - s.riseHeight * Math.sin((t * Math.PI) / 2);
-    } else if (this.phase === 'active') {
-      const step = s.trackSpeed * (dt / 1000);
-      this.x += Math.max(-step, Math.min(step, target - this.x));
-      this.y = GROUND_Y - s.riseHeight;
-    } else {
-      this.y = GROUND_Y - s.riseHeight * (1 - ease);
-    }
-    this.vx = 0;
-    this.vy = 0;
   }
 
   private onActive(): void {
@@ -344,8 +309,9 @@ export class Fighter {
     if (!s) return;
     if (s.type === 'projectile') {
       const edge = this.facing === 1 ? -s.width / 2 : GAME_WIDTH + s.width / 2;
-      const x = s.spawnFrom === 'edge' ? edge : this.x + this.facing * s.spawnX;
       const half = s.width / 2;
+      const onOpponent = Math.min(GAME_WIDTH - half, Math.max(half, this.opponentX));
+      const x = s.spawnFrom === 'edge' ? edge : s.spawnFrom === 'opponent' ? onOpponent : this.x + this.facing * s.spawnX;
       const haltX = s.volley
         ? Math.min(GAME_WIDTH - half, Math.max(half, this.opponentX - this.facing * s.volley.standOffX))
         : x;

@@ -270,7 +270,7 @@
       "type": "object",
       "required": ["type", "name", "description", "cost", "cooldownMs", "damage", "startupMs", "activeMs", "recoveryMs"],
       "properties": {
-        "type": { "enum": ["projectile", "dash", "shield", "stun", "teleport", "summon", "pour"] },
+        "type": { "enum": ["projectile", "dash", "shield", "stun", "teleport", "summon"] },
         "name": { "type": "string", "minLength": 1 },
         "description": { "type": "string", "minLength": 1 },
         "cost": { "type": "number", "minimum": 0, "maximum": 100 },
@@ -298,9 +298,9 @@
         "impact": { "type": "string", "description": "Comic-book word shown on a clean hit." },
         "label": { "type": "string", "description": "Replaces the special-type label on character select." },
         "spinTurns": { "type": "number", "minimum": 0 },
-        "spawnFrom": { "enum": ["self", "edge"] },
+        "spawnFrom": { "enum": ["self", "edge", "opponent"] },
         "pierce": { "type": "boolean" },
-        "fx": { "enum": ["constitution", "bulldozer", "cycle", "lathi", "panja", "broom", "mic"] },
+        "fx": { "enum": ["constitution", "bulldozer", "cycle", "lathi", "panja", "broom", "mic", "baarish"] },
         "volley": {
           "type": "object",
           "required": ["standOffX", "strikes", "beatMs"],
@@ -309,7 +309,8 @@
             "standOffX": { "type": "number" },
             "strikes": { "type": "integer", "minimum": 1 },
             "beatMs": { "type": "number", "exclusiveMinimum": 0 },
-            "vanish": { "type": "boolean" }
+            "vanish": { "type": "boolean" },
+            "delayMs": { "type": "number", "minimum": 0 }
           }
         },
         "finisher": {
@@ -334,10 +335,6 @@
         "y": { "type": "number" },
         "spawnX": { "type": "number" },
         "lifetimeMs": { "type": "number", "exclusiveMinimum": 0 },
-        "riseHeight": { "type": "number", "minimum": 0 },
-        "spoutX": { "type": "number" },
-        "spoutY": { "type": "number" },
-        "trackSpeed": { "type": "number", "minimum": 0 },
         "hitbox": { "$ref": "#/definitions/hitbox" },
         "area": {
           "type": "object",
@@ -367,12 +364,6 @@
         {
           "if": { "properties": { "type": { "const": "teleport" } } },
           "then": { "required": ["hitstunMs", "blockstunMs", "knockback", "behindOffset", "hitbox"] }
-        },
-        {
-          "if": { "properties": { "type": { "const": "pour" } } },
-          "then": {
-            "required": ["hitstunMs", "blockstunMs", "knockback", "riseHeight", "spoutX", "spoutY", "width", "trackSpeed"]
-          }
         },
         {
           "if": { "properties": { "type": { "const": "summon" } } },

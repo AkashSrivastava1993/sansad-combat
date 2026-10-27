@@ -104,11 +104,6 @@ export const SPECIAL_POSES: Record<SpecialType, PhasedPose> = {
     startup: { lean: -6, frontArm: [170, 20], backArm: [40, 60] },
     active: { lean: 8, frontArm: [90, 10], backArm: [40, 60] },
   },
-  // Arms flung wide while ascending, then leaning over to tip the kettle.
-  pour: {
-    startup: { lean: -8, headTilt: -14, frontArm: [150, 25], backArm: [140, 25], frontLeg: [10, 30], backLeg: [-8, 40] },
-    active: { lean: 16, headTilt: 18, frontArm: [80, 15], backArm: [150, 30], frontLeg: [14, 35], backLeg: [-6, 45] },
-  },
 };
 
 export const RIG = {

@@ -33,7 +33,7 @@ export class Projectile {
   /** Whether the last hit was blocked or reflected, for effects that react to contact. */
   blocked = false;
   volleyPhase: VolleyPhase = 'enter';
-  /** Time spent striking during a volley. */
+  /** Time spent striking during a volley; negative while waiting out `delayMs`. */
   holdMs = 0;
   /** Volley strikes already used, whether they landed or missed. */
   private strikesDone = 0;
@@ -95,6 +95,7 @@ export class Projectile {
       if (left <= step) {
         this.x = this.haltX;
         this.volleyPhase = 'strike';
+        this.holdMs = -(v.delayMs ?? 0);
       } else {
         this.x += this.dir * step;
       }

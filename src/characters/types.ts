@@ -38,7 +38,7 @@ export interface MoveData extends HitProps {
   hitbox: HitboxData;
 }
 
-export type SpecialType = 'projectile' | 'dash' | 'shield' | 'stun' | 'teleport' | 'summon' | 'pour';
+export type SpecialType = 'projectile' | 'dash' | 'shield' | 'stun' | 'teleport' | 'summon';
 
 interface SpecialBase {
   name: string;
@@ -59,14 +59,14 @@ interface SpecialBase {
 }
 
 /** Special-move effects that draw their own projectiles; see src/ui/specials. */
-export type SpecialFxId = 'constitution' | 'bulldozer' | 'cycle' | 'lathi' | 'panja' | 'broom' | 'mic';
+export type SpecialFxId = 'constitution' | 'bulldozer' | 'cycle' | 'lathi' | 'panja' | 'broom' | 'mic' | 'baarish';
 
 /** Optional behaviour shared by projectile specials and the entities they spawn. */
 export interface ProjectileExtras {
   /** Keeps travelling after its hit (it still hits only once) until it leaves the arena. */
   pierce?: boolean;
-  /** Stops `standOffX` short of the opponent, strikes `strikes` times on a `beatMs` rhythm, then runs back out (or ends on the spot when `vanish`). */
-  volley?: { standOffX: number; strikes: number; beatMs: number; vanish?: boolean };
+  /** Stops `standOffX` short of the opponent, strikes `strikes` times on a `beatMs` rhythm, then runs back out (or ends on the spot when `vanish`); `delayMs` waits before the first beat. */
+  volley?: { standOffX: number; strikes: number; beatMs: number; vanish?: boolean; delayMs?: number };
   /** Overrides for a volley's last strike. */
   finisher?: Partial<HitProps>;
   fx?: SpecialFxId;
@@ -82,8 +82,8 @@ export interface ProjectileSpecial extends SpecialBase, HitProps, ProjectileExtr
   y: number;
   /** Distance forward from the body centre where it spawns. */
   spawnX: number;
-  /** `edge`: enters from the arena edge behind the user instead of from their hand. */
-  spawnFrom?: 'self' | 'edge';
+  /** `edge`: enters from the arena edge behind the user; `opponent`: appears on the opponent's spot. */
+  spawnFrom?: 'self' | 'edge' | 'opponent';
   lifetimeMs: number;
   /** "#rrggbb"; defaults to the fighter's colour. */
   color?: string;
@@ -131,33 +131,13 @@ export interface SummonSpecial extends SpecialBase, HitProps {
   lifetimeMs: number;
 }
 
-/**
- * Rises into the sky during startup, glides above the opponent, pours a stream straight down while active and
- * floats back down in recovery. Untouchable for the whole move.
- */
-export interface PourSpecial extends SpecialBase, HitProps {
-  type: 'pour';
-  /** How high the feet rise above the ground, px. */
-  riseHeight: number;
-  /** Where the stream leaves the kettle: forward of the body centre and height above the feet. */
-  spoutX: number;
-  spoutY: number;
-  /** Width of the stream. */
-  width: number;
-  /** px/s the fighter drifts to keep the stream on the opponent while pouring. */
-  trackSpeed: number;
-  /** "#rrggbb" of the liquid; defaults to the fighter's colour. */
-  color?: string;
-}
-
 export type SpecialData =
   | ProjectileSpecial
   | DashSpecial
   | ShieldSpecial
   | StunSpecial
   | TeleportSpecial
-  | SummonSpecial
-  | PourSpecial;
+  | SummonSpecial;
 
 export type LookShape = 'rect' | 'ellipse' | 'triangle';
 

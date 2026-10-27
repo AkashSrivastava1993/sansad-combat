@@ -1,7 +1,7 @@
 import type Phaser from 'phaser';
 import type { Fighter } from '../../systems/combat/Fighter';
 import type { ToScreen } from '../FighterView';
-import { PourFx } from '../PourFx';
+import { BaarishFx } from './BaarishFx';
 import { BulldozerFx } from './BulldozerFx';
 import { BroomStormFx } from './BroomStormFx';
 import { ConstitutionFx } from './ConstitutionFx';
@@ -14,7 +14,6 @@ import { PanjaFx } from './PanjaFx';
 /** The effect that draws this fighter's special, if it has a bespoke one. */
 export function createSpecialFx(scene: Phaser.Scene, fighter: Fighter, toScreen: ToScreen): SpecialFx | null {
   const s = fighter.data.special;
-  if (s.type === 'pour') return new PourFx(scene, fighter, toScreen);
   if (s.type !== 'projectile' || !s.fx) return null;
   switch (s.fx) {
     case 'constitution':
@@ -31,5 +30,7 @@ export function createSpecialFx(scene: Phaser.Scene, fighter: Fighter, toScreen:
       return new BroomStormFx(scene, fighter, toScreen);
     case 'mic':
       return new MicDropFx(scene, fighter, toScreen);
+    case 'baarish':
+      return new BaarishFx(scene, fighter, toScreen);
   }
 }

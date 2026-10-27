@@ -35,7 +35,11 @@
     "poses": {
       "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 2.2, "bobSpeed": 2.2, "sway": 3 },
       "victory": { "lean": -8, "headTilt": -10, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 5, "bobSpeed": 2.4, "sway": 4 },
-      "jump": { "lean": 0, "headTilt": -4, "frontArm": [100, 60], "backArm": [60, 60], "frontLeg": [55, 85], "backLeg": [-5, 75] }
+      "jump": { "lean": 0, "headTilt": -4, "frontArm": [100, 60], "backArm": [60, 60], "frontLeg": [55, 85], "backLeg": [-5, 75] },
+      "special": {
+        "startup": { "lean": -6, "headTilt": -10, "frontArm": [168, 12], "backArm": [22, 105] },
+        "active": { "lean": -3, "headTilt": -6, "frontArm": [176, 6], "backArm": [16, 100] }
+      }
     }
   },
   "svg": {
@@ -77,24 +81,29 @@
     }
   },
   "special": {
-    "type": "pour",
-    "name": "Chai Devta's Barsaat",
-    "description": "Ascends on a cloud like a god, hovers over the opponent and pours boiling chai from his kettle. A clean hit leaves a severe burn.",
+    "type": "projectile",
+    "name": "Chai Ki Baarish: Boiling Point",
+    "label": "Kettle rain",
+    "description": "Hoists his kettle, summons a giant one over the opponent and rains four streams of boiling chai, then tips out a huge final pour that floors and scalds them.",
+    "fx": "baarish",
+    "impact": "SPLASH!",
     "cost": 50,
     "cooldownMs": 6000,
-    "damage": 10,
-    "startupMs": 650,
-    "activeMs": 900,
+    "damage": 2,
+    "startupMs": 550,
+    "activeMs": 60,
     "recoveryMs": 450,
-    "hitstunMs": 600,
-    "blockstunMs": 300,
-    "knockback": 80,
-    "burn": { "damagePerSec": 6, "durationMs": 4000 },
-    "color": "#b5652a",
-    "riseHeight": 190,
-    "spoutX": 70,
-    "spoutY": 95,
-    "width": 46,
-    "trackSpeed": 160
+    "hitstunMs": 240,
+    "blockstunMs": 140,
+    "knockback": 30,
+    "spawnFrom": "opponent",
+    "volley": { "standOffX": 0, "strikes": 5, "beatMs": 260, "vanish": true, "delayMs": 650 },
+    "finisher": { "damage": 8, "hitstunMs": 1100, "blockstunMs": 300, "knockback": 650, "knockdown": true, "impact": "KADAK!", "burn": { "damagePerSec": 5, "durationMs": 4000 } },
+    "speed": 0,
+    "width": 140,
+    "height": 330,
+    "y": 330,
+    "spawnX": 0,
+    "lifetimeMs": 4000
   }
 }

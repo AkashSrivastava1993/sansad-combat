@@ -81,8 +81,6 @@ export class AIController implements InputSource {
         return c.dist > 140 && c.dist < 500;
       case 'summon':
         return c.dist > 100 && c.dist < 450;
-      case 'pour':
-        return c.dist > 90;
     }
   }
 
