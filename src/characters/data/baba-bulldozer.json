@@ -30,7 +30,11 @@
     ],
     "poses": {
       "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1, "bobSpeed": 1.2, "sway": 2 },
-      "victory": { "lean": -4, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 3, "bobSpeed": 1.6, "sway": 2 }
+      "victory": { "lean": -4, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 3, "bobSpeed": 1.6, "sway": 2 },
+      "special": {
+        "startup": { "lean": -4, "headTilt": -8, "frontArm": [150, 10], "backArm": [20, 90] },
+        "active": { "lean": 8, "headTilt": 0, "frontArm": [92, 0], "backArm": [10, 100] }
+      }
     }
   },
   "svg": {
@@ -72,20 +76,30 @@
     }
   },
   "special": {
-    "type": "dash",
-    "name": "Bulldozer Charge",
-    "description": "A rush that crushes blocks: it hits for full damage even through a guard.",
+    "type": "projectile",
+    "name": "Bulldozer Rush",
+    "label": "Summoned charge",
+    "description": "Orders in a bulldozer that bursts from the arena edge behind him and flattens the opponent, guard or no guard.",
+    "fx": "bulldozer",
+    "impact": "CRUNCH!",
     "cost": 50,
     "cooldownMs": 5000,
-    "damage": 17,
-    "startupMs": 320,
-    "activeMs": 380,
-    "recoveryMs": 560,
-    "hitstunMs": 600,
+    "damage": 18,
+    "startupMs": 650,
+    "activeMs": 60,
+    "recoveryMs": 450,
+    "hitstunMs": 1100,
     "blockstunMs": 600,
-    "knockback": 460,
+    "knockback": 700,
     "guardBreak": true,
-    "speed": 640,
-    "hitbox": { "x": 30, "y": 100, "width": 90, "height": 90 }
+    "knockdown": true,
+    "spawnFrom": "edge",
+    "pierce": true,
+    "speed": 950,
+    "width": 170,
+    "height": 100,
+    "y": 100,
+    "spawnX": 0,
+    "lifetimeMs": 2200
   }
 }

@@ -15,7 +15,6 @@ export interface SpecialFx {
   update(now: number, projectiles: readonly Projectile[]): void;
 }
 
-export const hex = (color: string): number => Phaser.Display.Color.HexStringToColor(color).color;
 export const clamp01 = (t: number): number => Math.min(1, Math.max(0, t));
 export const smooth = (t: number): number => {
   const x = clamp01(t);

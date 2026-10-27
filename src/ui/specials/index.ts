@@ -2,8 +2,11 @@ import type Phaser from 'phaser';
 import type { Fighter } from '../../systems/combat/Fighter';
 import type { ToScreen } from '../FighterView';
 import { PourFx } from '../PourFx';
+import { BulldozerFx } from './BulldozerFx';
 import { ConstitutionFx } from './ConstitutionFx';
+import { CycleFx } from './CycleFx';
 import type { SpecialFx } from './kit';
+import { LathiFx } from './LathiFx';
 
 /** The effect that draws this fighter's special, if it has a bespoke one. */
 export function createSpecialFx(scene: Phaser.Scene, fighter: Fighter, toScreen: ToScreen): SpecialFx | null {
@@ -13,7 +16,11 @@ export function createSpecialFx(scene: Phaser.Scene, fighter: Fighter, toScreen:
   switch (s.fx) {
     case 'constitution':
       return new ConstitutionFx(scene, fighter, toScreen);
-    default:
-      return null;
+    case 'bulldozer':
+      return new BulldozerFx(scene, fighter, toScreen);
+    case 'cycle':
+      return new CycleFx(scene, fighter, toScreen);
+    case 'lathi':
+      return new LathiFx(scene, fighter, toScreen);
   }
 }

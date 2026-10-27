@@ -30,7 +30,11 @@
     ],
     "poses": {
       "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.4, "bobSpeed": 1.6, "sway": 2 },
-      "victory": { "lean": -6, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 3, "bobSpeed": 1.8, "sway": 4 }
+      "victory": { "lean": -6, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 3, "bobSpeed": 1.8, "sway": 4 },
+      "special": {
+        "startup": { "lean": -2, "headTilt": -6, "frontArm": [140, 145], "backArm": [150, 20] },
+        "active": { "lean": 8, "headTilt": 0, "frontArm": [95, 0], "backArm": [30, 60] }
+      }
     }
   },
   "svg": {
@@ -72,19 +76,29 @@
     }
   },
   "special": {
-    "type": "teleport",
-    "name": "Chaal Master",
-    "description": "Vanishes, reappears behind the opponent and strikes. Hitting her while she vanishes cancels it.",
-    "cost": 50,
-    "cooldownMs": 4500,
-    "damage": 15,
-    "startupMs": 280,
-    "activeMs": 120,
+    "type": "projectile",
+    "name": "Police Lathi Charge",
+    "label": "Summoned squad",
+    "description": "One whistle and a police squad runs in, lands four baton blows and a finishing knockdown, then runs off.",
+    "fx": "lathi",
+    "impact": "THWACK!",
+    "cost": 55,
+    "cooldownMs": 6000,
+    "damage": 4,
+    "startupMs": 500,
+    "activeMs": 60,
     "recoveryMs": 400,
-    "hitstunMs": 450,
+    "hitstunMs": 480,
     "blockstunMs": 220,
-    "knockback": 380,
-    "behindOffset": 90,
-    "hitbox": { "x": 18, "y": 125, "width": 70, "height": 105 }
+    "knockback": 30,
+    "spawnFrom": "edge",
+    "volley": { "standOffX": 55, "strikes": 4, "beatMs": 280 },
+    "finisher": { "damage": 9, "hitstunMs": 1100, "knockback": 620, "knockdown": true, "impact": "KA-POW!" },
+    "speed": 760,
+    "width": 150,
+    "height": 125,
+    "y": 125,
+    "spawnX": 0,
+    "lifetimeMs": 6000
   }
 }

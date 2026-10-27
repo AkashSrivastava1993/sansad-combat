@@ -27,7 +27,11 @@
     ],
     "poses": {
       "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.6, "bobSpeed": 1.8, "sway": 3 },
-      "victory": { "lean": -6, "headTilt": -8, "frontArm": [165, 10], "backArm": [150, 20], "bobAmp": 4, "bobSpeed": 2, "sway": 8 }
+      "victory": { "lean": -6, "headTilt": -8, "frontArm": [165, 10], "backArm": [150, 20], "bobAmp": 4, "bobSpeed": 2, "sway": 8 },
+      "special": {
+        "startup": { "lean": -4, "headTilt": -10, "frontArm": [165, 15], "backArm": [160, 15] },
+        "active": { "lean": 14, "headTilt": 2, "frontArm": [100, 0], "backArm": [70, 20], "frontLeg": [30, 20], "backLeg": [-25, 10] }
+      }
     }
   },
   "svg": {
@@ -70,22 +74,28 @@
   },
   "special": {
     "type": "projectile",
-    "name": "Bhaashan Barrage",
-    "description": "A long monologue becomes a wide speech wave that crosses the whole stage.",
+    "name": "Cycle Cyclone",
+    "label": "Spinning throw",
+    "description": "Summons a bicycle, spins up a cyclone and hurls it cartwheeling across the stage. Jump it or block it.",
+    "fx": "cycle",
+    "impact": "WHAM!",
+    "spinTurns": 2,
     "cost": 45,
-    "cooldownMs": 3500,
-    "damage": 11,
-    "startupMs": 380,
-    "activeMs": 50,
-    "recoveryMs": 450,
-    "hitstunMs": 380,
-    "blockstunMs": 220,
-    "knockback": 280,
-    "speed": 520,
-    "width": 80,
-    "height": 56,
-    "y": 110,
-    "spawnX": 55,
-    "lifetimeMs": 2400
+    "cooldownMs": 4500,
+    "damage": 14,
+    "startupMs": 560,
+    "activeMs": 60,
+    "recoveryMs": 420,
+    "hitstunMs": 1000,
+    "blockstunMs": 260,
+    "knockback": 560,
+    "knockdown": true,
+    "pierce": true,
+    "speed": 640,
+    "width": 96,
+    "height": 80,
+    "y": 125,
+    "spawnX": 50,
+    "lifetimeMs": 2200
   }
 }
