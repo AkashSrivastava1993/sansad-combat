@@ -1,0 +1,83 @@
+{
+  "$schema": "../fighter.schema.json",
+  "id": "muffler-man",
+  "name": "Muffler Man",
+  "faction": "Gathbandhan Alliance",
+  "color": "#5b6f94",
+  "palette": { "secondary": "#e0a526", "accent": "#b8332e", "skin": "#d29a6a", "dark": "#4a3322" },
+  "look": {
+    "proportions": {
+      "legLength": 62, "torsoHeight": 46, "neck": 4, "headWidth": 34, "headHeight": 34,
+      "shoulderWidth": 40, "waistWidth": 34, "hipWidth": 14,
+      "upperArm": 26, "foreArm": 24, "armWidth": 10, "legWidth": 12, "footLength": 19
+    },
+    "hair": { "style": "messy", "color": "#5a3a22" },
+    "face": { "eyes": "narrow", "brows": { "thickness": 3.5, "color": "dark", "tilt": 10 }, "mouth": "flat", "tired": true },
+    "base": { "top": "#d8c9a8", "pants": "dark", "shoes": "#2b2b2b", "sleeves": "long" },
+    "outfit": [
+      { "type": "shape", "anchor": "handBack", "shape": "rect", "x": 0, "y": 22, "width": 5, "height": 110, "color": "dark" },
+      { "type": "checks", "color": "#8a5a3a", "rows": 6, "cols": 5, "thickness": 1.6 },
+      { "type": "vest", "color": "primary", "trim": "secondary", "length": 0.8 },
+      { "type": "scarf", "color": "secondary", "band": "#c98a1c", "tail": 40, "thickness": 19 },
+      { "type": "cap", "style": "woolen", "color": "accent", "trim": "#8f2622" },
+      { "type": "glasses", "style": "round", "color": "dark", "thickness": 3.4 },
+      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 8, "y": 14, "width": 32, "height": 26, "color": "secondary" },
+      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 8, "y": 14, "width": 22, "height": 4, "color": "accent" },
+      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 8, "y": 22, "width": 16, "height": 4, "color": "accent" }
+    ],
+    "poses": {
+      "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.4, "bobSpeed": 1.7, "sway": 2 },
+      "victory": { "lean": -4, "frontArm": [172, 8], "backArm": [150, 10], "bobAmp": 5, "bobSpeed": 2.2, "sway": 3 }
+    }
+  },
+  "svg": {
+    "id": "muffler_man_v2",
+    "scale": 0.35,
+    "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [56, 498], "footFront": [214, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
+    "propFollows": "arm-front",
+    "anim": {
+      "restAngles": { "armBack": 25.8, "armFront": 24.8, "legBack": -19, "legFront": 16.6, "armBackLower": 145.1, "armFrontLower": 148 },
+      "elbowWeight": 0.5, "restElbow": 99, "extendElbow": 120, "reach": 30,
+      "kneeWeight": 0.3, "leanScale": 1, "headScale": 1, "bobScale": 1,
+      "cloth": { "pivot": [104, 160], "windSwing": 14, "swing": 4, "speed": 2.3, "lag": 6, "breeze": 4 }
+    }
+  },
+  "stats": { "maxHealth": 100, "walkSpeed": 235, "jumpVelocity": 900 },
+  "body": { "width": 66, "height": 146 },
+  "taunts": ["Cough, cough... that was strategic.", "I'm sitting here until you apologise."],
+  "winQuote": "Sit-in successful. Demand: one more rematch.",
+  "moves": {
+    "light": {
+      "startupMs": 80,
+      "activeMs": 80,
+      "recoveryMs": 150,
+      "damage": 6,
+      "hitstunMs": 250,
+      "blockstunMs": 150,
+      "knockback": 215,
+      "hitbox": { "x": 30, "y": 108, "width": 58, "height": 30 }
+    },
+    "heavy": {
+      "startupMs": 230,
+      "activeMs": 100,
+      "recoveryMs": 360,
+      "damage": 13,
+      "hitstunMs": 440,
+      "blockstunMs": 240,
+      "knockback": 500,
+      "hitbox": { "x": 30, "y": 58, "width": 90, "height": 40 }
+    }
+  },
+  "special": {
+    "type": "shield",
+    "name": "Dharna Shield",
+    "description": "Sits down and absorbs every hit for 0.9s, reflecting damage back at the attacker.",
+    "cost": 35,
+    "cooldownMs": 5000,
+    "damage": 4,
+    "reflectRatio": 0.8,
+    "startupMs": 60,
+    "activeMs": 900,
+    "recoveryMs": 300
+  }
+}

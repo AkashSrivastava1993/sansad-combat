@@ -1,0 +1,39 @@
+import type { Difficulty } from '../systems/ai/difficulty';
+
+export const SceneKey = {
+  Boot: 'Boot',
+  Menu: 'Menu',
+  CharacterSelect: 'CharacterSelect',
+  Fight: 'Fight',
+  Result: 'Result',
+} as const;
+
+export type GameMode = 'cpu' | 'local';
+
+/** How fights are drawn; kept in the game registry under VIEW_MODE_KEY. */
+export type ViewMode = '3d-art' | '3d-models' | '2d';
+export const VIEW_MODES: readonly ViewMode[] = ['3d-art', '3d-models', '2d'];
+export const VIEW_MODE_KEY = 'viewMode';
+
+export type { Difficulty };
+
+export interface CharacterSelectData {
+  mode: GameMode;
+  difficulty: Difficulty;
+}
+
+export interface FightData {
+  mode: GameMode;
+  difficulty: Difficulty;
+  p1: string;
+  p2: string;
+  /** 1-based round number; defaults to 1. */
+  round?: number;
+  /** Rounds won so far by [P1, P2]; defaults to [0, 0]. */
+  wins?: readonly [number, number];
+}
+
+export interface ResultData extends FightData {
+  /** Index of the winning player, or null for a draw. */
+  winner: 0 | 1 | null;
+}

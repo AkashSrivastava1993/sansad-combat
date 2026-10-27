@@ -1,0 +1,62 @@
+{
+  "canvas": [
+    256,
+    512
+  ],
+  "anchor": [
+    128,
+    500
+  ],
+  "facing": "right",
+  "layers": [
+    "back",
+    "arm-back",
+    "legs",
+    "torso",
+    "head",
+    "arm-front",
+    "prop"
+  ],
+  "fighters": [
+    {
+      "id": "mistri_baba_v2",
+      "name": "Mistri Baba v2",
+      "file": "mistri_baba_v2.svg"
+    },
+    {
+      "id": "tapri_titan_v4",
+      "name": "Tapri Titan v4",
+      "file": "tapri_titan_v4.svg"
+    },
+    {
+      "id": "rannitikar_v2",
+      "name": "Rannitikar v2",
+      "file": "rannitikar_v2.svg"
+    },
+    {
+      "id": "padyatri_yuvraj_v2",
+      "name": "Padyatri Yuvraj v2",
+      "file": "padyatri_yuvraj_v2.svg"
+    },
+    {
+      "id": "muffler_man_v2",
+      "name": "Muffler Man v2",
+      "file": "muffler_man_v2.svg"
+    },
+    {
+      "id": "filmi_queen_v2",
+      "name": "Filmi Queen v2",
+      "file": "filmi_queen_v2.svg"
+    },
+    {
+      "id": "maharani_v2",
+      "name": "Maharani v2",
+      "file": "maharani_v2.svg"
+    },
+    {
+      "id": "tapasvi_netaji_v2",
+      "name": "Tapasvi Netaji v2",
+      "file": "tapasvi_netaji_v2.svg"
+    }
+  ]
+}

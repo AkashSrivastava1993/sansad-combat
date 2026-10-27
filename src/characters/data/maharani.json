@@ -1,0 +1,92 @@
+{
+  "$schema": "../fighter.schema.json",
+  "id": "maharani",
+  "name": "Maharani",
+  "faction": "Gathbandhan Alliance",
+  "color": "#a01c2e",
+  "palette": { "secondary": "#d4a63a", "accent": "#6e1423", "skin": "#c58a62", "dark": "#2a0d14" },
+  "look": {
+    "proportions": {
+      "legLength": 62, "torsoHeight": 54, "neck": 5, "headWidth": 29, "headHeight": 31,
+      "shoulderWidth": 44, "waistWidth": 40, "hipWidth": 14,
+      "upperArm": 27, "foreArm": 25, "armWidth": 10, "legWidth": 12, "footLength": 20
+    },
+    "hair": { "style": "bun", "color": "#5a5560", "streak": "#c9ced8" },
+    "face": { "eyes": "narrow", "brows": { "thickness": 2, "color": "#5a5560", "tilt": 6 }, "mouth": "flat" },
+    "base": { "top": "primary", "pants": "dark", "shoes": "secondary", "sleeves": "short" },
+    "outfit": [
+      { "type": "shawl", "color": "secondary", "trim": "accent", "tail": 40 },
+      { "type": "kurta", "color": "primary", "trim": "secondary", "length": 40, "flare": 14 },
+      { "type": "cap", "style": "crown", "color": "secondary" },
+      { "type": "shape", "anchor": "torso", "shape": "rect", "x": 0, "y": 48, "width": 34, "height": 6, "color": "secondary" },
+      { "type": "shape", "anchor": "torso", "shape": "rect", "x": 0, "y": 41, "width": 24, "height": 5, "color": "secondary" },
+      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": 0, "y": 34, "width": 11, "height": 13, "color": "accent" },
+      { "type": "shape", "anchor": "head", "shape": "ellipse", "x": -3, "y": -8, "width": 7, "height": 11, "color": "secondary" },
+      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 8, "y": -36, "width": 5, "height": 88, "color": "accent" },
+      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 8, "y": -10, "width": 8, "height": 3, "color": "secondary" },
+      { "type": "shape", "anchor": "handFront", "shape": "ellipse", "x": 8, "y": 10, "width": 11, "height": 11, "color": "secondary" }
+    ],
+    "poses": {
+      "idle": { "lean": 2, "headTilt": -2, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [10, 6], "backLeg": [-8, 6], "bobAmp": 0.8, "bobSpeed": 1.2, "sway": 1.5 },
+      "victory": { "lean": -2, "headTilt": 4, "frontArm": [150, 15], "backArm": [10, 20], "bobAmp": 2, "bobSpeed": 1.5, "sway": 6 }
+    }
+  },
+  "svg": {
+    "id": "maharani_v2",
+    "scale": 0.364,
+    "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [88, 498], "footFront": [186, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
+    "propFollows": "arm-front",
+    "anim": {
+      "restAngles": { "armBack": 25.8, "armFront": 24.8, "legBack": -9.8, "legFront": 8.2, "armBackLower": 145.1, "armFrontLower": 148 },
+      "elbowWeight": 0.5, "restElbow": 99, "extendElbow": 120, "reach": 30,
+      "kneeWeight": 0.3, "leanScale": 0.9, "headScale": 1, "bobScale": 0.8,
+      "cloth": { "pivot": [108, 156], "windSwing": 8, "swing": 2, "speed": 2.3, "lag": 7, "breeze": 2 }
+    }
+  },
+  "stats": { "maxHealth": 100, "walkSpeed": 225, "jumpVelocity": 880 },
+  "body": { "width": 72, "height": 152 },
+  "taunts": ["I'm calling family. Don't worry, there's plenty.", "Every relative can fight. I have a very big family."],
+  "winQuote": "A family effort. Mostly mine.",
+  "moves": {
+    "light": {
+      "startupMs": 80,
+      "activeMs": 80,
+      "recoveryMs": 150,
+      "damage": 6,
+      "hitstunMs": 250,
+      "blockstunMs": 150,
+      "knockback": 215,
+      "hitbox": { "x": 32, "y": 110, "width": 58, "height": 30 }
+    },
+    "heavy": {
+      "startupMs": 230,
+      "activeMs": 100,
+      "recoveryMs": 370,
+      "damage": 13,
+      "hitstunMs": 450,
+      "blockstunMs": 250,
+      "knockback": 500,
+      "hitbox": { "x": 32, "y": 60, "width": 88, "height": 40 }
+    }
+  },
+  "special": {
+    "type": "summon",
+    "name": "Parivaar Assist",
+    "description": "Calls a relative who appears beside the opponent and lands one big strike after a short delay.",
+    "cost": 55,
+    "cooldownMs": 5000,
+    "damage": 18,
+    "startupMs": 320,
+    "activeMs": 80,
+    "recoveryMs": 280,
+    "hitstunMs": 500,
+    "blockstunMs": 250,
+    "knockback": 450,
+    "offsetX": 75,
+    "width": 100,
+    "height": 130,
+    "y": 130,
+    "strikeDelayMs": 450,
+    "lifetimeMs": 750
+  }
+}

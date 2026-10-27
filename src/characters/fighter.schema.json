@@ -1,0 +1,400 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Fighter",
+  "type": "object",
+  "required": ["id", "name", "faction", "color", "stats", "body", "moves", "special"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+    "faction": { "type": "string", "minLength": 1 },
+    "palette": {
+      "type": "object",
+      "required": ["secondary", "accent", "skin", "dark"],
+      "additionalProperties": false,
+      "properties": {
+        "secondary": { "$ref": "#/definitions/hex" },
+        "accent": { "$ref": "#/definitions/hex" },
+        "skin": { "$ref": "#/definitions/hex" },
+        "dark": { "$ref": "#/definitions/hex" }
+      }
+    },
+    "look": { "$ref": "#/definitions/look" },
+    "taunts": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "winQuote": { "type": "string", "minLength": 1 },
+    "stats": {
+      "type": "object",
+      "required": ["maxHealth", "walkSpeed", "jumpVelocity"],
+      "additionalProperties": false,
+      "properties": {
+        "maxHealth": { "type": "number", "exclusiveMinimum": 0 },
+        "walkSpeed": { "type": "number", "minimum": 0 },
+        "jumpVelocity": { "type": "number", "minimum": 0 }
+      }
+    },
+    "body": {
+      "type": "object",
+      "required": ["width", "height"],
+      "additionalProperties": false,
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "moves": {
+      "type": "object",
+      "required": ["light", "heavy"],
+      "additionalProperties": false,
+      "properties": {
+        "light": { "$ref": "#/definitions/move" },
+        "heavy": { "$ref": "#/definitions/move" }
+      }
+    },
+    "special": { "$ref": "#/definitions/special" },
+    "svg": { "$ref": "#/definitions/svg" }
+  },
+  "definitions": {
+    "svg": {
+      "description": "Layered SVG art (public/assets/characters). Art-space values use the manifest canvas units; angles are degrees from straight down, forward positive.",
+      "type": "object",
+      "required": ["id", "scale", "pivots", "propFollows", "anim"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "scale": { "type": "number", "exclusiveMinimum": 0 },
+        "pivots": {
+          "type": "object",
+          "required": ["shoulderBack", "shoulderFront", "hipBack", "hipFront", "neck", "footBack", "footFront"],
+          "additionalProperties": { "$ref": "#/definitions/pair" }
+        },
+        "propFollows": { "enum": ["arm-front", "arm-back", "none"] },
+        "anim": {
+          "type": "object",
+          "required": [
+            "restAngles", "elbowWeight", "restElbow", "extendElbow", "reach", "kneeWeight",
+            "leanScale", "headScale", "bobScale", "cloth"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "restAngles": {
+              "type": "object",
+              "required": ["armBack", "armFront", "legBack", "legFront"],
+              "additionalProperties": { "type": "number" }
+            },
+            "elbowWeight": { "type": "number" },
+            "restElbow": { "type": "number" },
+            "extendElbow": { "type": "number", "exclusiveMinimum": 0 },
+            "reach": { "type": "number" },
+            "kneeWeight": { "type": "number" },
+            "leanScale": { "type": "number" },
+            "headScale": { "type": "number" },
+            "bobScale": { "type": "number" },
+            "cloth": {
+              "type": "object",
+              "required": ["pivot", "windSwing", "swing", "speed", "lag", "breeze"],
+              "additionalProperties": false,
+              "properties": {
+                "pivot": { "$ref": "#/definitions/pair" },
+                "windSwing": { "type": "number" },
+                "swing": { "type": "number" },
+                "speed": { "type": "number" },
+                "lag": { "type": "number", "minimum": 0 },
+                "breeze": { "type": "number" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "hex": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+    "colorRef": {
+      "description": "primary, secondary, accent, skin, dark, or #rrggbb",
+      "type": "string",
+      "pattern": "^(primary|secondary|accent|skin|dark|#[0-9a-fA-F]{6})$"
+    },
+    "pair": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+    "pose": {
+      "description": "Degrees from straight down, forward positive. Arms are [shoulder, elbow]; legs are [hip, knee].",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lean": { "type": "number" },
+        "headTilt": { "type": "number" },
+        "frontArm": { "$ref": "#/definitions/pair" },
+        "backArm": { "$ref": "#/definitions/pair" },
+        "frontLeg": { "$ref": "#/definitions/pair" },
+        "backLeg": { "$ref": "#/definitions/pair" },
+        "bobAmp": { "type": "number", "minimum": 0 },
+        "bobSpeed": { "type": "number", "minimum": 0 },
+        "sway": { "type": "number", "minimum": 0 }
+      }
+    },
+    "phasedPose": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "startup": { "$ref": "#/definitions/pose" },
+        "active": { "$ref": "#/definitions/pose" },
+        "recovery": { "$ref": "#/definitions/pose" }
+      }
+    },
+    "look": {
+      "type": "object",
+      "required": ["proportions", "hair", "face"],
+      "additionalProperties": false,
+      "properties": {
+        "proportions": {
+          "description": "legLength + torsoHeight + neck + headHeight should equal body.height",
+          "type": "object",
+          "required": [
+            "legLength", "torsoHeight", "neck", "headWidth", "headHeight", "shoulderWidth", "waistWidth",
+            "hipWidth", "upperArm", "foreArm", "armWidth", "legWidth", "footLength"
+          ],
+          "additionalProperties": { "type": "number", "minimum": 0 }
+        },
+        "head": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "shape": { "enum": ["oval", "round", "square"] } }
+        },
+        "hair": {
+          "type": "object",
+          "required": ["style", "color"],
+          "additionalProperties": false,
+          "properties": {
+            "style": { "enum": ["bald", "short", "messy", "slick", "long", "bun", "volume", "braid"] },
+            "color": { "$ref": "#/definitions/colorRef" },
+            "streak": { "$ref": "#/definitions/colorRef" }
+          }
+        },
+        "face": {
+          "type": "object",
+          "required": ["eyes", "brows", "mouth"],
+          "additionalProperties": false,
+          "properties": {
+            "eyes": { "enum": ["round", "narrow", "wide"] },
+            "mouth": { "enum": ["flat", "smile", "smirk", "open"] },
+            "tired": { "type": "boolean" },
+            "brows": {
+              "type": "object",
+              "required": ["thickness", "color"],
+              "additionalProperties": false,
+              "properties": {
+                "thickness": { "type": "number", "exclusiveMinimum": 0 },
+                "color": { "$ref": "#/definitions/colorRef" },
+                "tilt": { "type": "number" }
+              }
+            }
+          }
+        },
+        "base": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "top": { "$ref": "#/definitions/colorRef" },
+            "pants": { "$ref": "#/definitions/colorRef" },
+            "shoes": { "$ref": "#/definitions/colorRef" },
+            "sleeveColor": { "$ref": "#/definitions/colorRef" },
+            "sleeves": { "enum": ["long", "short", "none"] }
+          }
+        },
+        "outfit": { "type": "array", "items": { "$ref": "#/definitions/outfitLayer" } },
+        "poses": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "idle": { "$ref": "#/definitions/pose" },
+            "victory": { "$ref": "#/definitions/pose" },
+            "lose": { "$ref": "#/definitions/pose" },
+            "jump": { "$ref": "#/definitions/pose" },
+            "block": { "$ref": "#/definitions/pose" },
+            "hit": { "$ref": "#/definitions/pose" },
+            "ko": { "$ref": "#/definitions/pose" },
+            "punch": { "$ref": "#/definitions/phasedPose" },
+            "kick": { "$ref": "#/definitions/phasedPose" },
+            "special": { "$ref": "#/definitions/phasedPose" }
+          }
+        }
+      }
+    },
+    "outfitLayer": {
+      "type": "object",
+      "required": ["type", "color"],
+      "properties": {
+        "type": { "enum": ["kurta", "vest", "shawl", "scarf", "cap", "beard", "moustache", "glasses", "shape", "checks"] },
+        "color": { "$ref": "#/definitions/colorRef" },
+        "trim": { "$ref": "#/definitions/colorRef" },
+        "band": { "$ref": "#/definitions/colorRef" },
+        "style": { "type": "string" },
+        "length": { "type": "number" },
+        "flare": { "type": "number" },
+        "tail": { "type": "number" },
+        "size": { "type": "number" },
+        "wind": { "type": "number", "minimum": -1, "maximum": 1 },
+        "thickness": { "type": "number", "exclusiveMinimum": 0 },
+        "rows": { "type": "integer", "minimum": 2 },
+        "cols": { "type": "integer", "minimum": 2 },
+        "anchor": { "enum": ["head", "torso", "back", "handFront", "handBack", "feet"] },
+        "layer": { "enum": ["behind", "front"] },
+        "shape": { "enum": ["rect", "ellipse", "triangle"] },
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "angle": { "type": "number" },
+        "alpha": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "allOf": [
+        { "if": { "properties": { "type": { "const": "kurta" } } }, "then": { "required": ["length"] } },
+        { "if": { "properties": { "type": { "enum": ["shawl", "scarf"] } } }, "then": { "required": ["tail"] } },
+        {
+          "if": { "properties": { "type": { "const": "shape" } } },
+          "then": { "required": ["anchor", "shape", "x", "y", "width", "height"] }
+        }
+      ]
+    },
+    "hitbox": {
+      "type": "object",
+      "required": ["x", "y", "width", "height"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "special": {
+      "type": "object",
+      "required": ["type", "name", "description", "cost", "cooldownMs", "damage", "startupMs", "activeMs", "recoveryMs"],
+      "properties": {
+        "type": { "enum": ["projectile", "dash", "shield", "stun", "teleport", "summon", "pour"] },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "cost": { "type": "number", "minimum": 0, "maximum": 100 },
+        "cooldownMs": { "type": "number", "minimum": 0 },
+        "damage": { "type": "number", "minimum": 0 },
+        "startupMs": { "type": "number", "minimum": 0 },
+        "activeMs": { "type": "number", "minimum": 0 },
+        "recoveryMs": { "type": "number", "minimum": 0 },
+        "hitstunMs": { "type": "number", "minimum": 0 },
+        "blockstunMs": { "type": "number", "minimum": 0 },
+        "knockback": { "type": "number" },
+        "guardBreak": { "type": "boolean" },
+        "burn": {
+          "description": "Damage over time left by an unblocked hit.",
+          "type": "object",
+          "required": ["damagePerSec", "durationMs"],
+          "additionalProperties": false,
+          "properties": {
+            "damagePerSec": { "type": "number", "minimum": 0 },
+            "durationMs": { "type": "number", "minimum": 0 }
+          }
+        },
+        "color": { "$ref": "#/definitions/hex" },
+        "reflectRatio": { "type": "number", "minimum": 0 },
+        "behindOffset": { "type": "number" },
+        "offsetX": { "type": "number" },
+        "strikeDelayMs": { "type": "number", "minimum": 0 },
+        "speed": { "type": "number", "minimum": 0 },
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "y": { "type": "number" },
+        "spawnX": { "type": "number" },
+        "lifetimeMs": { "type": "number", "exclusiveMinimum": 0 },
+        "riseHeight": { "type": "number", "minimum": 0 },
+        "spoutX": { "type": "number" },
+        "spoutY": { "type": "number" },
+        "trackSpeed": { "type": "number", "minimum": 0 },
+        "hitbox": { "$ref": "#/definitions/hitbox" },
+        "area": {
+          "type": "object",
+          "required": ["width", "height"],
+          "additionalProperties": false,
+          "properties": {
+            "width": { "type": "number", "exclusiveMinimum": 0 },
+            "height": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "projectile" } } },
+          "then": {
+            "required": ["hitstunMs", "blockstunMs", "knockback", "speed", "width", "height", "y", "spawnX", "lifetimeMs"]
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "dash" } } },
+          "then": { "required": ["hitstunMs", "blockstunMs", "knockback", "speed", "hitbox"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "stun" } } },
+          "then": { "required": ["hitstunMs", "blockstunMs", "knockback", "area"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "teleport" } } },
+          "then": { "required": ["hitstunMs", "blockstunMs", "knockback", "behindOffset", "hitbox"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "pour" } } },
+          "then": {
+            "required": ["hitstunMs", "blockstunMs", "knockback", "riseHeight", "spoutX", "spoutY", "width", "trackSpeed"]
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "summon" } } },
+          "then": {
+            "required": [
+              "hitstunMs",
+              "blockstunMs",
+              "knockback",
+              "offsetX",
+              "width",
+              "height",
+              "y",
+              "strikeDelayMs",
+              "lifetimeMs"
+            ]
+          }
+        }
+      ]
+    },
+    "move": {
+      "type": "object",
+      "required": [
+        "startupMs",
+        "activeMs",
+        "recoveryMs",
+        "damage",
+        "hitstunMs",
+        "blockstunMs",
+        "knockback",
+        "hitbox"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "startupMs": { "type": "number", "minimum": 0 },
+        "activeMs": { "type": "number", "minimum": 0 },
+        "recoveryMs": { "type": "number", "minimum": 0 },
+        "damage": { "type": "number", "minimum": 0 },
+        "hitstunMs": { "type": "number", "minimum": 0 },
+        "blockstunMs": { "type": "number", "minimum": 0 },
+        "knockback": { "type": "number" },
+        "hitbox": {
+          "type": "object",
+          "required": ["x", "y", "width", "height"],
+          "additionalProperties": false,
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "width": { "type": "number", "exclusiveMinimum": 0 },
+            "height": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        }
+      }
+    }
+  }
+}

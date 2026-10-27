@@ -1,0 +1,83 @@
+{
+  "$schema": "../fighter.schema.json",
+  "id": "padyatri-yuvraj",
+  "name": "Padyatri Yuvraj",
+  "faction": "Gathbandhan Alliance",
+  "color": "#27407a",
+  "palette": { "secondary": "#f2f2f2", "accent": "#d23a3a", "skin": "#c99468", "dark": "#3a3a42" },
+  "look": {
+    "proportions": {
+      "legLength": 72, "torsoHeight": 46, "neck": 4, "headWidth": 31, "headHeight": 30,
+      "shoulderWidth": 52, "waistWidth": 40, "hipWidth": 16,
+      "upperArm": 29, "foreArm": 27, "armWidth": 11, "legWidth": 13, "footLength": 22
+    },
+    "hair": { "style": "short", "color": "dark" },
+    "face": { "eyes": "round", "brows": { "thickness": 3.5, "color": "dark", "tilt": -2 }, "mouth": "smile" },
+    "base": { "top": "secondary", "sleeveColor": "primary", "pants": "#b9a98a", "shoes": "#e6e6e6", "sleeves": "long" },
+    "outfit": [
+      { "type": "shape", "anchor": "back", "shape": "rect", "x": -26, "y": 26, "width": 20, "height": 40, "color": "#8a7a5a" },
+      { "type": "shape", "anchor": "back", "shape": "rect", "x": -30, "y": 66, "width": 4, "height": 90, "color": "dark" },
+      { "type": "shape", "anchor": "back", "shape": "triangle", "x": -19, "y": 96, "width": 22, "height": 26, "color": "accent", "angle": 90 },
+      { "type": "vest", "color": "primary", "trim": "secondary", "length": 1 },
+      { "type": "beard", "style": "stubble", "color": "dark" }
+    ],
+    "poses": {
+      "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 2, "bobSpeed": 1.8, "sway": 3 },
+      "victory": { "lean": -6, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 5, "bobSpeed": 2, "sway": 6 }
+    }
+  },
+  "svg": {
+    "id": "padyatri_yuvraj_v2",
+    "scale": 0.364,
+    "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [56, 498], "footFront": [214, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
+    "propFollows": "arm-front",
+    "anim": {
+      "restAngles": { "armBack": 25.8, "armFront": 24.8, "legBack": -19, "legFront": 16.6, "armBackLower": 145.1, "armFrontLower": 148 },
+      "elbowWeight": 0.5, "restElbow": 99, "extendElbow": 120, "reach": 40,
+      "kneeWeight": 0.3, "leanScale": 1, "headScale": 1, "bobScale": 1,
+      "cloth": { "pivot": [104, 170], "windSwing": 6, "swing": 2, "speed": 2.3, "lag": 10, "breeze": 0 }
+    }
+  },
+  "stats": { "maxHealth": 112, "walkSpeed": 190, "jumpVelocity": 800 },
+  "body": { "width": 74, "height": 152 },
+  "taunts": ["I'll walk 4,000 km just to hit you.", "Slow and steady wins. Eventually. Probably."],
+  "winQuote": "I walked here. Slowly. You're welcome.",
+  "moves": {
+    "light": {
+      "startupMs": 90,
+      "activeMs": 80,
+      "recoveryMs": 180,
+      "damage": 7,
+      "hitstunMs": 260,
+      "blockstunMs": 160,
+      "knockback": 230,
+      "hitbox": { "x": 34, "y": 112, "width": 60, "height": 32 }
+    },
+    "heavy": {
+      "startupMs": 260,
+      "activeMs": 110,
+      "recoveryMs": 420,
+      "damage": 16,
+      "hitstunMs": 470,
+      "blockstunMs": 260,
+      "knockback": 540,
+      "hitbox": { "x": 34, "y": 62, "width": 90, "height": 44 }
+    }
+  },
+  "special": {
+    "type": "dash",
+    "name": "Yatra Rush",
+    "description": "A very slow, very obvious charge that hits for massive damage. Dodge it or pay.",
+    "cost": 60,
+    "cooldownMs": 5500,
+    "damage": 26,
+    "startupMs": 600,
+    "activeMs": 520,
+    "recoveryMs": 650,
+    "hitstunMs": 750,
+    "blockstunMs": 350,
+    "knockback": 720,
+    "speed": 430,
+    "hitbox": { "x": 20, "y": 148, "width": 85, "height": 140 }
+  }
+}

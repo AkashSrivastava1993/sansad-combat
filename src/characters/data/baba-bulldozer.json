@@ -1,0 +1,91 @@
+{
+  "$schema": "../fighter.schema.json",
+  "id": "baba-bulldozer",
+  "name": "Baba Bulldozer",
+  "faction": "Rashtriya Morcha",
+  "color": "#8a4520",
+  "palette": { "secondary": "#b07a3a", "accent": "#f2c230", "skin": "#a9724a", "dark": "#1d1a18" },
+  "look": {
+    "proportions": {
+      "legLength": 50, "torsoHeight": 72, "neck": 2, "headWidth": 36, "headHeight": 36,
+      "shoulderWidth": 80, "waistWidth": 68, "hipWidth": 26,
+      "upperArm": 30, "foreArm": 28, "armWidth": 17, "legWidth": 21, "footLength": 24
+    },
+    "head": { "shape": "square" },
+    "hair": { "style": "bald", "color": "dark" },
+    "face": { "eyes": "narrow", "brows": { "thickness": 5, "color": "dark", "tilt": 14 }, "mouth": "flat" },
+    "base": { "top": "primary", "pants": "dark", "shoes": "dark", "sleeves": "short" },
+    "outfit": [
+      { "type": "kurta", "color": "primary", "trim": "accent", "length": 36, "flare": 10 },
+      { "type": "shawl", "color": "accent", "trim": "secondary", "tail": 34 },
+      { "type": "beard", "style": "full", "color": "dark", "size": 1.2 },
+      { "type": "cap", "style": "hardhat", "color": "accent", "trim": "secondary" },
+      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": -12, "y": 66, "width": 7, "height": 7, "color": "#5a3a22" },
+      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": -7, "y": 60, "width": 7, "height": 7, "color": "#5a3a22" },
+      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": 0, "y": 56, "width": 8, "height": 8, "color": "#5a3a22" },
+      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": 8, "y": 60, "width": 7, "height": 7, "color": "#5a3a22" },
+      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": 13, "y": 66, "width": 7, "height": 7, "color": "#5a3a22" },
+      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 16, "y": 8, "width": 18, "height": 96, "color": "accent" },
+      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 26, "y": 8, "width": 4, "height": 96, "color": "secondary" }
+    ],
+    "poses": {
+      "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1, "bobSpeed": 1.2, "sway": 2 },
+      "victory": { "lean": -4, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 3, "bobSpeed": 1.6, "sway": 2 }
+    }
+  },
+  "svg": {
+    "id": "mistri_baba_v2",
+    "scale": 0.382,
+    "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [56, 498], "footFront": [214, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
+    "propFollows": "arm-front",
+    "anim": {
+      "restAngles": { "armBack": 25.8, "armFront": 24.8, "legBack": -19, "legFront": 16.6, "armBackLower": 145.1, "armFrontLower": 148 },
+      "elbowWeight": 0.5, "restElbow": 99, "extendElbow": 120, "reach": 26,
+      "kneeWeight": 0.3, "leanScale": 0.8, "headScale": 0.8, "bobScale": 0.6,
+      "cloth": { "pivot": [104, 170], "windSwing": 10, "swing": 3, "speed": 2.3, "lag": 7, "breeze": 0 }
+    }
+  },
+  "stats": { "maxHealth": 115, "walkSpeed": 190, "jumpVelocity": 780 },
+  "body": { "width": 86, "height": 160 },
+  "taunts": ["Dialogue? I only speak in horsepower.", "Beep, beep. Reversing into your plans."],
+  "winQuote": "Arena cleared. Zero paperwork.",
+  "moves": {
+    "light": {
+      "startupMs": 100,
+      "activeMs": 90,
+      "recoveryMs": 190,
+      "damage": 8,
+      "hitstunMs": 270,
+      "blockstunMs": 160,
+      "knockback": 240,
+      "hitbox": { "x": 38, "y": 114, "width": 64, "height": 34 }
+    },
+    "heavy": {
+      "startupMs": 280,
+      "activeMs": 110,
+      "recoveryMs": 430,
+      "damage": 17,
+      "hitstunMs": 480,
+      "blockstunMs": 270,
+      "knockback": 560,
+      "hitbox": { "x": 38, "y": 64, "width": 95, "height": 46 }
+    }
+  },
+  "special": {
+    "type": "dash",
+    "name": "Bulldozer Charge",
+    "description": "A rush that crushes blocks: it hits for full damage even through a guard.",
+    "cost": 50,
+    "cooldownMs": 5000,
+    "damage": 17,
+    "startupMs": 320,
+    "activeMs": 380,
+    "recoveryMs": 560,
+    "hitstunMs": 600,
+    "blockstunMs": 600,
+    "knockback": 460,
+    "guardBreak": true,
+    "speed": 640,
+    "hitbox": { "x": 30, "y": 100, "width": 90, "height": 90 }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "$schema": "../fighter.schema.json",
+  "id": "tapasvi-netaji",
+  "name": "Tapasvi Netaji",
+  "faction": "Gathbandhan Alliance",
+  "color": "#7a4fb5",
+  "palette": { "secondary": "#efe6d0", "accent": "#7fb8e6", "skin": "#c68e5f", "dark": "#2a2a35" },
+  "look": {
+    "proportions": {
+      "legLength": 68, "torsoHeight": 46, "neck": 4, "headWidth": 30, "headHeight": 32,
+      "shoulderWidth": 42, "waistWidth": 34, "hipWidth": 14,
+      "upperArm": 28, "foreArm": 26, "armWidth": 9, "legWidth": 11, "footLength": 19
+    },
+    "hair": { "style": "short", "color": "#c0c4cc" },
+    "face": { "eyes": "narrow", "brows": { "thickness": 4, "color": "#c0c4cc", "tilt": 8 }, "mouth": "open" },
+    "base": { "top": "secondary", "pants": "#e6dfcc", "shoes": "dark", "sleeves": "long" },
+    "outfit": [
+      { "type": "shape", "anchor": "handBack", "shape": "rect", "x": 0, "y": 8, "width": 4, "height": 128, "color": "#8a8f99" },
+      { "type": "shape", "anchor": "handBack", "shape": "ellipse", "x": 0, "y": 78, "width": 13, "height": 17, "color": "#c0c4cc" },
+      { "type": "shape", "anchor": "handBack", "shape": "rect", "x": 0, "y": 76, "width": 13, "height": 4, "color": "dark" },
+      { "type": "kurta", "color": "secondary", "trim": "accent", "length": 34, "flare": 4 },
+      { "type": "vest", "color": "accent", "trim": "primary", "length": 0.8 },
+      { "type": "shawl", "color": "#c0c4cc", "trim": "primary", "tail": 30 },
+      { "type": "moustache", "style": "handlebar", "color": "#c0c4cc" },
+      { "type": "cap", "style": "turban", "color": "primary", "trim": "#8f6ac8", "tail": 34 },
+      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 9, "y": 1, "width": 12, "height": 3.5, "color": "skin" }
+    ],
+    "poses": {
+      "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.6, "bobSpeed": 1.8, "sway": 3 },
+      "victory": { "lean": -6, "headTilt": -8, "frontArm": [165, 10], "backArm": [150, 20], "bobAmp": 4, "bobSpeed": 2, "sway": 8 }
+    }
+  },
+  "svg": {
+    "id": "tapasvi_netaji_v2",
+    "scale": 0.359,
+    "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [56, 498], "footFront": [214, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
+    "propFollows": "arm-front",
+    "anim": {
+      "restAngles": { "armBack": 25.8, "armFront": 24.8, "legBack": -19, "legFront": 16.6, "armBackLower": 145.1, "armFrontLower": 148 },
+      "elbowWeight": 0.5, "restElbow": 99, "extendElbow": 120, "reach": 34,
+      "kneeWeight": 0.3, "leanScale": 1, "headScale": 1, "bobScale": 1,
+      "cloth": { "pivot": [104, 170], "windSwing": 10, "swing": 3, "speed": 2.3, "lag": 6, "breeze": 0 }
+    }
+  },
+  "stats": { "maxHealth": 95, "walkSpeed": 215, "jumpVelocity": 880 },
+  "body": { "width": 70, "height": 150 },
+  "taunts": ["Brothers and sisters, I have 3 hours of speech prepared!", "I promise a punch in every pocket!"],
+  "winQuote": "This victory is dedicated to everyone who clapped at the wrong time.",
+  "moves": {
+    "light": {
+      "startupMs": 90,
+      "activeMs": 80,
+      "recoveryMs": 170,
+      "damage": 5,
+      "hitstunMs": 240,
+      "blockstunMs": 140,
+      "knockback": 200,
+      "hitbox": { "x": 32, "y": 108, "width": 55, "height": 28 }
+    },
+    "heavy": {
+      "startupMs": 240,
+      "activeMs": 100,
+      "recoveryMs": 380,
+      "damage": 12,
+      "hitstunMs": 440,
+      "blockstunMs": 240,
+      "knockback": 480,
+      "hitbox": { "x": 32, "y": 60, "width": 85, "height": 40 }
+    }
+  },
+  "special": {
+    "type": "projectile",
+    "name": "Bhaashan Barrage",
+    "description": "A long monologue becomes a wide speech wave that crosses the whole stage.",
+    "cost": 45,
+    "cooldownMs": 3500,
+    "damage": 11,
+    "startupMs": 380,
+    "activeMs": 50,
+    "recoveryMs": 450,
+    "hitstunMs": 380,
+    "blockstunMs": 220,
+    "knockback": 280,
+    "speed": 520,
+    "width": 80,
+    "height": 56,
+    "y": 110,
+    "spawnX": 55,
+    "lifetimeMs": 2400
+  }
+}

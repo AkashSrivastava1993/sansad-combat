@@ -1,0 +1,100 @@
+{
+  "$schema": "../fighter.schema.json",
+  "id": "chai-wala-champion",
+  "name": "Chai-wala Champion",
+  "faction": "Rashtriya Morcha",
+  "color": "#e8dcc0",
+  "palette": { "secondary": "#b8672a", "accent": "#c0392b", "skin": "#bd8860", "dark": "#4a2e1f" },
+  "look": {
+    "proportions": {
+      "legLength": 60, "torsoHeight": 52, "neck": 3, "headWidth": 34, "headHeight": 33,
+      "shoulderWidth": 48, "waistWidth": 42, "hipWidth": 16,
+      "upperArm": 25, "foreArm": 23, "armWidth": 12, "legWidth": 14, "footLength": 19
+    },
+    "head": { "shape": "round" },
+    "hair": { "style": "short", "color": "dark" },
+    "face": { "eyes": "round", "brows": { "thickness": 3.5, "color": "dark", "tilt": -2 }, "mouth": "smile" },
+    "base": { "top": "primary", "pants": "#6b4a32", "shoes": "dark", "sleeves": "short" },
+    "outfit": [
+      { "type": "shape", "anchor": "back", "shape": "rect", "x": -30, "y": 36, "width": 16, "height": 17, "color": "#cfe3ea" },
+      { "type": "shape", "anchor": "back", "shape": "rect", "x": -30, "y": 54, "width": 16, "height": 17, "color": "#cfe3ea" },
+      { "type": "shape", "anchor": "back", "shape": "rect", "x": -30, "y": 72, "width": 16, "height": 17, "color": "#cfe3ea" },
+      { "type": "kurta", "color": "primary", "trim": "accent", "length": 22 },
+      { "type": "vest", "color": "#f4efe2", "trim": "secondary", "length": 1 },
+      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": 6, "y": 22, "width": 12, "height": 9, "color": "#8a5a3a", "alpha": 0.6 },
+      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": -8, "y": 14, "width": 9, "height": 7, "color": "#8a5a3a", "alpha": 0.5 },
+      { "type": "moustache", "style": "thick", "color": "dark" },
+      { "type": "cap", "style": "topi", "color": "accent", "trim": "#f4f4f4" },
+      { "type": "shape", "anchor": "handFront", "shape": "ellipse", "x": 6, "y": 6, "width": 34, "height": 30, "color": "secondary" },
+      { "type": "shape", "anchor": "handFront", "shape": "triangle", "x": 26, "y": 12, "width": 12, "height": 15, "color": "secondary", "angle": 90 },
+      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 6, "y": 24, "width": 26, "height": 4, "color": "dark" },
+      { "type": "shape", "anchor": "handFront", "shape": "ellipse", "x": 34, "y": 28, "width": 7, "height": 7, "color": "#f0f0f0", "alpha": 0.6 },
+      { "type": "shape", "anchor": "handFront", "shape": "ellipse", "x": 38, "y": 37, "width": 8, "height": 8, "color": "#f0f0f0", "alpha": 0.5 },
+      { "type": "shape", "anchor": "handFront", "shape": "ellipse", "x": 34, "y": 47, "width": 9, "height": 9, "color": "#f0f0f0", "alpha": 0.4 }
+    ],
+    "poses": {
+      "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 2.2, "bobSpeed": 2.2, "sway": 3 },
+      "victory": { "lean": -8, "headTilt": -10, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 5, "bobSpeed": 2.4, "sway": 4 },
+      "jump": { "lean": 0, "headTilt": -4, "frontArm": [100, 60], "backArm": [60, 60], "frontLeg": [55, 85], "backLeg": [-5, 75] }
+    }
+  },
+  "svg": {
+    "id": "tapri_titan_v4",
+    "scale": 0.355,
+    "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [56, 498], "footFront": [214, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
+    "propFollows": "arm-front",
+    "anim": {
+      "restAngles": { "armBack": 25.8, "armFront": 24.8, "legBack": -19, "legFront": 16.6, "armBackLower": 145.1, "armFrontLower": 148 },
+      "elbowWeight": 0.5, "restElbow": 99, "extendElbow": 120, "reach": 36,
+      "kneeWeight": 0.3, "leanScale": 1, "headScale": 1, "bobScale": 1.2,
+      "cloth": { "pivot": [104, 170], "windSwing": 14, "swing": 4, "speed": 2.3, "lag": 6, "breeze": 0 }
+    }
+  },
+  "stats": { "maxHealth": 105, "walkSpeed": 230, "jumpVelocity": 900 },
+  "body": { "width": 68, "height": 148 },
+  "taunts": ["Chai pe charcha? More like chai pe chaos.", "Careful, I'm served piping hot."],
+  "winQuote": "Sugar, spice and a total knockout.",
+  "moves": {
+    "light": {
+      "startupMs": 75,
+      "activeMs": 80,
+      "recoveryMs": 150,
+      "damage": 6,
+      "hitstunMs": 250,
+      "blockstunMs": 150,
+      "knockback": 215,
+      "hitbox": { "x": 30, "y": 108, "width": 58, "height": 30 }
+    },
+    "heavy": {
+      "startupMs": 220,
+      "activeMs": 100,
+      "recoveryMs": 370,
+      "damage": 13,
+      "hitstunMs": 440,
+      "blockstunMs": 240,
+      "knockback": 500,
+      "hitbox": { "x": 30, "y": 58, "width": 90, "height": 40 }
+    }
+  },
+  "special": {
+    "type": "pour",
+    "name": "Chai Devta's Barsaat",
+    "description": "Ascends on a cloud like a god, hovers over the opponent and pours boiling chai from his kettle. A clean hit leaves a severe burn.",
+    "cost": 50,
+    "cooldownMs": 6000,
+    "damage": 10,
+    "startupMs": 650,
+    "activeMs": 900,
+    "recoveryMs": 450,
+    "hitstunMs": 600,
+    "blockstunMs": 300,
+    "knockback": 80,
+    "burn": { "damagePerSec": 6, "durationMs": 4000 },
+    "color": "#b5652a",
+    "riseHeight": 190,
+    "spoutX": 70,
+    "spoutY": 95,
+    "width": 46,
+    "trackSpeed": 160
+  }
+}

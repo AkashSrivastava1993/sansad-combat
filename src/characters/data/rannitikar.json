@@ -1,0 +1,90 @@
+{
+  "$schema": "../fighter.schema.json",
+  "id": "rannitikar",
+  "name": "Rannitikar",
+  "faction": "Rashtriya Morcha",
+  "color": "#5a1a28",
+  "palette": { "secondary": "#17171f", "accent": "#d4a84a", "skin": "#b98258", "dark": "#0f0f16" },
+  "look": {
+    "proportions": {
+      "legLength": 64, "torsoHeight": 46, "neck": 4, "headWidth": 28, "headHeight": 31,
+      "shoulderWidth": 40, "waistWidth": 32, "hipWidth": 14,
+      "upperArm": 26, "foreArm": 24, "armWidth": 10, "legWidth": 11, "footLength": 19
+    },
+    "hair": { "style": "slick", "color": "dark" },
+    "face": { "eyes": "narrow", "brows": { "thickness": 3, "color": "dark", "tilt": 9 }, "mouth": "smirk" },
+    "base": { "top": "primary", "pants": "dark", "shoes": "dark", "sleeves": "long" },
+    "outfit": [
+      { "type": "shape", "anchor": "handBack", "shape": "rect", "x": 0, "y": 16, "width": 4, "height": 96, "color": "dark" },
+      { "type": "shape", "anchor": "handBack", "shape": "rect", "x": 0, "y": -30, "width": 5, "height": 8, "color": "accent" },
+      { "type": "shawl", "color": "secondary", "trim": "accent", "tail": 60 },
+      { "type": "kurta", "color": "secondary", "trim": "accent", "length": 40, "flare": 4 },
+      { "type": "vest", "color": "primary", "trim": "accent", "length": 0.9 },
+      { "type": "beard", "style": "goatee", "color": "dark", "size": 0.7 },
+      { "type": "shape", "anchor": "torso", "shape": "rect", "x": 0, "y": 44, "width": 16, "height": 8, "color": "primary" },
+      { "type": "shape", "anchor": "torso", "shape": "ellipse", "x": 8, "y": 34, "width": 5, "height": 5, "color": "accent" },
+      { "type": "shape", "anchor": "handFront", "shape": "ellipse", "x": 4, "y": 20, "width": 34, "height": 34, "color": "accent", "alpha": 0.3 },
+      { "type": "shape", "anchor": "handFront", "shape": "rect", "x": 4, "y": 8, "width": 14, "height": 4, "color": "accent" },
+      { "type": "shape", "anchor": "handFront", "shape": "triangle", "x": 4, "y": 18, "width": 12, "height": 16, "color": "accent" },
+      { "type": "shape", "anchor": "handFront", "shape": "triangle", "x": 8, "y": 28, "width": 10, "height": 8, "color": "accent", "angle": 70 }
+    ],
+    "poses": {
+      "idle": { "lean": 4, "headTilt": -4, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [20, 11], "backLeg": [-16, 10], "bobAmp": 1.4, "bobSpeed": 1.6, "sway": 2 },
+      "victory": { "lean": -6, "headTilt": -8, "frontArm": [160, 15], "backArm": [-20, 100], "bobAmp": 3, "bobSpeed": 1.8, "sway": 4 }
+    }
+  },
+  "svg": {
+    "id": "rannitikar_v2",
+    "scale": 0.348,
+    "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [56, 498], "footFront": [214, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
+    "propFollows": "arm-front",
+    "anim": {
+      "restAngles": { "armBack": 25.8, "armFront": 24.8, "legBack": -19, "legFront": 16.6, "armBackLower": 145.1, "armFrontLower": 148 },
+      "elbowWeight": 0.5, "restElbow": 99, "extendElbow": 120, "reach": 34,
+      "kneeWeight": 0.3, "leanScale": 1, "headScale": 1, "bobScale": 1,
+      "cloth": { "pivot": [104, 170], "windSwing": 14, "swing": 4, "speed": 2.3, "lag": 6, "breeze": 0 }
+    }
+  },
+  "stats": { "maxHealth": 90, "walkSpeed": 265, "jumpVelocity": 960 },
+  "body": { "width": 62, "height": 145 },
+  "taunts": ["Every move is strategy. Mostly, I'm just behind you.", "I planned your defeat. And my alibi."],
+  "winQuote": "Checkmate. I also rewrote the rulebook afterwards.",
+  "moves": {
+    "light": {
+      "startupMs": 60,
+      "activeMs": 80,
+      "recoveryMs": 130,
+      "damage": 5,
+      "hitstunMs": 230,
+      "blockstunMs": 140,
+      "knockback": 200,
+      "hitbox": { "x": 28, "y": 105, "width": 55, "height": 28 }
+    },
+    "heavy": {
+      "startupMs": 200,
+      "activeMs": 100,
+      "recoveryMs": 370,
+      "damage": 12,
+      "hitstunMs": 430,
+      "blockstunMs": 240,
+      "knockback": 480,
+      "hitbox": { "x": 28, "y": 55, "width": 95, "height": 38 }
+    }
+  },
+  "special": {
+    "type": "teleport",
+    "name": "Chaal Master",
+    "description": "Vanishes, reappears behind the opponent and strikes. Hitting her while she vanishes cancels it.",
+    "cost": 50,
+    "cooldownMs": 4500,
+    "damage": 15,
+    "startupMs": 280,
+    "activeMs": 120,
+    "recoveryMs": 400,
+    "hitstunMs": 450,
+    "blockstunMs": 220,
+    "knockback": 380,
+    "behindOffset": 90,
+    "hitbox": { "x": 18, "y": 125, "width": 70, "height": 105 }
+  }
+}

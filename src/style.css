@@ -1,0 +1,103 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #0b0d12;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+#game {
+  position: fixed;
+  inset: 0;
+}
+
+#game canvas {
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+#game canvas.stage3d {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+
+#rotate-hint {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  background: #0b0d12;
+  color: #fff;
+  font: bold 20px sans-serif;
+  text-align: center;
+}
+
+@media (orientation: portrait) and (pointer: coarse) {
+  #rotate-hint {
+    display: flex;
+  }
+}
+
+#touch-controls {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+#touch-controls.visible {
+  display: block;
+}
+
+.tc-pad {
+  position: absolute;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  display: grid;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.tc-pad-left {
+  left: max(12px, env(safe-area-inset-left));
+  grid-template-columns: repeat(2, auto);
+}
+
+.tc-pad-left .tc-btn[data-action='jump'] {
+  grid-column: 1 / span 2;
+  justify-self: center;
+}
+
+.tc-pad-right {
+  right: max(12px, env(safe-area-inset-right));
+  grid-template-columns: repeat(4, auto);
+}
+
+.tc-btn {
+  pointer-events: auto;
+  width: clamp(54px, 15vmin, 88px);
+  height: clamp(54px, 15vmin, 88px);
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font: bold clamp(14px, 4vmin, 22px) sans-serif;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tc-btn.active {
+  background: rgba(255, 255, 255, 0.45);
+}
