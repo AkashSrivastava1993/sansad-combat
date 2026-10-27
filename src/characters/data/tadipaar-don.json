@@ -13,7 +13,7 @@
     }
   },
   "svg": {
-    "id": "tadipaar_don",
+    "id": "tadipaar_don_v2",
     "scale": 0.348,
     "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [56, 498], "footFront": [214, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
     "propFollows": "arm-front",
@@ -25,7 +25,7 @@
     }
   },
   "stats": { "maxHealth": 90, "walkSpeed": 265, "jumpVelocity": 960 },
-  "body": { "width": 62, "height": 145 },
+  "body": { "width": 68, "height": 145 },
   "previewHeight": 151,
   "taunts": ["Every move is strategy. Mostly, I'm just behind you.", "I planned your defeat. And my alibi."],
   "winQuote": "Checkmate. I also rewrote the rulebook afterwards.",

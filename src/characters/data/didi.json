@@ -1,0 +1,80 @@
+{
+  "$schema": "../fighter.schema.json",
+  "id": "didi",
+  "name": "Didi",
+  "faction": "INDI Alliance",
+  "color": "#1b8fd6",
+  "poses": {
+    "idle": { "lean": 3, "headTilt": -2, "frontArm": [25, 123], "backArm": [26, 119], "frontLeg": [10, 6], "backLeg": [-8, 6], "bobAmp": 1.2, "bobSpeed": 1.5, "sway": 2 },
+    "victory": { "lean": -2, "headTilt": 4, "frontArm": [150, 15], "backArm": [10, 20], "bobAmp": 2, "bobSpeed": 1.5, "sway": 6 },
+    "special": {
+      "startup": { "lean": -4, "headTilt": -8, "frontArm": [118, 30], "backArm": [12, 100] },
+      "active": { "lean": 8, "headTilt": -2, "frontArm": [96, 4], "backArm": [10, 90] }
+    }
+  },
+  "svg": {
+    "id": "didi",
+    "scale": 0.355,
+    "pivots": { "shoulderBack": [102, 178], "shoulderFront": [156, 180], "hipBack": [108, 300], "hipFront": [148, 300], "neck": [128, 150], "footBack": [88, 498], "footFront": [186, 498], "elbowBack": [130, 236], "elbowFront": [180, 232] },
+    "propFollows": "arm-front",
+    "anim": {
+      "restAngles": { "armBack": 25.8, "armFront": 24.8, "legBack": -9.8, "legFront": 8.2, "armBackLower": 145.1, "armFrontLower": 148 },
+      "elbowWeight": 0.5, "restElbow": 99, "extendElbow": 120, "reach": 30,
+      "kneeWeight": 0.3, "leanScale": 0.9, "headScale": 1, "bobScale": 0.9,
+      "cloth": { "pivot": [108, 156], "windSwing": 8, "swing": 2, "speed": 2.3, "lag": 7, "breeze": 2 }
+    }
+  },
+  "stats": { "maxHealth": 100, "walkSpeed": 235, "jumpVelocity": 900 },
+  "body": { "width": 68, "height": 148 },
+  "previewHeight": 160,
+  "taunts": ["Didi aasche! Raasta chhodo.", "Dekh lo, abhi aur bataati hoon!"],
+  "winQuote": "Ladenge nahi, jeetenge!",
+  "moves": {
+    "light": {
+      "startupMs": 80,
+      "activeMs": 80,
+      "recoveryMs": 150,
+      "damage": 6,
+      "hitstunMs": 250,
+      "blockstunMs": 150,
+      "knockback": 215,
+      "hitbox": { "x": 32, "y": 110, "width": 58, "height": 30 }
+    },
+    "heavy": {
+      "startupMs": 220,
+      "activeMs": 100,
+      "recoveryMs": 360,
+      "damage": 13,
+      "hitstunMs": 450,
+      "blockstunMs": 250,
+      "knockback": 500,
+      "hitbox": { "x": 32, "y": 60, "width": 88, "height": 40 }
+    }
+  },
+  "special": {
+    "type": "projectile",
+    "name": "Didi Bangla Jaadu",
+    "label": "Voodoo curse",
+    "description": "Pulls out a cloth doll and drives a magic needle into it. A rune circle flares under the opponent and, a moment later, the curse blasts them off their feet. Step out of the circle before it fires.",
+    "fx": "jaadu",
+    "impact": "JAADU!",
+    "cost": 55,
+    "cooldownMs": 5500,
+    "damage": 18,
+    "startupMs": 800,
+    "activeMs": 60,
+    "recoveryMs": 800,
+    "hitstunMs": 1100,
+    "blockstunMs": 320,
+    "knockback": 700,
+    "knockdown": true,
+    "spawnFrom": "opponent",
+    "volley": { "standOffX": 0, "strikes": 1, "beatMs": 500, "vanish": true, "delayMs": 450 },
+    "speed": 0,
+    "width": 100,
+    "height": 190,
+    "y": 190,
+    "spawnX": 0,
+    "lifetimeMs": 2500
+  }
+}

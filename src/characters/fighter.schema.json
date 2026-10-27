@@ -187,7 +187,7 @@
         "spinTurns": { "type": "number", "minimum": 0 },
         "spawnFrom": { "enum": ["self", "edge", "opponent"] },
         "pierce": { "type": "boolean" },
-        "fx": { "enum": ["constitution", "bulldozer", "cycle", "lathi", "panja", "broom", "mic", "baarish"] },
+        "fx": { "enum": ["constitution", "bulldozer", "cycle", "lathi", "panja", "broom", "mic", "baarish", "jaadu"] },
         "volley": {
           "type": "object",
           "required": ["standOffX", "strikes", "beatMs"],

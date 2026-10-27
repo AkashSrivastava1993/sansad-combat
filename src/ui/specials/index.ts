@@ -6,6 +6,7 @@ import { BulldozerFx } from './BulldozerFx';
 import { BroomStormFx } from './BroomStormFx';
 import { ConstitutionFx } from './ConstitutionFx';
 import { CycleFx } from './CycleFx';
+import { JaaduFx } from './JaaduFx';
 import type { SpecialFx } from './kit';
 import { LathiFx } from './LathiFx';
 import { MicDropFx } from './MicDropFx';
@@ -32,5 +33,7 @@ export function createSpecialFx(scene: Phaser.Scene, fighter: Fighter, toScreen:
       return new MicDropFx(scene, fighter, toScreen);
     case 'baarish':
       return new BaarishFx(scene, fighter, toScreen);
+    case 'jaadu':
+      return new JaaduFx(scene, fighter, toScreen);
   }
 }

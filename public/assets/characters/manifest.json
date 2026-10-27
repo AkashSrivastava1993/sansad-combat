@@ -29,9 +29,9 @@
       "file": "tapri_titan.svg"
     },
     {
-      "id": "tadipaar_don",
+      "id": "tadipaar_don_v2",
       "name": "Tadipaar Don",
-      "file": "tadipaar_don.svg"
+      "file": "tadipaar_don_v2.svg"
     },
     {
       "id": "padyatri_yuvraj_v2",
@@ -57,6 +57,11 @@
       "id": "chote_neta_ji",
       "name": "Chote Neta Ji",
       "file": "chote_neta_ji.svg"
+    },
+    {
+      "id": "didi",
+      "name": "Didi",
+      "file": "didi.svg"
     }
   ]
 }

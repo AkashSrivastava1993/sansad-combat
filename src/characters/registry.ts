@@ -155,7 +155,7 @@ function validateSpecial(s: FighterData['special'] | undefined): string | null {
   return validateSpecialExtras(record);
 }
 
-const FX_IDS = new Set<string>(['constitution', 'bulldozer', 'cycle', 'lathi', 'panja', 'broom', 'mic', 'baarish']);
+const FX_IDS = new Set<string>(['constitution', 'bulldozer', 'cycle', 'lathi', 'panja', 'broom', 'mic', 'baarish', 'jaadu']);
 const HIT_NUMBERS = ['damage', 'hitstunMs', 'blockstunMs', 'knockback'] as const;
 
 function validateSpecialExtras(r: Record<string, unknown>): string | null {
