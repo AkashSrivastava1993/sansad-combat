@@ -4,6 +4,8 @@ interface FightHooks {
   quit(): void;
 }
 
+import { canFullscreen } from './platform';
+
 type FsDocument = Document & { webkitFullscreenElement?: Element; webkitExitFullscreen?: () => void };
 type FsElement = HTMLElement & { webkitRequestFullscreen?: () => void };
 
@@ -12,7 +14,6 @@ const FULLSCREEN_ICON =
 
 const fsDoc = document as FsDocument;
 const fsRoot = document.documentElement as FsElement;
-const canFullscreen = Boolean(fsRoot.requestFullscreen ?? fsRoot.webkitRequestFullscreen);
 const isFullscreen = (): boolean => Boolean(fsDoc.fullscreenElement ?? fsDoc.webkitFullscreenElement);
 
 async function toggleFullscreen(): Promise<void> {
@@ -72,6 +73,10 @@ class GameChrome {
     this.overlay.append(this.overlayTitle, resume, quit);
 
     document.body.append(this.root, this.overlay);
+    // Touch players go fullscreen on their first tap, where the browser allows it.
+    if (canFullscreen && matchMedia('(pointer: coarse)').matches) {
+      window.addEventListener('pointerup', () => !isFullscreen() && void toggleFullscreen(), { once: true });
+    }
     window.addEventListener('keydown', (e) => {
       if (e.code === 'KeyP' && this.hooks) this.togglePause();
     });

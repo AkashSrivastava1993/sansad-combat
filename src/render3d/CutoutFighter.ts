@@ -1,9 +1,9 @@
 import * as THREE from 'three';
-import type { FighterData, SvgLayerId } from '../characters/types';
+import type { FighterData, SvgLayerId } from '../core/characters/types';
 import type { RigFrame } from '../rig/animator';
 import { svgArt, svgImage, SVG_DRAW_ORDER } from '../rig/svg/atlas';
 import { clothTarget, layoutSvg } from '../rig/svg/layout';
-import { Puppet3D, shared } from './Puppet3D';
+import { Puppet3D } from './Puppet3D';
 import { DEG, PX } from './space';
 
 /** Texture px per art unit; SVGs re-rasterise crisply at any size. */
@@ -37,29 +37,17 @@ interface Part {
   material: THREE.MeshBasicMaterial;
 }
 
-const auraGeometry = shared(new THREE.CircleGeometry(0.5, 32));
-
 /** The layered SVG art as paper-thin cut-outs standing in the 3D arena. */
 export class CutoutFighter extends Puppet3D {
   private readonly parts = new Map<SvgLayerId, Part>();
   private readonly present = new Set<SvgLayerId>();
-  private readonly aura: THREE.Mesh<THREE.CircleGeometry, THREE.MeshBasicMaterial>;
   private cloth = 0;
   private lastTime: number | null = null;
 
   constructor(parent: THREE.Object3D, data: FighterData, drawOrder: number) {
-    super(parent, data);
+    super(parent, data, drawOrder);
     const [cw, ch] = svgArt().canvas;
     const s = data.svg.scale * PX;
-
-    this.aura = new THREE.Mesh(
-      auraGeometry,
-      new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending }),
-    );
-    this.aura.position.set(0, (data.body.height / 2) * PX, -0.2);
-    this.aura.scale.set(data.body.width * 1.7 * PX, data.body.height * 1.15 * PX, 1);
-    this.aura.renderOrder = drawOrder * 20;
-    this.root.add(this.aura);
 
     SVG_DRAW_ORDER.forEach((layer, i) => {
       const map = layerTexture(data.id, layer);
@@ -111,11 +99,7 @@ export class CutoutFighter extends Puppet3D {
     const hurt = frame.expression === 'hurt' || frame.expression === 'ko';
     this.parts.get('head')?.material.color.set(hurt ? 0xffb4b4 : 0xffffff);
 
-    this.aura.visible = frame.aura !== undefined;
-    if (frame.aura) {
-      this.aura.material.color.set(frame.aura.color);
-      this.aura.material.opacity = frame.aura.alpha * 1.5;
-    }
+    this.showAura(frame.aura);
   }
 
   protected setOpacity(alpha: number): void {

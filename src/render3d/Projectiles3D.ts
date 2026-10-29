@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { Projectile } from '../systems/combat/Projectile';
+import type { ProjectileSnapshot } from '../core/match/state';
 import { shared } from './Puppet3D';
 import { PX, worldX, worldY } from './space';
 
@@ -15,19 +15,19 @@ interface Visual {
 
 /** Glowing orbs for projectiles and solid stand-ins for summoned helpers. */
 export class Projectiles3D {
-  private readonly visuals = new Map<Projectile, Visual>();
+  private readonly visuals = new Map<number, Visual>();
 
   constructor(private readonly parent: THREE.Object3D) {}
 
-  update(all: readonly Projectile[], timeSec: number): void {
+  update(all: readonly ProjectileSnapshot[], timeSec: number): void {
     // Projectiles with a bespoke special effect are drawn by that effect.
     const list = all.filter((p) => !p.data.fx);
-    const alive = new Set(list);
-    for (const [p, vis] of this.visuals) {
-      if (!alive.has(p)) this.remove(p, vis);
+    const alive = new Set(list.map((p) => p.id));
+    for (const [id, vis] of this.visuals) {
+      if (!alive.has(id)) this.remove(id, vis);
     }
     for (const p of list) {
-      const vis = this.visuals.get(p) ?? this.create(p);
+      const vis = this.visuals.get(p.id) ?? this.create(p);
       const { x, y, width, height } = p.hitbox;
       vis.group.position.set(worldX(x + width / 2), worldY(y + height / 2), 0);
       if (vis.spin) vis.spin.rotation.set(timeSec * 3, timeSec * 5 * p.dir, 0);
@@ -36,10 +36,10 @@ export class Projectiles3D {
   }
 
   clear(): void {
-    for (const [p, vis] of this.visuals) this.remove(p, vis);
+    for (const [id, vis] of this.visuals) this.remove(id, vis);
   }
 
-  private create(p: Projectile): Visual {
+  private create(p: ProjectileSnapshot): Visual {
     const color = new THREE.Color(p.color);
     const group = new THREE.Group();
     const { width, height } = p.hitbox;
@@ -73,16 +73,16 @@ export class Projectiles3D {
       group.add(halo);
     }
     this.parent.add(group);
-    this.visuals.set(p, vis);
+    this.visuals.set(p.id, vis);
     return vis;
   }
 
-  private remove(p: Projectile, vis: Visual): void {
+  private remove(id: number, vis: Visual): void {
     this.parent.remove(vis.group);
     vis.group.traverse((o) => {
       const mesh = o as THREE.Mesh;
       if (mesh.isMesh) (mesh.material as THREE.Material).dispose();
     });
-    this.visuals.delete(p);
+    this.visuals.delete(id);
   }
 }

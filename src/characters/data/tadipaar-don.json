@@ -12,6 +12,7 @@
       "active": { "lean": 8, "headTilt": 0, "frontArm": [95, 0], "backArm": [30, 60] }
     }
   },
+  "figure": {"skin": "#e0aa84", "hair": {"style": "short", "color": "#e8e8e8"}, "beard": {"color": "#b9b9bf", "length": "short"}, "moustache": "#f0f0f0", "glasses": "clear", "top": {"color": "#f4f1e8", "sleeves": "#f4f1e8", "length": "knee"}, "vest": "#141a30", "stole": "#f39a1e", "bottom": {"color": "#efeadb"}, "shoes": "#17171c"},
   "svg": {
     "id": "tadipaar_don_v2",
     "scale": 0.348,
@@ -60,7 +61,7 @@
     "impact": "THWACK!",
     "cost": 55,
     "cooldownMs": 6000,
-    "damage": 4,
+    "damage": 6,
     "startupMs": 500,
     "activeMs": 60,
     "recoveryMs": 400,
@@ -69,7 +70,7 @@
     "knockback": 30,
     "spawnFrom": "edge",
     "volley": { "standOffX": 55, "strikes": 4, "beatMs": 280 },
-    "finisher": { "damage": 9, "hitstunMs": 1100, "knockback": 620, "knockdown": true, "impact": "KA-POW!" },
+    "finisher": { "damage": 14, "hitstunMs": 1100, "knockback": 620, "knockdown": true, "impact": "KA-POW!" },
     "speed": 760,
     "width": 150,
     "height": 125,

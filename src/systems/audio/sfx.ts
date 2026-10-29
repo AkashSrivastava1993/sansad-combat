@@ -1,14 +1,14 @@
 import type Phaser from 'phaser';
 import { synthPlay } from './synth';
 
-export { preloadVoice } from './synth';
+export { preloadVoice, startVoice, type VoiceHandle } from './synth';
 
 export type SfxName = 'roundStart' | 'fight' | 'attack' | 'special' | 'hit' | 'block' | 'shield' | 'ko' | 'timeUp' | 'win';
 
 export interface SfxInfo {
   /** Damage of the move involved, for scaling volume or picking a variant. */
   damage?: number;
-  /** Fighter whose voice clip (if any) accompanies a special or a match win. */
+  /** Fighter whose voice clip (if any) accompanies a match win. */
   fighterId?: string;
 }
 

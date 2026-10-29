@@ -12,6 +12,7 @@
       "active": { "lean": 12, "headTilt": 2, "frontArm": [102, 6], "backArm": [14, 100] }
     }
   },
+  "figure": {"skin": "#ebb89a", "hair": {"style": "curly", "color": "#7a4a2a"}, "glasses": "dark", "earring": true, "top": {"color": "#e0b13e", "length": "short"}, "bottom": {"color": "#f1e3c0", "skirt": true, "trim": "#d9a32a"}, "pallu": "#eadcb4", "shoes": "#c89a60"},
   "svg": {
     "id": "filmi_queen",
     "scale": 0.355,
@@ -60,7 +61,7 @@
     "impact": "MIC DROP!",
     "cost": 50,
     "cooldownMs": 5000,
-    "damage": 16,
+    "damage": 24,
     "startupMs": 700,
     "activeMs": 60,
     "recoveryMs": 520,

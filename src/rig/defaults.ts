@@ -1,4 +1,4 @@
-import type { PhasedPose, Pose, SpecialType, StaticPose } from '../characters/types';
+import type { PhasedPose, Pose, SpecialType, StaticPose } from '../core/characters/types';
 
 // Angle conventions are documented on `Pose`. Characters override any of these in their JSON `look.poses`.
 
@@ -74,9 +74,16 @@ export const PUNCH_POSE: PhasedPose = {
   active: { lean: 16, headTilt: 4, frontArm: [88, 0], backArm: [40, 110] },
 };
 
+/** The low kick: a sweeping leg at shin height from a crouch. */
 export const KICK_POSE: PhasedPose = {
-  startup: { lean: -10, frontLeg: [60, 115], frontArm: [40, 90], backArm: [30, 90], backLeg: [-4, 5] },
-  active: { lean: -20, frontLeg: [92, 0], frontArm: [-20, 30], backArm: [70, 40], backLeg: [-4, 5] },
+  startup: { lean: 4, frontLeg: [35, 70], frontArm: [30, 80], backArm: [20, 80], backLeg: [-12, 20] },
+  active: { lean: 14, frontLeg: [72, 0], frontArm: [-20, 40], backArm: [60, 50], backLeg: [-24, 55] },
+};
+
+/** The high kick: knee up, then the leg flung out at head height while leaning away. */
+export const HIGH_KICK_POSE: PhasedPose = {
+  startup: { lean: -10, frontLeg: [75, 105], frontArm: [50, 90], backArm: [30, 90], backLeg: [-6, 8] },
+  active: { lean: -30, headTilt: -6, frontLeg: [128, 0], frontArm: [-30, 30], backArm: [75, 40], backLeg: [-4, 5] },
 };
 
 export const SPECIAL_POSES: Record<SpecialType, PhasedPose> = {

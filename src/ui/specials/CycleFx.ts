@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
-import type { Fighter } from '../../systems/combat/Fighter';
-import type { Projectile } from '../../systems/combat/Projectile';
+import type { FighterSnapshot, MatchState, ProjectileSnapshot } from '../../core/match/state';
 import type { ToScreen } from '../FighterView';
 import { Changes, FX_DEPTH, floatText, placer, puff, smooth, type Pt, type SpecialFx } from './kit';
 
@@ -28,25 +27,27 @@ export class CycleFx implements SpecialFx {
 
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly fighter: Fighter,
+    private fighter: FighterSnapshot,
     private readonly toScreen: ToScreen,
   ) {
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD).setDepth(FX_DEPTH);
     this.g = scene.add.graphics().setDepth(FX_DEPTH);
   }
 
-  update(now: number, projectiles: readonly Projectile[]): void {
+  update(now: number, state: MatchState): void {
+    this.fighter = state.fighters[this.fighter.slot];
+    const projectiles = state.projectiles;
     this.glow.clear();
     this.g.clear();
     const f = this.fighter;
     const s = f.currentSpecial;
-    if (f.state === 'special' && s?.type === 'projectile' && f.phase === 'startup') {
+    if (f.action === 'special' && s?.type === 'projectile' && f.phase === 'startup') {
       this.drawWindUp(now, f.phaseProgress, s.spinTurns ?? 0);
     } else {
       this.summoned = false;
     }
     for (const p of projectiles) {
-      if (p.owner !== f || p.data.fx !== 'cycle' || p.dead) continue;
+      if (p.owner !== f.slot || p.data.fx !== 'cycle' || p.dead) continue;
       this.drawFlight(p, now);
       if (this.hits.changed(p, p.hitsLanded, 0)) {
         const at = this.centre(p);
@@ -93,12 +94,12 @@ export class CycleFx implements SpecialFx {
     }
   }
 
-  private centre(p: Projectile): { x: number; y: number; zoom: number } {
+  private centre(p: ProjectileSnapshot): { x: number; y: number; zoom: number } {
     const hb = p.hitbox;
     return this.toScreen(p.x, hb.y + hb.height / 2);
   }
 
-  private drawFlight(p: Projectile, now: number): void {
+  private drawFlight(p: ProjectileSnapshot, now: number): void {
     const at = this.centre(p);
     const z = at.zoom;
     const roll = (p.age / 1000) * ROLL_SPEED;

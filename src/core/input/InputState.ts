@@ -6,6 +6,7 @@ export interface InputState {
   light: boolean;
   heavy: boolean;
   special: boolean;
+  grab: boolean;
 }
 
 export type InputAction = keyof InputState;
@@ -18,6 +19,7 @@ const INPUT_ACTIONS: readonly InputAction[] = [
   'light',
   'heavy',
   'special',
+  'grab',
 ];
 
 export const emptyInput = (): InputState => ({
@@ -28,6 +30,7 @@ export const emptyInput = (): InputState => ({
   light: false,
   heavy: false,
   special: false,
+  grab: false,
 });
 
 export interface InputSource {

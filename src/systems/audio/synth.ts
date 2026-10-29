@@ -157,14 +157,56 @@ export function preloadVoice(id: string): void {
   if (c && !voices.has(id)) voices.set(id, fetchVoice(c, id));
 }
 
-function playVoice(c: AudioContext, id: string): void {
-  void voices.get(id)?.then((buffer) => {
-    if (!buffer) return;
-    const src = c.createBufferSource();
+export interface VoiceHandle {
+  stop(): void;
+}
+
+interface ActiveVoice extends VoiceHandle {
+  startedAt: number;
+  playing: boolean;
+}
+
+/** A newer voice may only cut in on one that has already been talking this long (seconds). */
+const VOICE_PRIORITY_S = 4.5;
+let currentVoice: ActiveVoice | null = null;
+
+/** Starts a fighter's voice clip; an earlier clip keeps the floor for VOICE_PRIORITY_S unless `force` is set. */
+export function startVoice(id: string, force = false): VoiceHandle | null {
+  const c = audio();
+  const loading = voices.get(id);
+  if (!c || !master || c.state !== 'running' || !loading) return null;
+  if (!force && currentVoice?.playing && c.currentTime - currentVoice.startedAt < VOICE_PRIORITY_S) return null;
+  currentVoice?.stop();
+
+  let src: AudioBufferSourceNode | null = null;
+  const gain = c.createGain();
+  gain.connect(master);
+  const voice: ActiveVoice = {
+    startedAt: c.currentTime,
+    playing: true,
+    stop() {
+      if (!voice.playing) return;
+      voice.playing = false;
+      // A short fade avoids a click.
+      gain.gain.setTargetAtTime(0, c.currentTime, 0.015);
+      src?.stop(c.currentTime + 0.08);
+    },
+  };
+  currentVoice = voice;
+  void loading.then((buffer) => {
+    if (!buffer || !voice.playing) {
+      voice.playing = false;
+      return;
+    }
+    src = c.createBufferSource();
     src.buffer = buffer;
-    src.connect(master!);
+    src.connect(gain);
+    src.onended = () => {
+      voice.playing = false;
+    };
     src.start();
   });
+  return voice;
 }
 
 export function synthPlay(name: SfxName, info: SfxInfo): void {
@@ -181,6 +223,5 @@ export function synthPlay(name: SfxName, info: SfxInfo): void {
     return;
   }
   SYNTHS[name](c, info);
-  if (name === 'special' && info.fighterId) playVoice(c, info.fighterId);
-  if (name === 'win' && info.fighterId) playVoice(c, `${info.fighterId}-win`);
+  if (name === 'win' && info.fighterId) startVoice(`${info.fighterId}-win`, true);
 }

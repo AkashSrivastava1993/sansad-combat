@@ -1,5 +1,5 @@
 import type Phaser from 'phaser';
-import type { FighterData, SvgLayerId } from '../../characters/types';
+import type { FighterData, SvgLayerId } from '../../core/characters/types';
 
 /** Rasterise at this fraction of the art size; the sprites are drawn smaller than the art, so this keeps edges crisp. */
 export const TEXTURE_SCALE = 0.75;
@@ -121,7 +121,8 @@ async function loadFighter(scene: Phaser.Scene, data: FighterData, file: string)
 export async function loadSvgAtlas(scene: Phaser.Scene, fighters: readonly FighterData[]): Promise<void> {
   let manifest: Manifest;
   try {
-    const res = await fetch(assetUrl('manifest.json'));
+    // The manifest keeps its name across deploys, so never trust a cached copy (/assets is served immutable).
+    const res = await fetch(assetUrl('manifest.json'), { cache: 'no-cache' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     manifest = (await res.json()) as Manifest;
   } catch (err) {

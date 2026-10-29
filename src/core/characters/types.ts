@@ -246,6 +246,87 @@ export interface SvgConfig {
   };
 }
 
+export type HairStyle = 'bald' | 'short' | 'bun' | 'curly' | 'wavy';
+export type PropKind = 'kettle' | 'broom' | 'mic';
+
+/** Look of the low-poly 3D figure drawn in the 3D arena; every colour is "#rrggbb". */
+export interface FigureConfig {
+  skin: string;
+  /** Body width multiplier; 1 is average. */
+  bulk?: number;
+  hair?: { style: HairStyle; color: string };
+  beard?: { color: string; length: 'short' | 'full' | 'long' };
+  /** Colour of a moustache. */
+  moustache?: string;
+  /** `frame` is a pair of thin rectangular frames with arms; `clear` round rims; `dark` solid dark lenses. */
+  glasses?: 'clear' | 'dark' | 'frame';
+  /** A cloth cap with a band, e.g. a Gandhi topi. */
+  topi?: { color: string; band?: string };
+  earring?: boolean;
+  /** Shirt or kurta; `sleeves` defaults to bare skin and `length` knee hangs a kurta over the thighs. */
+  top: { color: string; sleeves?: string; length: 'short' | 'knee' };
+  /** Sleeveless jacket worn over the top. */
+  vest?: string;
+  /** Scarf hanging down the chest. */
+  stole?: string;
+  /** Thin vertical stripes on the skirt and pallu, e.g. a handloom saree. */
+  stripes?: string;
+  /** A watch on the front wrist. */
+  watch?: string;
+  /** Thin bangles on both wrists. */
+  bangles?: string;
+  /** Saree border: a diagonal band across the chest and the pallu edges. */
+  border?: string;
+  /** Trousers, or a long skirt (saree) when `skirt` is set; `trim` is the hem band. */
+  bottom: { color: string; skirt?: boolean; trim?: string };
+  /** Cloth hanging down the back, e.g. the end of a saree. */
+  pallu?: string;
+  shoes: string;
+  /** Held in the front hand. */
+  prop?: PropKind;
+}
+
+/** Animation states a 3D model can play; a fighter's current core action maps onto one of these. */
+export type ModelAction = 'idle' | 'walk' | 'jump' | 'punch' | 'kick' | 'block' | 'hit' | 'ko' | 'win' | 'special';
+
+export interface ModelClip {
+  /** Name of the animation clip inside the GLB. */
+  clip: string;
+  /** Repeat while the action lasts; otherwise play once and hold the last frame. Defaults to true for idle, walk, block and win. */
+  loop?: boolean;
+  /** Playback speed multiplier; defaults to 1. */
+  timeScale?: number;
+  /** Crossfade seconds into this clip; defaults to the model's `fade`. */
+  fade?: number;
+  /** Stretch or squeeze the clip to the length of the move it plays for, so it lines up with the real attack timing. Defaults to true for punch, kick and special. */
+  fit?: boolean;
+}
+
+/**
+ * A rigged GLB that replaces the cut-out art in the 3D arena. Without a clip for an action the model falls back
+ * (special -> kick -> punch -> idle, ko -> hit -> idle, anything else -> idle).
+ */
+export interface ModelConfig {
+  /** Path of the GLB relative to the site root, e.g. "assets/models/didi.glb". */
+  url: string;
+  /** Uniform scale; 1 means one glTF unit (a metre) per world unit, so a 1.8 m model stands about 180 game px tall. */
+  scale?: number;
+  /** World units to raise (or sink, if negative) the model so its feet rest on the floor. */
+  groundOffset?: number;
+  /** Degrees to turn the model so it faces the opponent when facing right; 0 for the glTF convention of facing +z. */
+  yaw?: number;
+  /** Default crossfade between clips, in seconds. */
+  fade?: number;
+  /** Also pin the root bone's height; by default only its sideways travel is removed. */
+  lockRootY?: boolean;
+  /** Whether the model casts shadows on the floor; defaults to true. */
+  castShadow?: boolean;
+  /** Whether the model receives shadows from others; defaults to false. */
+  receiveShadow?: boolean;
+  /** Clip for each action; `idle` is required. */
+  animations: { idle: string | ModelClip } & Partial<Record<Exclude<ModelAction, 'idle'>, string | ModelClip>>;
+}
+
 export interface FighterData {
   id: string;
   name: string;
@@ -255,6 +336,10 @@ export interface FighterData {
   faction: string;
   /** Layered SVG art; every fighter needs it. */
   svg: SvgConfig;
+  /** Optional 3D model; when set, the 3D arena draws it instead of anything else. */
+  model?: ModelConfig;
+  /** Low-poly 3D figure drawn in the 3D arena when there is no `model`; without it the SVG art is used. */
+  figure?: FigureConfig;
   poses?: PoseOverrides;
   /** Height in px used to scale this fighter on the select screen and result card. */
   previewHeight: number;

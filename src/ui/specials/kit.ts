@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { FONT_FAMILY } from '../../config';
-import type { Projectile } from '../../systems/combat/Projectile';
+import type { MatchState, ProjectileSnapshot } from '../../core/match/state';
 
 /** Above fighters and sparks, below comic impact words. */
 export const FX_DEPTH = 11;
@@ -12,7 +12,7 @@ export interface Pt {
 
 /** Per-fighter visuals for a special move, updated every frame by the fight scene. */
 export interface SpecialFx {
-  update(now: number, projectiles: readonly Projectile[]): void;
+  update(now: number, state: MatchState): void;
 }
 
 export const clamp01 = (t: number): number => Math.min(1, Math.max(0, t));
@@ -73,14 +73,18 @@ export function floatText(scene: Phaser.Scene, x: number, y: number, text: strin
   scene.tweens.add({ targets: label, y: y - rise, alpha: 0, delay: ms * 0.4, duration: ms * 0.6, onComplete: () => label.destroy() });
 }
 
+/** The projectile as it was when it ended, once it has left `state.projectiles`; otherwise the latest snapshot given. */
+export const finalState = (p: ProjectileSnapshot, state: MatchState): ProjectileSnapshot =>
+  state.endedProjectiles.find((e) => e.id === p.id) ?? p;
+
 /** Tracks per-projectile counters so effects can react once to a new hit or phase. */
 export class Changes<T> {
-  private readonly seen = new WeakMap<Projectile, T>();
+  private readonly seen = new Map<number, T>();
 
   /** True the first time `value` differs from the last one seen for `p` (and on first sight if `initial` differs). */
-  changed(p: Projectile, value: T, initial: T): boolean {
-    const before = this.seen.has(p) ? this.seen.get(p)! : initial;
-    this.seen.set(p, value);
+  changed(p: ProjectileSnapshot, value: T, initial: T): boolean {
+    const before = this.seen.has(p.id) ? this.seen.get(p.id)! : initial;
+    this.seen.set(p.id, value);
     return before !== value;
   }
 }

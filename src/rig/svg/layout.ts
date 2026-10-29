@@ -1,4 +1,4 @@
-import type { Pair, Pose, SvgConfig, SvgLayerId } from '../../characters/types';
+import type { Pair, Pose, SvgConfig, SvgLayerId } from '../../core/characters/types';
 import { SVG_DRAW_ORDER, type SvgArt } from './atlas';
 
 export interface SvgFrame {

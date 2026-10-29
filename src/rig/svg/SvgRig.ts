@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import type { FighterData, SvgLayerId } from '../../characters/types';
+import type { FighterData, SvgLayerId } from '../../core/characters/types';
 import type { RigFrame } from '../animator';
 import { svgArt, svgTextureKey, SVG_DRAW_ORDER, TEXTURE_SCALE } from './atlas';
 import { clothTarget, layoutSvg } from './layout';

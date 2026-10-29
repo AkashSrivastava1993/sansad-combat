@@ -12,6 +12,7 @@
       "active": { "lean": 12, "headTilt": 2, "frontArm": [96, 4], "backArm": [-18, 70] }
     }
   },
+  "figure": {"skin": "#b98258", "hair": {"style": "short", "color": "#1c1c22"}, "moustache": "#1a1a1a", "glasses": "clear", "topi": {"color": "#f4f4f0"}, "top": {"color": "#78a9e6", "sleeves": "#78a9e6", "length": "short"}, "bottom": {"color": "#1b2540"}, "shoes": "#17171c", "prop": "broom"},
   "svg": {
     "id": "muffler_man",
     "scale": 0.35,
@@ -60,7 +61,7 @@
     "impact": "SWISH!",
     "cost": 55,
     "cooldownMs": 6000,
-    "damage": 3,
+    "damage": 5,
     "startupMs": 650,
     "activeMs": 60,
     "recoveryMs": 420,
@@ -68,7 +69,7 @@
     "blockstunMs": 160,
     "knockback": 40,
     "volley": { "standOffX": 0, "strikes": 6, "beatMs": 230, "vanish": true },
-    "finisher": { "damage": 9, "hitstunMs": 1100, "blockstunMs": 300, "knockback": 700, "knockdown": true, "impact": "SWEEP!" },
+    "finisher": { "damage": 14, "hitstunMs": 1100, "blockstunMs": 300, "knockback": 700, "knockdown": true, "impact": "SWEEP!" },
     "speed": 950,
     "width": 200,
     "height": 190,

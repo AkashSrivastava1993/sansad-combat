@@ -59,9 +59,122 @@
       }
     },
     "special": { "$ref": "#/definitions/special" },
-    "svg": { "$ref": "#/definitions/svg" }
+    "svg": { "$ref": "#/definitions/svg" },
+    "figure": { "$ref": "#/definitions/figure" },
+    "model": { "$ref": "#/definitions/model" }
   },
   "definitions": {
+    "hex": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+    "figure": {
+      "description": "Low-poly 3D figure drawn in the 3D arena when there is no model; every colour is #rrggbb.",
+      "type": "object",
+      "required": ["skin", "top", "bottom", "shoes"],
+      "additionalProperties": false,
+      "properties": {
+        "skin": { "$ref": "#/definitions/hex" },
+        "bulk": { "type": "number", "exclusiveMinimum": 0, "description": "Body width multiplier; 1 is average." },
+        "hair": {
+          "type": "object",
+          "required": ["style", "color"],
+          "additionalProperties": false,
+          "properties": { "style": { "enum": ["bald", "short", "bun", "curly", "wavy"] }, "color": { "$ref": "#/definitions/hex" } }
+        },
+        "beard": {
+          "type": "object",
+          "required": ["color", "length"],
+          "additionalProperties": false,
+          "properties": { "color": { "$ref": "#/definitions/hex" }, "length": { "enum": ["short", "full", "long"] } }
+        },
+        "moustache": { "$ref": "#/definitions/hex" },
+        "glasses": { "enum": ["clear", "dark", "frame"] },
+        "topi": {
+          "type": "object",
+          "required": ["color"],
+          "additionalProperties": false,
+          "properties": { "color": { "$ref": "#/definitions/hex" }, "band": { "$ref": "#/definitions/hex" } }
+        },
+        "earring": { "type": "boolean" },
+        "top": {
+          "type": "object",
+          "required": ["color", "length"],
+          "additionalProperties": false,
+          "properties": {
+            "color": { "$ref": "#/definitions/hex" },
+            "sleeves": { "$ref": "#/definitions/hex", "description": "Omit for bare arms." },
+            "length": { "enum": ["short", "knee"], "description": "knee hangs a kurta over the thighs." }
+          }
+        },
+        "vest": { "$ref": "#/definitions/hex" },
+        "stole": { "$ref": "#/definitions/hex" },
+        "bottom": {
+          "type": "object",
+          "required": ["color"],
+          "additionalProperties": false,
+          "properties": {
+            "color": { "$ref": "#/definitions/hex" },
+            "skirt": { "type": "boolean", "description": "A long skirt (saree) instead of trousers." },
+            "trim": { "$ref": "#/definitions/hex", "description": "Hem band colour." }
+          }
+        },
+        "pallu": { "$ref": "#/definitions/hex", "description": "Cloth hanging down the back." },
+        "stripes": { "$ref": "#/definitions/hex", "description": "Thin vertical stripes on the skirt and pallu." },
+        "watch": { "$ref": "#/definitions/hex", "description": "A watch on the front wrist." },
+        "bangles": { "$ref": "#/definitions/hex", "description": "Thin bangles on both wrists." },
+        "border": { "$ref": "#/definitions/hex", "description": "Saree border: diagonal chest band and pallu edges." },
+        "shoes": { "$ref": "#/definitions/hex" },
+        "prop": { "enum": ["kettle", "broom", "mic"], "description": "Held in the front hand." }
+      }
+    },
+    "clip": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "required": ["clip"],
+          "additionalProperties": false,
+          "properties": {
+            "clip": { "type": "string", "minLength": 1, "description": "Name of the animation clip inside the GLB." },
+            "loop": { "type": "boolean", "description": "Repeat while the action lasts; defaults to true for idle, walk, block and win." },
+            "timeScale": { "type": "number", "exclusiveMinimum": 0 },
+            "fade": { "type": "number", "minimum": 0, "description": "Crossfade seconds into this clip." },
+            "fit": { "type": "boolean", "description": "Stretch the clip to the length of the move it plays for; defaults to true for punch, kick and special." }
+          }
+        }
+      ]
+    },
+    "model": {
+      "description": "Optional rigged GLB drawn in the 3D arena instead of the SVG art. A missing file falls back to a capsule placeholder. Unmapped actions fall back: special -> kick -> punch -> idle, ko -> hit -> idle, others -> idle.",
+      "type": "object",
+      "required": ["url", "animations"],
+      "additionalProperties": false,
+      "properties": {
+        "url": { "type": "string", "minLength": 1, "description": "GLB path relative to the site root, e.g. assets/models/didi.glb." },
+        "scale": { "type": "number", "exclusiveMinimum": 0, "description": "Uniform scale; 1 = one glTF unit (metre) per world unit (100 game px)." },
+        "groundOffset": { "type": "number", "description": "World units to raise (or sink) the model so its feet rest on the floor." },
+        "yaw": { "type": "number", "description": "Degrees to turn the model so it faces right; 0 for glTF's +z convention." },
+        "fade": { "type": "number", "minimum": 0, "description": "Default crossfade between clips, in seconds." },
+        "lockRootY": { "type": "boolean", "description": "Also pin the root bone's height; by default only its sideways travel is removed." },
+        "castShadow": { "type": "boolean", "description": "Whether the model casts shadows; defaults to true." },
+        "receiveShadow": { "type": "boolean", "description": "Whether the model receives shadows; defaults to false." },
+        "animations": {
+          "type": "object",
+          "required": ["idle"],
+          "additionalProperties": false,
+          "properties": {
+            "idle": { "$ref": "#/definitions/clip" },
+            "walk": { "$ref": "#/definitions/clip" },
+            "jump": { "$ref": "#/definitions/clip" },
+            "punch": { "$ref": "#/definitions/clip" },
+            "kick": { "$ref": "#/definitions/clip" },
+            "block": { "$ref": "#/definitions/clip" },
+            "hit": { "$ref": "#/definitions/clip" },
+            "ko": { "$ref": "#/definitions/clip" },
+            "win": { "$ref": "#/definitions/clip" },
+            "special": { "$ref": "#/definitions/clip" }
+          }
+        }
+      }
+    },
     "svg": {
       "description": "Layered SVG art (public/assets/characters). Art-space values use the manifest canvas units; angles are degrees from straight down, forward positive.",
       "type": "object",

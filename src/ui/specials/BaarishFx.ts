@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GROUND_Y } from '../../config';
-import type { Fighter } from '../../systems/combat/Fighter';
-import { type Projectile, STRIKE_CONTACT } from '../../systems/combat/Projectile';
+import type { FighterSnapshot, MatchState, ProjectileSnapshot } from '../../core/match/state';
+import { STRIKE_CONTACT } from '../../core/combat/Projectile';
 import type { ToScreen } from '../FighterView';
 import { clamp01, floatText, FX_DEPTH, gather, placer, puff, smooth, type Pt, type SpecialFx } from './kit';
 
@@ -60,7 +60,7 @@ const BAND: Pt[] = Array.from({ length: 13 }, (_, i) => {
 export class BaarishFx implements SpecialFx {
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly g: Phaser.GameObjects.Graphics;
-  private tracked: Projectile | null = null;
+  private tracked: ProjectileSnapshot | null = null;
   private run: Run | null = null;
   private finale: { run: Run; h: number; start: number } | null = null;
   private lastH = -1e9;
@@ -73,23 +73,24 @@ export class BaarishFx implements SpecialFx {
 
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly fighter: Fighter,
+    private fighter: FighterSnapshot,
     private readonly toScreen: ToScreen,
   ) {
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD).setDepth(FX_DEPTH);
     this.g = scene.add.graphics().setDepth(FX_DEPTH);
   }
 
-  update(now: number, projectiles: readonly Projectile[]): void {
+  update(now: number, state: MatchState): void {
+    this.fighter = state.fighters[this.fighter.slot];
+    const projectiles = state.projectiles;
     this.glow.clear();
     this.g.clear();
     this.drawWindUp(now);
 
-    const live = projectiles.find((p) => p.owner === this.fighter && p.data.fx === 'baarish' && !p.dead);
+    const live = projectiles.find((p) => p.owner === this.fighter.slot && p.data.fx === 'baarish' && !p.dead);
     if (live) {
       const v = live.data.volley!;
-      if (live !== this.tracked) {
-        this.tracked = live;
+      if (live.id !== this.tracked?.id) {
         this.lastHits = 0;
         this.lastH = -1e9;
         this.run = { x: live.x, dir: live.dir, strikes: v.strikes, beat: v.beatMs, delay: v.delayMs ?? 0 };
@@ -99,6 +100,7 @@ export class BaarishFx implements SpecialFx {
         for (let i = this.lastHits; i < live.hitsLanded; i++) this.hitFlash(live, i === v.strikes - 1);
         this.lastHits = live.hitsLanded;
       }
+      this.tracked = live;
       this.frame(live.holdMs, this.run!, now);
     } else if (this.tracked && this.run) {
       this.finale = { run: this.run, h: this.lastH, start: now };
@@ -116,7 +118,7 @@ export class BaarishFx implements SpecialFx {
   private drawWindUp(now: number): void {
     const f = this.fighter;
     const s = f.currentSpecial;
-    if (f.state !== 'special' || s?.type !== 'projectile' || s.fx !== 'baarish' || f.phase !== 'startup') return;
+    if (f.action !== 'special' || s?.type !== 'projectile' || s.fx !== 'baarish' || f.phase !== 'startup') return;
     const t = f.phaseProgress;
     const power = smooth(t / 0.3);
     const at = this.toScreen(f.x + f.facing * 18, f.y - f.data.body.height * (0.62 + 0.4 * smooth(t / 0.6)));
@@ -339,7 +341,7 @@ export class BaarishFx implements SpecialFx {
   }
 
   /** A bright pop where each registered hit lands, bigger for the finisher. */
-  private hitFlash(p: Projectile, last: boolean): void {
+  private hitFlash(p: ProjectileSnapshot, last: boolean): void {
     const hb = p.hitbox;
     const c = this.toScreen(p.x + (Math.random() - 0.5) * 40, hb.y + hb.height * 0.78);
     const z = c.zoom;

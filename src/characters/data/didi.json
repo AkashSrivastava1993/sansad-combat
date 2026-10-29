@@ -12,6 +12,7 @@
       "active": { "lean": 8, "headTilt": -2, "frontArm": [96, 4], "backArm": [10, 90] }
     }
   },
+  "figure": {"skin": "#c9936b", "hair": {"style": "bun", "color": "#15131a"}, "glasses": "frame", "top": {"color": "#f6f4ee", "sleeves": "#f6f4ee", "length": "short"}, "bottom": {"color": "#f6f4ee", "skirt": true, "trim": "#3f6fd0"}, "border": "#3f6fd0", "pallu": "#f1f1ec", "watch": "#3a4752", "bangles": "#c9ccd2", "shoes": "#5a3a26", "prop": "mic"},
   "svg": {
     "id": "didi",
     "scale": 0.355,
@@ -60,7 +61,7 @@
     "impact": "JAADU!",
     "cost": 55,
     "cooldownMs": 5500,
-    "damage": 18,
+    "damage": 27,
     "startupMs": 800,
     "activeMs": 60,
     "recoveryMs": 800,

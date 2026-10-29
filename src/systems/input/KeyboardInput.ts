@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { emptyInput, type InputAction, type InputSource, type InputState } from './InputState';
+import { emptyInput, type InputAction, type InputSource, type InputState } from '../../core/input/InputState';
 
 export type KeyBindings = Record<InputAction, string>;
 
@@ -12,6 +12,7 @@ export const P1_KEYS: KeyBindings = {
   light: 'F',
   heavy: 'G',
   special: 'H',
+  grab: 'T',
 };
 
 export const P2_KEYS: KeyBindings = {
@@ -22,6 +23,7 @@ export const P2_KEYS: KeyBindings = {
   light: 'COMMA',
   heavy: 'PERIOD',
   special: 'FORWARD_SLASH',
+  grab: 'M',
 };
 
 export class KeyboardInput implements InputSource {

@@ -1,9 +1,8 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GROUND_Y } from '../../config';
-import type { Fighter } from '../../systems/combat/Fighter';
-import type { Projectile } from '../../systems/combat/Projectile';
+import type { FighterSnapshot, MatchState, ProjectileSnapshot } from '../../core/match/state';
 import type { ToScreen } from '../FighterView';
-import { FX_DEPTH, floatText, gather, placer, puff, smooth, type Pt, type SpecialFx } from './kit';
+import { FX_DEPTH, finalState, floatText, gather, placer, puff, smooth, type Pt, type SpecialFx } from './kit';
 
 const GOLD = 0xffcf3a;
 const BLUE = 0x2f6bff;
@@ -78,7 +77,7 @@ interface Shock {
 export class PanjaFx implements SpecialFx {
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly g: Phaser.GameObjects.Graphics;
-  private tracked: Projectile | null = null;
+  private tracked: ProjectileSnapshot | null = null;
   private shock: Shock | null = null;
   private lastPhase = '';
   private nextGather = 0;
@@ -86,24 +85,26 @@ export class PanjaFx implements SpecialFx {
 
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly fighter: Fighter,
+    private fighter: FighterSnapshot,
     private readonly toScreen: ToScreen,
   ) {
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD).setDepth(FX_DEPTH);
     this.g = scene.add.graphics().setDepth(FX_DEPTH);
   }
 
-  update(now: number, projectiles: readonly Projectile[]): void {
+  update(now: number, state: MatchState): void {
+    this.fighter = state.fighters[this.fighter.slot];
+    const projectiles = state.projectiles;
     this.glow.clear();
     this.g.clear();
     this.drawCharge(now);
 
-    const live = projectiles.find((p) => p.owner === this.fighter && p.data.fx === 'panja' && !p.dead);
+    const live = projectiles.find((p) => p.owner === this.fighter.slot && p.data.fx === 'panja' && !p.dead);
     if (live) {
       this.tracked = live;
       this.drawFlight(live, now);
     } else if (this.tracked) {
-      this.resolveEnd(this.tracked, now);
+      this.resolveEnd(finalState(this.tracked, state), now);
       this.tracked = null;
     }
     if (this.shock) this.drawShock(this.shock, now);
@@ -119,7 +120,7 @@ export class PanjaFx implements SpecialFx {
   private drawCharge(now: number): void {
     const f = this.fighter;
     const s = f.currentSpecial;
-    const phase = f.state === 'special' && s?.type === 'projectile' && s.fx === 'panja' ? f.phase : '';
+    const phase = f.action === 'special' && s?.type === 'projectile' && s.fx === 'panja' ? f.phase : '';
     const at = phase === 'startup' ? this.anchor() : null;
     if (phase === 'active' && this.lastPhase !== 'active') this.release();
     this.lastPhase = phase;
@@ -200,7 +201,7 @@ export class PanjaFx implements SpecialFx {
     floatText(this.scene, c.x, c.y - 90 * c.zoom, 'HIGH COMMAND!', '#ffe7a0', 18 * c.zoom, 36 * c.zoom, 900);
   }
 
-  private drawFlight(p: Projectile, now: number): void {
+  private drawFlight(p: ProjectileSnapshot, now: number): void {
     const hb = p.hitbox;
     const gy = hb.y + hb.height / 2;
     const size = (hb.height * VISUAL_BOOST) / HAND_H;
@@ -228,7 +229,7 @@ export class PanjaFx implements SpecialFx {
   }
 
   /** The hand is gone: a hit becomes a palm shockwave, otherwise it simply breaks apart. */
-  private resolveEnd(p: Projectile, now: number): void {
+  private resolveEnd(p: ProjectileSnapshot, now: number): void {
     const hb = p.hitbox;
     const y = hb.y + hb.height / 2;
     if (p.hitsLanded > 0) {

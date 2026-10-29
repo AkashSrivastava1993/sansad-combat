@@ -1,0 +1,6 @@
+{
+  // Core must compile with no DOM, Node or bundler types, so it stays renderer-independent.
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "lib": ["ES2022"], "types": [] },
+  "include": ["."]
+}

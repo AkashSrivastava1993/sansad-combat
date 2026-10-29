@@ -1,4 +1,6 @@
-import type { Difficulty } from '../systems/ai/difficulty';
+import type Phaser from 'phaser';
+import { ARENA_IDS, DEFAULT_ARENA, type ArenaId } from '../content/arenas';
+import type { Difficulty } from '../core/ai/difficulty';
 
 export const SceneKey = {
   Boot: 'Boot',
@@ -32,3 +34,15 @@ export interface ResultData extends FightData {
   /** Index of the winning player, or null for a draw. */
   winner: 0 | 1 | null;
 }
+
+const ARENA_KEY = 'arena';
+
+/** The arena picked on the menu; it is remembered for the rest of the session. */
+export const getArena = (registry: Phaser.Data.DataManager): ArenaId => {
+  const id = registry.get(ARENA_KEY) as ArenaId | undefined;
+  return id && ARENA_IDS.includes(id) ? id : DEFAULT_ARENA;
+};
+
+export const setArena = (registry: Phaser.Data.DataManager, id: ArenaId): void => {
+  registry.set(ARENA_KEY, id);
+};

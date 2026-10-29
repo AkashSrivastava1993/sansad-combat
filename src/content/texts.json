@@ -1,0 +1,150 @@
+{
+  "menu": {
+    "homeScreenHint": "Swipe up on the screen to hide the address bar. For true full screen: Share, then Add to Home Screen",
+    "controls": "P1: WASD move/jump/block, F punch, G kick (high/low), H special, T grab\nP2: Arrows move/jump/block, , punch, . kick, / special, M grab"
+  },
+  "model": {
+    "loading": "Loading {name} model {percent}",
+    "failed": "{name} model unavailable: {reason}. Showing the fallback look."
+  },
+  "hud": {
+    "p1": "P1",
+    "p2": "P2",
+    "roundStart": "ROUND {round}",
+    "fightStart": "FIGHT!",
+    "ko": "K.O.",
+    "timeUp": "TIME"
+  },
+  "ticker": {
+    "label": "BREAKING",
+    "events": {
+      "roundStart": [
+        "Round {round} begins; the Speaker has already lost control of it",
+        "Round {round}: members requested to keep their fists within the rules of the House"
+      ],
+      "fightStart": [
+        "Session called to order; order declines the invitation",
+        "The House is now in session; the Speaker is now in hiding"
+      ],
+      "hit": [
+        "{attacker} raises a very physical point of order against {defender}",
+        "{defender} objects to the last remark, which was a fist",
+        "{attacker} makes a strong case; {defender} makes a strong noise",
+        "{defender} yields the floor, involuntarily"
+      ],
+      "block": [
+        "{defender} invokes procedural defence; {attacker}'s motion does not pass",
+        "{attacker} moves a motion; {defender} moves a forearm"
+      ],
+      "shield": [
+        "{defender} cites parliamentary privilege; {attacker} bounces off it",
+        "{attacker} hits the privilege wall; privilege wins on a technicality"
+      ],
+      "grab": [
+        "{attacker} grabs {defender} and hoists the debate overhead",
+        "{attacker} lifts {defender} to a higher level of discussion"
+      ],
+      "slam": [
+        "{attacker} slams {defender} onto the floor of the House; motion carried",
+        "{defender} is flattened by a bill that was heavier than expected"
+      ],
+      "knockdown": [
+        "{defender} takes a sudden seat on the floor of the House",
+        "{defender} is now technically out of order and horizontal"
+      ],
+      "special": [
+        "{attacker} unveils {special} without giving notice",
+        "{attacker} invokes {special}; the Speaker pretends not to see",
+        "Breaking procedure: {attacker} goes for {special}"
+      ],
+      "ko": [
+        "{defender} adjourned indefinitely",
+        "{defender} has left the House, not entirely by choice",
+        "{attacker} wins the debate by removing the other speaker"
+      ],
+      "timeUp": [
+        "Time is up; the House adjourns without a decision, as is tradition",
+        "Clock runs out; both sides declare victory immediately"
+      ]
+    }
+  },
+  "placards": [
+    { "text": "वोट चोर, गद्दी छोड़!", "bg": "#ff9933", "fg": "#1a1a2e" },
+    { "text": "मोहब्बत की दुकान", "bg": "#f4f4f4", "fg": "#d62828" },
+    { "text": "अबकी बार, 400 पार!", "bg": "#ffb703", "fg": "#5a1a00" },
+    { "text": "खेला होबे!", "bg": "#d62839", "fg": "#ffffff" },
+    { "text": "मंदिर वहीं बनाएंगे!", "bg": "#138808", "fg": "#ffffff" },
+    { "text": "ग्याणू, रिज़ाइन प्लीज़!", "bg": "#1f4fa3", "fg": "#ffffff" },
+    { "text": "अच्छे दिन आने वाले हैं!", "bg": "#222222", "fg": "#ffd24a" },
+    { "text": "जय जवान, जय किसान!", "bg": "#f4efe1", "fg": "#7a1f2b" },
+    { "text": "कांग्रेस मुक्त भारत!", "bg": "#4a2c82", "fg": "#f4efe1" },
+    { "text": "लोकतंत्र बचाओ!", "bg": "#1f6f78", "fg": "#f4efe1" },
+    { "text": "अबकी बार, मोदी सरकार!", "bg": "#e0a526", "fg": "#1b2a49" },
+    { "text": "मैं भी चौकीदार!", "bg": "#c9462c", "fg": "#ffffff" },
+    { "text": "चौकीदार चोर है!", "bg": "#ff9933", "fg": "#1a1a2e" },
+    { "text": "सबका साथ, सबका विकास!", "bg": "#f4f4f4", "fg": "#d62828" },
+    { "text": "इंक़लाब ज़िंदाबाद!", "bg": "#ffb703", "fg": "#5a1a00" },
+    { "text": "तानाशाही नहीं चलेगी!", "bg": "#d62839", "fg": "#ffffff" },
+    { "text": "किसान एकता ज़िंदाबाद!", "bg": "#138808", "fg": "#ffffff" },
+    { "text": "दिल्ली चलो!", "bg": "#1f4fa3", "fg": "#ffffff" },
+    { "text": "जय श्री राम!", "bg": "#222222", "fg": "#ffd24a" },
+    { "text": "सरकार जवाब दो!", "bg": "#f4efe1", "fg": "#7a1f2b" },
+    { "text": "न खाऊँगा, न खाने दूँगा!", "bg": "#4a2c82", "fg": "#f4efe1" },
+    { "text": "सिंहासन खाली करो कि जनता आती है!", "bg": "#1f6f78", "fg": "#f4efe1" },
+    { "text": "दीदी ओ दीदी!", "bg": "#e0a526", "fg": "#1b2a49" },
+    { "text": "लाठी गोली खाएँगे, अपना हक़ लेकर रहेंगे!", "bg": "#c9462c", "fg": "#ffffff" },
+    { "text": "नोटबंदी वापस लो!", "bg": "#ff9933", "fg": "#1a1a2e" }
+  ],
+  "arenas": {
+    "sansad": {
+      "name": "SANSAD BHAWAN",
+      "banner": { "title": "SANSAD COMBAT", "subtitle": "LIVE FROM THE HOUSE OF ORDER (NOT FOUND)" },
+      "idle": [
+        "Speaker requests silence for the 14th time; silence requests a recount",
+        "Canteen confirms it is the only place in the building with full attendance",
+        "Opposition and treasury benches agree on one thing: the other side started it",
+        "Sources say the debate on the debate has been postponed to discuss the postponement",
+        "Question Hour answered by a question; Answer Hour not yet scheduled",
+        "House adjourned for the fifth time since breakfast",
+        "Walkout expected shortly; walkout was expected shortly an hour ago",
+        "Microphones muted for everyone's safety, mostly the microphones'",
+        "Viewers advised that the shouting is a form of dialogue"
+      ]
+    },
+    "indiagate": {
+      "name": "INDIA GATE",
+      "banner": { "title": "INDIA GATE", "subtitle": "SELFIE POINT: 2 KM AHEAD. FIGHT POINT: HERE" },
+      "idle": [
+        "Tourists advised to look at the monument, not the fight; tourists look at the fight",
+        "Balloon seller reports record sales to the front row",
+        "Guard blows whistle at the grass; the grass was not involved",
+        "Selfie queue now longer than the fight queue",
+        "Traffic police confirm the circle is still a circle",
+        "Kulfi wala declares a neutral zone near his cart",
+        "Lawn closes at sunset; the fight was not informed",
+        "Ice gola prices rise sharply, citing atmosphere"
+      ]
+    },
+    "jantarmantar": {
+      "name": "JANTAR MANTAR",
+      "banner": { "title": "JANTAR MANTAR", "subtitle": "THE SUNDIAL SAYS IT IS ALWAYS TIME FOR A FIGHT" },
+      "idle": [
+        "Sundial confirms it is exactly fight o'clock, give or take a shadow",
+        "Guide explains the instrument; crowd explains the fight",
+        "Stone staircase reports it has seen worse arguments",
+        "Visitors asked not to climb the Samrat Yantra; one visitor is already on top",
+        "Observatory notes the stars are not available for comment",
+        "Astronomers agree the sun is in the wrong position for a rematch",
+        "Cloud cover cancels the eclipse, not the fight",
+        "Ticket counter reports lines forming for both the monument and the brawl"
+      ]
+    }
+  },
+  "flags": [
+    ["#1f6f78", "#f4efe1", "#7a1f2b"],
+    ["#e0a526", "#1b2a49", "#e0a526"],
+    ["#4a2c82", "#f4efe1", "#c9462c"],
+    ["#2e7d4f", "#f6d365", "#2e7d4f"],
+    ["#222a3d", "#e8e0cc", "#a6372c"]
+  ]
+}

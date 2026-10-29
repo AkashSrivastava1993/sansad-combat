@@ -1,5 +1,5 @@
 import type Phaser from 'phaser';
-import type { Fighter } from '../../systems/combat/Fighter';
+import type { FighterSnapshot } from '../../core/match/state';
 import type { ToScreen } from '../FighterView';
 import { BaarishFx } from './BaarishFx';
 import { BulldozerFx } from './BulldozerFx';
@@ -13,7 +13,7 @@ import { MicDropFx } from './MicDropFx';
 import { PanjaFx } from './PanjaFx';
 
 /** The effect that draws this fighter's special, if it has a bespoke one. */
-export function createSpecialFx(scene: Phaser.Scene, fighter: Fighter, toScreen: ToScreen): SpecialFx | null {
+export function createSpecialFx(scene: Phaser.Scene, fighter: FighterSnapshot, toScreen: ToScreen): SpecialFx | null {
   const s = fighter.data.special;
   if (s.type !== 'projectile' || !s.fx) return null;
   switch (s.fx) {

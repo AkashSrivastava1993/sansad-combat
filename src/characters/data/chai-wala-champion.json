@@ -13,6 +13,7 @@
       "active": { "lean": -3, "headTilt": -6, "frontArm": [176, 6], "backArm": [16, 100] }
     }
   },
+  "figure": {"skin": "#d9a07a", "hair": {"style": "wavy", "color": "#f1f1f1"}, "beard": {"color": "#f1f1f1", "length": "long"}, "glasses": "clear", "top": {"color": "#f4f1e8", "sleeves": "#f4f1e8", "length": "knee"}, "vest": "#1e2a50", "stole": "#f39a1e", "bottom": {"color": "#ebe6d6"}, "shoes": "#4a2f1c", "prop": "kettle"},
   "svg": {
     "id": "tapri_titan",
     "scale": 0.355,
@@ -61,7 +62,7 @@
     "impact": "SPLASH!",
     "cost": 50,
     "cooldownMs": 6000,
-    "damage": 2,
+    "damage": 3,
     "startupMs": 550,
     "activeMs": 60,
     "recoveryMs": 450,
@@ -70,7 +71,7 @@
     "knockback": 30,
     "spawnFrom": "opponent",
     "volley": { "standOffX": 0, "strikes": 5, "beatMs": 260, "vanish": true, "delayMs": 650 },
-    "finisher": { "damage": 8, "hitstunMs": 1100, "blockstunMs": 300, "knockback": 650, "knockdown": true, "impact": "KADAK!", "burn": { "damagePerSec": 5, "durationMs": 4000 } },
+    "finisher": { "damage": 12, "hitstunMs": 1100, "blockstunMs": 300, "knockback": 650, "knockdown": true, "impact": "KADAK!", "burn": { "damagePerSec": 8, "durationMs": 4000 } },
     "speed": 0,
     "width": 140,
     "height": 330,

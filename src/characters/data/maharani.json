@@ -12,6 +12,7 @@
       "active": { "lean": 6, "headTilt": -2, "frontArm": [96, 4], "backArm": [10, 90] }
     }
   },
+  "figure": {"skin": "#d9a47c", "hair": {"style": "bun", "color": "#cfcfd6"}, "glasses": "clear", "top": {"color": "#f6f4ee", "sleeves": "#f6f4ee", "length": "short"}, "bottom": {"color": "#f6f4ee", "skirt": true, "trim": "#2f62c9"}, "pallu": "#2d56b8", "shoes": "#c89870"},
   "svg": {
     "id": "maharani",
     "scale": 0.364,
@@ -60,7 +61,7 @@
     "impact": "PANJA!",
     "cost": 55,
     "cooldownMs": 5000,
-    "damage": 18,
+    "damage": 27,
     "startupMs": 700,
     "activeMs": 60,
     "recoveryMs": 520,

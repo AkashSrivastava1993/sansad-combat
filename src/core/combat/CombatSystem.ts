@@ -1,5 +1,5 @@
-import type { HitProps } from '../../characters/types';
-import { ENERGY_PER_DAMAGE_DEALT } from '../../config';
+import type { HitProps } from '../characters/types';
+import { ENERGY_PER_DAMAGE_DEALT, GROUND_Y } from '../config';
 import type { Fighter } from './Fighter';
 import { overlapCenter, overlaps } from './geometry';
 import type { Projectile } from './Projectile';
@@ -11,6 +11,10 @@ export interface HitEvent {
   blocked: boolean;
   /** The defender's shield absorbed the hit and bounced damage back. */
   shielded: boolean;
+  /** The hit came from a special move rather than a normal attack. */
+  fromSpecial: boolean;
+  /** The hit is the landing of a grab's slam. */
+  slam?: boolean;
   /** World-space contact point. */
   x: number;
   y: number;
@@ -27,6 +31,8 @@ interface Candidate {
 
 export class CombatSystem {
   readonly projectiles: Projectile[] = [];
+  /** Projectiles removed since the last `takeEnded`, in their final state. */
+  private readonly ended: Projectile[] = [];
 
   /** Advances projectiles and applies all hits landing this frame; simultaneous hits both connect. */
   resolve(a: Fighter, b: Fighter, dt: number): HitEvent[] {
@@ -38,12 +44,21 @@ export class CombatSystem {
     }
     this.advance(a, b, dt);
 
+    const slams = [a, b].flatMap((thrower) => this.settleSlam(thrower, true) ?? []);
+    for (const [attacker, defender] of [
+      [a, b],
+      [b, a],
+    ] as const) {
+      const hands = attacker.grabBox;
+      if (hands && defender.grabbable && overlaps(hands, defender.hurtbox)) attacker.beginCarry(defender);
+    }
+
     const candidates: Candidate[] = [];
     for (const [attacker, defender] of [
       [a, b],
       [b, a],
     ] as const) {
-      if (defender.state === 'ko' || defender.untouchable) continue;
+      if (defender.action === 'ko' || defender.untouchable) continue;
       const hitbox = attacker.hitbox;
       const hit = attacker.activeHit;
       if (hitbox && hit && !attacker.hasHit && overlaps(hitbox, defender.hurtbox)) {
@@ -71,7 +86,7 @@ export class CombatSystem {
       }
     }
 
-    const events: HitEvent[] = [];
+    const events: HitEvent[] = [...slams];
     for (const { attacker, defender, hit, dir, projectile, point } of candidates) {
       if (projectile) projectile.registerHit();
       else attacker.hasHit = true;
@@ -80,15 +95,15 @@ export class CombatSystem {
       if (defender.shieldActive && shield?.type === 'shield') {
         if (projectile) projectile.blocked = true;
         attacker.takeReflect(Math.round(shield.damage + (shield.reflectRatio ?? 0) * hit.damage));
-        events.push({ attacker, defender, hit, blocked: true, shielded: true, ...point });
+        events.push({ attacker, defender, hit, blocked: true, shielded: true, fromSpecial: projectile !== null || attacker.action === 'special', ...point });
         continue;
       }
-      const blocked = defender.state === 'block' && !hit.guardBreak;
+      const blocked = defender.action === 'block' && !hit.guardBreak;
       if (projectile) projectile.blocked = blocked;
       const dealt = defender.takeHit(hit, dir, blocked);
-      if (hit.burn && !blocked && defender.state !== 'ko') defender.ignite(hit.burn);
+      if (hit.burn && !blocked && defender.action !== 'ko') defender.ignite(hit.burn);
       attacker.gainEnergy(dealt * ENERGY_PER_DAMAGE_DEALT);
-      events.push({ attacker, defender, hit, blocked, shielded: false, ...point });
+      events.push({ attacker, defender, hit, blocked, shielded: false, fromSpecial: projectile !== null || attacker.action === 'special', ...point });
     }
 
     this.prune();
@@ -97,6 +112,7 @@ export class CombatSystem {
 
   /** Moves projectiles without letting them hit, e.g. while a finished round winds down. */
   coast(a: Fighter, b: Fighter, dt: number): void {
+    for (const thrower of [a, b]) this.settleSlam(thrower, false);
     this.advance(a, b, dt);
     this.prune();
   }
@@ -106,9 +122,33 @@ export class CombatSystem {
     for (const p of this.projectiles) p.update(dt);
   }
 
+  /**
+   * Finishes a slam that has just landed: damage and knockdown when `apply`, otherwise (the round is over)
+   * the held fighter simply lands.
+   */
+  private settleSlam(thrower: Fighter, apply: boolean): HitEvent | null {
+    if (!thrower.slamDue) return null;
+    thrower.slamDue = false;
+    const victim = thrower.carried;
+    thrower.carried = null;
+    if (!victim) return null;
+    victim.release();
+    if (!apply || victim.action === 'ko') return null;
+    const hit = thrower.slamHit();
+    const dealt = victim.takeHit(hit, thrower.facing, false);
+    victim.floored = true;
+    thrower.gainEnergy(dealt * ENERGY_PER_DAMAGE_DEALT);
+    return { attacker: thrower, defender: victim, hit, blocked: false, shielded: false, fromSpecial: false, slam: true, x: victim.x, y: GROUND_Y - 30 };
+  }
+
+  /** Hands over the projectiles that ended since the last call. */
+  takeEnded(): Projectile[] {
+    return this.ended.splice(0);
+  }
+
   private prune(): void {
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
-      if (this.projectiles[i]!.dead) this.projectiles.splice(i, 1);
+      if (this.projectiles[i]!.dead) this.ended.unshift(...this.projectiles.splice(i, 1));
     }
   }
 

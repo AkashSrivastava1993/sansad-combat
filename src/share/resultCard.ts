@@ -1,4 +1,4 @@
-import type { FighterData } from '../characters/types';
+import type { FighterData } from '../core/characters/types';
 import { FONT_FAMILY } from '../config';
 import { factionOf } from '../characters/registry';
 import { RigAnimator } from '../rig/animator';

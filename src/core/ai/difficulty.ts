@@ -13,10 +13,12 @@ export interface AIProfile {
   specialChance: number;
   /** How long a retreat lasts. */
   retreatMs: number;
+  /** Chance to try a grab when in range, per decision; tripled against a blocker. */
+  grabChance: number;
 }
 
 export const AI_PROFILES: Record<Difficulty, AIProfile> = {
-  easy: { reactionMs: 450, aggression: 0.3, blockChance: 0.15, specialChance: 0.2, retreatMs: 700 },
-  normal: { reactionMs: 250, aggression: 0.6, blockChance: 0.5, specialChance: 0.5, retreatMs: 500 },
-  hard: { reactionMs: 120, aggression: 0.85, blockChance: 0.85, specialChance: 0.8, retreatMs: 300 },
+  easy: { reactionMs: 450, aggression: 0.3, blockChance: 0.15, specialChance: 0.2, retreatMs: 700, grabChance: 0.04 },
+  normal: { reactionMs: 250, aggression: 0.6, blockChance: 0.5, specialChance: 0.5, retreatMs: 500, grabChance: 0.08 },
+  hard: { reactionMs: 120, aggression: 0.85, blockChance: 0.85, specialChance: 0.8, retreatMs: 300, grabChance: 0.14 },
 };

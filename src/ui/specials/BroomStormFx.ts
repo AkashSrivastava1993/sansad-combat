@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import { GROUND_Y } from '../../config';
-import type { Fighter } from '../../systems/combat/Fighter';
-import { type Projectile, STRIKE_CONTACT } from '../../systems/combat/Projectile';
+import type { FighterSnapshot, MatchState, ProjectileSnapshot } from '../../core/match/state';
+import { STRIKE_CONTACT } from '../../core/combat/Projectile';
 import type { ToScreen } from '../FighterView';
-import { clamp01, floatText, FX_DEPTH, puff, smooth, type SpecialFx } from './kit';
+import { clamp01, finalState, floatText, FX_DEPTH, puff, smooth, type SpecialFx } from './kit';
 
 /** Visual broom count; they are drawn from a formula into one graphics layer, never as separate objects. */
 const COUNT = 100;
@@ -50,7 +50,7 @@ export class BroomStormFx implements SpecialFx {
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly g: Phaser.GameObjects.Graphics;
   private readonly pool: Broom[] = Array.from({ length: COUNT }, () => ({ x: 0, y: 0, x2: 0, y2: 0, x3: 0, y3: 0, rot: 0, s: 1, depth: 0 }));
-  private tracked: Projectile | null = null;
+  private tracked: ProjectileSnapshot | null = null;
   private finale: Finale | null = null;
   private lastHits = 0;
   private grabbed = false;
@@ -58,28 +58,30 @@ export class BroomStormFx implements SpecialFx {
 
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly fighter: Fighter,
+    private fighter: FighterSnapshot,
     private readonly toScreen: ToScreen,
   ) {
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD).setDepth(FX_DEPTH);
     this.g = scene.add.graphics().setDepth(FX_DEPTH);
   }
 
-  update(now: number, projectiles: readonly Projectile[]): void {
+  update(now: number, state: MatchState): void {
+    this.fighter = state.fighters[this.fighter.slot];
+    const projectiles = state.projectiles;
     this.glow.clear();
     this.g.clear();
     this.drawWindUp(now);
 
-    const live = projectiles.find((p) => p.owner === this.fighter && p.data.fx === 'broom' && !p.dead);
+    const live = projectiles.find((p) => p.owner === this.fighter.slot && p.data.fx === 'broom' && !p.dead);
     if (live) {
-      if (live !== this.tracked) {
-        this.tracked = live;
+      if (live.id !== this.tracked?.id) {
         this.lastHits = 0;
         this.release(live);
       }
+      this.tracked = live;
       this.drawStorm(live, now);
     } else if (this.tracked) {
-      this.end(this.tracked, now);
+      this.end(finalState(this.tracked, state), now);
       this.tracked = null;
     }
     if (this.finale) this.drawFinale(now);
@@ -89,7 +91,7 @@ export class BroomStormFx implements SpecialFx {
   private drawWindUp(now: number): void {
     const f = this.fighter;
     const s = f.currentSpecial;
-    const on = f.state === 'special' && s?.type === 'projectile' && s.fx === 'broom' && f.phase === 'startup';
+    const on = f.action === 'special' && s?.type === 'projectile' && s.fx === 'broom' && f.phase === 'startup';
     if (!on) {
       this.grabbed = false;
       return;
@@ -127,7 +129,7 @@ export class BroomStormFx implements SpecialFx {
     }
   }
 
-  private release(p: Projectile): void {
+  private release(p: ProjectileSnapshot): void {
     const c = this.toScreen(p.x, GROUND_Y - 100);
     puff(this.scene, c.x, c.y, 24 * c.zoom, 0xffffff, { grow: 2.6, ms: 300, additive: true, alpha: 0.45 });
     floatText(this.scene, c.x, c.y - 80 * c.zoom, 'JHAADU STORM!', '#cfe8ff', 20 * c.zoom, 34 * c.zoom, 1000);
@@ -155,7 +157,7 @@ export class BroomStormFx implements SpecialFx {
     }
   }
 
-  private drawStorm(p: Projectile, now: number): void {
+  private drawStorm(p: ProjectileSnapshot, now: number): void {
     const v = p.data.volley!;
     const base = this.toScreen(p.x, GROUND_Y);
     const z = base.zoom;
@@ -200,7 +202,7 @@ export class BroomStormFx implements SpecialFx {
   }
 
   /** A bright burst somewhere in the cyclone for each registered hit. */
-  private flash(p: Projectile, last: boolean): void {
+  private flash(p: ProjectileSnapshot, last: boolean): void {
     const hb = p.hitbox;
     const c = this.toScreen(p.x + (Math.random() - 0.5) * hb.width * 0.5, hb.y + hb.height * (0.3 + Math.random() * 0.4));
     const z = c.zoom;
@@ -251,7 +253,7 @@ export class BroomStormFx implements SpecialFx {
   }
 
   /** The storm is over: brooms scatter into particles, and the giant sweep follows through if it was cut off. */
-  private end(p: Projectile, now: number): void {
+  private end(p: ProjectileSnapshot, now: number): void {
     const v = p.data.volley!;
     const contact = (v.strikes - 1 + STRIKE_CONTACT) * v.beatMs;
     this.finale = { x: p.x, dir: p.dir, dt: p.holdMs - contact, start: now, beat: v.beatMs };

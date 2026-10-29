@@ -1,10 +1,14 @@
 import * as THREE from 'three';
-import type { FighterData } from '../characters/types';
+import type { FighterData } from '../core/characters/types';
 import { GAME_HEIGHT, GAME_WIDTH, GROUND_Y } from '../config';
-import type { Projectile } from '../systems/combat/Projectile';
+import { type FighterSnapshot, type MatchState, windingUp } from '../core/match/state';
+import type { FightRenderer } from '../renderers/FightRenderer';
 import type { FighterPuppet, ScreenPoint } from '../ui/FighterView';
-import { buildArena, type Arena } from './arena';
+import { DEFAULT_ARENA, type ArenaId } from '../content/arenas';
+import { buildArena, type Arena } from './arenas';
 import { CutoutFighter } from './CutoutFighter';
+import { FigureFighter } from './FigureFighter';
+import { ModelFighter } from './ModelFighter';
 import { Projectiles3D } from './Projectiles3D';
 import type { Puppet3D } from './Puppet3D';
 import { DEG, PX, worldX, worldY } from './space';
@@ -19,6 +23,13 @@ const HALF_FOV_TAN = Math.tan(14 * DEG);
 /** Camera height above the view centre, in view half-heights; looking down shows the floor in perspective. */
 const ELEVATION = 0.6;
 const FOLLOW_RATE = 4;
+/** View half-height in game px when the camera pushes in on a special being wound up. */
+const CUTSCENE_HALF_H = 165;
+/** How quickly the cutscene shot comes in and goes out, per second. */
+const CUTSCENE_IN = 7;
+const CUTSCENE_OUT = 2.5;
+/** The shot sits this far ahead of the caster, towards their target. */
+const CUTSCENE_LEAD = 60;
 /** Extra width around the fighters when zooming in. */
 const FRAME_MARGIN = 440;
 /** Space kept above the highest fighter for the HUD. */
@@ -29,7 +40,9 @@ const MAX_PIXELS = 2.5e6;
  * Three.js arena drawn on its own canvas beneath Phaser's (which stays on top for the HUD). The camera always
  * looks straight down -z, so the fight plane maps affinely to the screen and 2D overlays line up via `project`.
  */
-export class Stage3D {
+export class Stage3D implements FightRenderer {
+  readonly kind = 'three';
+
   private static instance: Stage3D | null | undefined;
 
   /** The shared stage, or null when WebGL is unavailable. */
@@ -48,16 +61,22 @@ export class Stage3D {
   private readonly renderer: THREE.WebGLRenderer;
   private readonly scene = new THREE.Scene();
   private readonly camera = new THREE.PerspectiveCamera();
-  private readonly arena: Arena;
+  private arena!: Arena;
+  private readonly arenas = new Map<ArenaId, Arena>();
   private readonly projectiles: Projectiles3D;
   private readonly puppets: Puppet3D[] = [];
   private host: HTMLCanvasElement | null = null;
   private layout = '';
+  /** Free space around the Phaser canvas as fractions of its size; the frustum widens by the same amount. */
+  private pad = { l: 0, r: 0, t: 0, b: 0 };
   private view = { x: GAME_WIDTH / 2, halfH: FULL_HALF_H };
   private shakeOffset = { x: 0, y: 0 };
   private shakeMs = 0;
   private shakeIntensity = 0;
   private clock = 0;
+  /** 0 = normal framing, 1 = fully pushed in on the caster. */
+  private cutscene = 0;
+  private shotX = GAME_WIDTH / 2;
 
   private constructor() {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -68,15 +87,19 @@ export class Stage3D {
     const canvas = this.renderer.domElement;
     canvas.className = 'stage3d';
     canvas.style.display = 'none';
-    this.arena = buildArena(this.scene);
+    this.useArena(DEFAULT_ARENA);
     this.projectiles = new Projectiles3D(this.scene);
   }
 
-  /** Shows the stage under Phaser's canvas with the camera reset to the full arena. */
-  begin(phaserCanvas: HTMLCanvasElement): void {
+  /** Shows the stage under Phaser's canvas, in the given arena, with the camera reset to the full arena. */
+  begin(phaserCanvas: HTMLCanvasElement, arena: ArenaId = DEFAULT_ARENA): void {
+    this.useArena(arena);
+    this.arena.dealPlacards();
     const canvas = this.renderer.domElement;
     if (this.host !== phaserCanvas) {
-      phaserCanvas.parentElement!.insertBefore(canvas, phaserCanvas);
+      // The stage fills the whole page box, behind the (letterboxed) Phaser canvas.
+      const page = phaserCanvas.closest('#game') ?? phaserCanvas.parentElement!;
+      page.insertBefore(canvas, page.firstChild);
       this.host = phaserCanvas;
       this.layout = '';
     }
@@ -84,6 +107,21 @@ export class Stage3D {
     this.view = { x: GAME_WIDTH / 2, halfH: FULL_HALF_H };
     this.shakeMs = 0;
     this.shakeOffset = { x: 0, y: 0 };
+    this.cutscene = 0;
+  }
+
+  /** Builds an arena the first time it is needed and shows only that one. */
+  private useArena(id: ArenaId): void {
+    let arena = this.arenas.get(id);
+    if (!arena) {
+      arena = buildArena(id);
+      this.arenas.set(id, arena);
+      this.scene.add(arena.root);
+    }
+    for (const other of this.arenas.values()) other.root.visible = other === arena;
+    this.arena = arena;
+    this.scene.background = arena.background;
+    this.scene.fog = arena.fog;
   }
 
   /** Hides the stage and removes the round's fighters and projectiles. */
@@ -94,15 +132,26 @@ export class Stage3D {
     this.puppets.length = 0;
   }
 
-  /** Adds a fighter drawn from their layered SVG art. */
+  /** Adds a fighter drawn from their GLB model, else their low-poly figure, else their layered SVG art. */
   addFighter(data: FighterData): FighterPuppet {
-    const puppet = new CutoutFighter(this.scene, data, this.puppets.length);
+    const order = this.puppets.length;
+    const puppet = data.model
+      ? new ModelFighter(this.scene, data, order, data.model)
+      : data.figure
+        ? new FigureFighter(this.scene, data, order, data.figure)
+        : new CutoutFighter(this.scene, data, order);
     this.puppets.push(puppet);
     return puppet;
   }
 
-  updateProjectiles(list: readonly Projectile[]): void {
-    this.projectiles.update(list, this.clock);
+  /** Draws one frame of `state`, with the camera following the fighters. */
+  draw(state: MatchState, deltaMs: number): void {
+    this.projectiles.update(state.projectiles, this.clock);
+    this.render(
+      state.fighters.map((f) => ({ x: f.x, top: f.y - f.data.body.height })),
+      deltaMs,
+      windingUp(state),
+    );
   }
 
   /** Same meaning as Phaser's camera shake: intensity is a fraction of the view size; a running shake wins unless forced. */
@@ -117,17 +166,17 @@ export class Stage3D {
   }
 
   /** Where a point on the fight plane (game px) currently appears on screen, and the scale there. */
-  project(gx: number, gy: number): ScreenPoint {
+  readonly project = (gx: number, gy: number): ScreenPoint => {
     const zoom = FULL_HALF_H / this.view.halfH;
     const c = this.centre();
     return { x: (gx - c.x) * zoom + GAME_WIDTH / 2, y: (gy - c.y) * zoom + GAME_HEIGHT / 2, zoom };
-  }
+  };
 
   /** Frames the fighters (x and head height in game px) and draws a frame. */
-  render(focus: readonly { x: number; top: number }[], dtMs: number): void {
+  private render(focus: readonly { x: number; top: number }[], dtMs: number, caster: FighterSnapshot | null): void {
     const dt = dtMs / 1000;
     this.clock += dt;
-    this.follow(focus, dt);
+    this.follow(focus, dt, caster);
     this.updateShake(dtMs);
     this.syncLayout();
     this.applyCamera();
@@ -142,7 +191,7 @@ export class Stage3D {
     };
   }
 
-  private follow(focus: readonly { x: number; top: number }[], dt: number): void {
+  private follow(focus: readonly { x: number; top: number }[], dt: number, caster: FighterSnapshot | null): void {
     if (focus.length === 0) return;
     const xs = focus.map((f) => f.x);
     const minX = Math.min(...xs);
@@ -150,10 +199,18 @@ export class Stage3D {
     const top = Math.min(...focus.map((f) => f.top));
     const fitWidth = (maxX - minX + FRAME_MARGIN) / (2 * ASPECT);
     const fitHeight = (GROUND_Y - top + HEADROOM) / (1 + GROUND_BELOW_CENTRE);
-    const halfH = THREE.MathUtils.clamp(Math.max(fitWidth, fitHeight), MIN_HALF_H, FULL_HALF_H);
+    let halfH = THREE.MathUtils.clamp(Math.max(fitWidth, fitHeight), MIN_HALF_H, FULL_HALF_H);
+    let centreX = (minX + maxX) / 2;
+
+    // While a special winds up the shot pushes in on the caster, then eases back out.
+    if (caster) this.shotX = caster.x + caster.facing * CUTSCENE_LEAD;
+    this.cutscene += ((caster ? 1 : 0) - this.cutscene) * (1 - Math.exp(-(caster ? CUTSCENE_IN : CUTSCENE_OUT) * dt));
+    halfH = THREE.MathUtils.lerp(halfH, CUTSCENE_HALF_H, this.cutscene);
+    centreX = THREE.MathUtils.lerp(centreX, this.shotX, this.cutscene);
+
     const halfW = halfH * ASPECT;
-    const x = THREE.MathUtils.clamp((minX + maxX) / 2, halfW, GAME_WIDTH - halfW);
-    const k = 1 - Math.exp(-FOLLOW_RATE * dt);
+    const x = THREE.MathUtils.clamp(centreX, halfW, GAME_WIDTH - halfW);
+    const k = 1 - Math.exp(-(FOLLOW_RATE + this.cutscene * 4) * dt);
     this.view.halfH += (halfH - this.view.halfH) * k;
     this.view.x += (x - this.view.x) * k;
   }
@@ -171,19 +228,21 @@ export class Stage3D {
     };
   }
 
-  /** Keeps the 3D canvas exactly under Phaser's, which the scale manager letterboxes. */
+  /** Fills the page box with the 3D canvas, remembering where Phaser's letterboxed canvas sits inside it. */
   private syncLayout(): void {
     const host = this.host;
-    if (!host) return;
-    const { offsetLeft: x, offsetTop: y, offsetWidth: w, offsetHeight: h } = host;
-    const key = `${x},${y},${w},${h},${window.devicePixelRatio}`;
-    if (key === this.layout || w === 0 || h === 0) return;
+    const page = this.renderer.domElement.parentElement;
+    if (!host || !page) return;
+    const p = page.getBoundingClientRect();
+    const h = host.getBoundingClientRect();
+    const key = [p.width, p.height, h.left - p.left, h.top - p.top, h.width, h.height, window.devicePixelRatio].join();
+    if (key === this.layout || h.width === 0 || h.height === 0) return;
     this.layout = key;
-    const style = this.renderer.domElement.style;
-    style.left = `${x}px`;
-    style.top = `${y}px`;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2, Math.sqrt(MAX_PIXELS / (w * h))));
-    this.renderer.setSize(w, h);
+    const l = h.left - p.left;
+    const t = h.top - p.top;
+    this.pad = { l: l / h.width, r: (p.width - l - h.width) / h.width, t: t / h.height, b: (p.height - t - h.height) / h.height };
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2, Math.sqrt(MAX_PIXELS / (p.width * p.height))));
+    this.renderer.setSize(p.width, p.height);
   }
 
   private applyCamera(): void {
@@ -201,7 +260,10 @@ export class Stage3D {
     cam.updateMatrixWorld();
     // Off-axis frustum: the camera sits above the view centre but keeps looking straight ahead.
     const k = cam.near / dist;
-    cam.projectionMatrix.makePerspective(-hw * k, hw * k, (cy + hh - camY) * k, (cy - hh - camY) * k, cam.near, cam.far);
+    const top = (cy + hh - camY) * k;
+    const bottom = (cy - hh - camY) * k;
+    const { l, r, t, b } = this.pad;
+    cam.projectionMatrix.makePerspective(-hw * k * (1 + l), hw * k * (1 + r), top + (top - bottom) * t, bottom - (top - bottom) * b, cam.near, cam.far);
     cam.projectionMatrixInverse.copy(cam.projectionMatrix).invert();
   }
 }

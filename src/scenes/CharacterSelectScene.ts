@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { factionOf, getFactionGroups, getFighter, getFighters } from '../characters/registry';
-import type { FighterData } from '../characters/types';
+import type { FighterData } from '../core/characters/types';
 import {
   DEFAULT_FACTION_STYLE,
   FACTIONS,

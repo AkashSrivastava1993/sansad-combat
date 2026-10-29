@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { ENERGY_MAX, GAME_WIDTH, ROUNDS_TO_WIN } from '../config';
-import type { Fighter } from '../systems/combat/Fighter';
+import type { FighterSnapshot, MatchState } from '../core/match/state';
+import { texts } from '../content/texts';
 import { textStyle } from './ui';
 
 const BAR_WIDTH = 380;
@@ -21,15 +22,14 @@ export class Hud {
 
   constructor(
     scene: Phaser.Scene,
-    private readonly fighters: readonly [Fighter, Fighter],
-    wins: readonly [number, number],
+    { fighters, wins }: MatchState,
   ) {
     this.bars = scene.add.graphics();
     this.drawPips(scene, wins);
     this.timer = scene.add.text(GAME_WIDTH / 2, BAR_Y + BAR_HEIGHT / 2, '', textStyle(32)).setOrigin(0.5);
-    scene.add.text(MARGIN, NAME_Y, `P1  ${fighters[0].data.name}`, textStyle(18));
+    scene.add.text(MARGIN, NAME_Y, `${texts.hud.p1}  ${fighters[0].data.name}`, textStyle(18));
     scene
-      .add.text(GAME_WIDTH - MARGIN, NAME_Y, `${fighters[1].data.name}  P2`, textStyle(18))
+      .add.text(GAME_WIDTH - MARGIN, NAME_Y, `${fighters[1].data.name}  ${texts.hud.p2}`, textStyle(18))
       .setOrigin(1, 0);
   }
 
@@ -49,11 +49,11 @@ export class Hud {
     }
   }
 
-  update(timeLeftMs: number): void {
-    const [a, b] = this.fighters;
+  update({ fighters, timeLeftMs }: MatchState): void {
+    const [a, b] = fighters;
     const leftX = MARGIN;
     const rightX = GAME_WIDTH - MARGIN - BAR_WIDTH;
-    const ratio = (f: Fighter) => Math.max(0, f.health / f.data.stats.maxHealth);
+    const ratio = (f: FighterSnapshot) => Math.max(0, f.health / f.maxHealth);
 
     this.bars.clear();
     this.bars.fillStyle(0x222222).fillRect(leftX, BAR_Y, BAR_WIDTH, BAR_HEIGHT);
@@ -72,7 +72,7 @@ export class Hud {
   }
 
   /** Fills from the outer screen edge; gold when the special is usable, with a tick at its cost. */
-  private drawEnergy(f: Fighter, edgeX: number, dir: 1 | -1): void {
+  private drawEnergy(f: FighterSnapshot, edgeX: number, dir: 1 | -1): void {
     const left = dir === 1 ? edgeX : edgeX - ENERGY_WIDTH;
     const fill = ENERGY_WIDTH * (f.energy / ENERGY_MAX);
     this.bars.fillStyle(0x222222).fillRect(left, ENERGY_Y, ENERGY_WIDTH, ENERGY_HEIGHT);

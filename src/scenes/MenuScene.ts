@@ -1,8 +1,11 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from '../config';
-import { DIFFICULTIES, type Difficulty } from '../systems/ai/difficulty';
+import { ARENA_IDS, arenaText } from '../content/arenas';
+import { texts } from '../content/texts';
+import { DIFFICULTIES, type Difficulty } from '../core/ai/difficulty';
+import { needsHomeScreenInstall } from '../ui/platform';
 import { createButton, textStyle } from '../ui/ui';
-import { SceneKey, type CharacterSelectData } from './sceneData';
+import { getArena, SceneKey, setArena, type CharacterSelectData } from './sceneData';
 
 const DIFFICULTY_KEY = 'difficulty';
 
@@ -21,14 +24,14 @@ export class MenuScene extends Phaser.Scene {
 
     const start = (mode: CharacterSelectData['mode']) => () =>
       this.scene.start(SceneKey.CharacterSelect, { mode, difficulty: this.difficulty } satisfies CharacterSelectData);
-    createButton(this, cx, 270, 'VS CPU', start('cpu'));
-    createButton(this, cx, 350, 'LOCAL 2P', start('local'));
+    createButton(this, cx, 230, 'VS CPU', start('cpu'));
+    createButton(this, cx, 300, 'LOCAL 2P', start('local'));
 
     const label = () => `CPU LEVEL: ${this.difficulty.toUpperCase()}`;
     const levelButton = createButton(
       this,
       cx,
-      425,
+      370,
       label(),
       () => {
         const next = DIFFICULTIES[(DIFFICULTIES.indexOf(this.difficulty) + 1) % DIFFICULTIES.length]!;
@@ -39,11 +42,29 @@ export class MenuScene extends Phaser.Scene {
       50,
     );
 
+    const arenaLabel = () => `ARENA: ${arenaText(getArena(this.registry)).name}`;
+    const arenaButton = createButton(
+      this,
+      cx,
+      435,
+      arenaLabel(),
+      () => {
+        setArena(this.registry, ARENA_IDS[(ARENA_IDS.indexOf(getArena(this.registry)) + 1) % ARENA_IDS.length]!);
+        (arenaButton.getAt(1) as Phaser.GameObjects.Text).setText(arenaLabel());
+      },
+      420,
+      50,
+    );
+
+    if (needsHomeScreenInstall) {
+      this.add.text(cx, 20, texts.menu.homeScreenHint, { ...textStyle(13, '#ffd24a'), align: 'center' }).setOrigin(0.5);
+    }
+
     this.add
       .text(
         cx,
-        GAME_HEIGHT - 50,
-        'P1: WASD move/jump/block, F light, G heavy, H special\nP2: Arrows move/jump/block, , light, . heavy, / special',
+        GAME_HEIGHT - 28,
+        texts.menu.controls,
         { ...textStyle(16, '#aab2d5'), align: 'center' },
       )
       .setOrigin(0.5);

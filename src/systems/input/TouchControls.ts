@@ -1,4 +1,4 @@
-import { emptyInput, type InputAction, type InputSource, type InputState } from './InputState';
+import { emptyInput, type InputAction, type InputSource, type InputState } from '../../core/input/InputState';
 
 interface ButtonDef {
   action: InputAction;
@@ -17,6 +17,7 @@ const RIGHT_PAD: ButtonDef[] = [
   { action: 'light', label: 'LP', title: 'Light attack' },
   { action: 'heavy', label: 'HP', title: 'Heavy attack' },
   { action: 'special', label: 'SP', title: 'Special' },
+  { action: 'grab', label: 'GRB', title: 'Grab and slam' },
 ];
 
 const isTouchDevice = (): boolean =>

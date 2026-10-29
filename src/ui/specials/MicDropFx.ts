@@ -1,9 +1,8 @@
 import Phaser from 'phaser';
 import { FONT_FAMILY, GAME_WIDTH, GROUND_Y } from '../../config';
-import type { Fighter } from '../../systems/combat/Fighter';
-import type { Projectile } from '../../systems/combat/Projectile';
+import type { FighterSnapshot, MatchState, ProjectileSnapshot } from '../../core/match/state';
 import type { ToScreen } from '../FighterView';
-import { clamp01, floatText, FX_DEPTH, gather, placer, puff, smooth, type Pt, type SpecialFx } from './kit';
+import { clamp01, finalState, floatText, FX_DEPTH, gather, placer, puff, smooth, type Pt, type SpecialFx } from './kit';
 
 const RED = 0xe5243b;
 const GOLD = 0xffc93a;
@@ -48,7 +47,7 @@ interface Impact {
 export class MicDropFx implements SpecialFx {
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly g: Phaser.GameObjects.Graphics;
-  private tracked: Projectile | null = null;
+  private tracked: ProjectileSnapshot | null = null;
   private impact: Impact | null = null;
   private lastPhase = '';
   private landed = false;
@@ -60,24 +59,26 @@ export class MicDropFx implements SpecialFx {
 
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly fighter: Fighter,
+    private fighter: FighterSnapshot,
     private readonly toScreen: ToScreen,
   ) {
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD).setDepth(FX_DEPTH);
     this.g = scene.add.graphics().setDepth(FX_DEPTH);
   }
 
-  update(now: number, projectiles: readonly Projectile[]): void {
+  update(now: number, state: MatchState): void {
+    this.fighter = state.fighters[this.fighter.slot];
+    const projectiles = state.projectiles;
     this.glow.clear();
     this.g.clear();
     this.drawMic(now);
 
-    const live = projectiles.find((p) => p.owner === this.fighter && p.data.fx === 'mic' && !p.dead);
+    const live = projectiles.find((p) => p.owner === this.fighter.slot && p.data.fx === 'mic' && !p.dead);
     if (live) {
       this.tracked = live;
       this.drawWave(live, now);
     } else if (this.tracked) {
-      this.resolveEnd(this.tracked, now);
+      this.resolveEnd(finalState(this.tracked, state), now);
       this.tracked = null;
     }
     if (this.impact) this.drawImpact(this.impact, now);
@@ -87,7 +88,7 @@ export class MicDropFx implements SpecialFx {
   private micPose(): MicPose | null {
     const f = this.fighter;
     const s = f.currentSpecial;
-    if (f.state !== 'special' || s?.type !== 'projectile' || s.fx !== 'mic') return null;
+    if (f.action !== 'special' || s?.type !== 'projectile' || s.fx !== 'mic') return null;
     const h = f.data.body.height;
     const t = f.phaseProgress;
     if (f.phase === 'startup') {
@@ -189,7 +190,7 @@ export class MicDropFx implements SpecialFx {
   }
 
   /** The dropped mic hits the floor. */
-  private thud(f: Fighter): void {
+  private thud(f: FighterSnapshot): void {
     const at = this.toScreen(f.x + f.facing * (f.currentSpecial?.type === 'projectile' ? f.currentSpecial.spawnX + 2 : 60), GROUND_Y);
     const z = at.zoom;
     this.glow.lineStyle(3 * z, GOLD, 0.8).strokeEllipse(at.x, at.y, 40 * z, 10 * z);
@@ -225,7 +226,7 @@ export class MicDropFx implements SpecialFx {
   }
 
   /** Layered rings pulsing outwards from a glowing core, with trails and comic lettering behind. */
-  private drawWave(p: Projectile, now: number): void {
+  private drawWave(p: ProjectileSnapshot, now: number): void {
     const hb = p.hitbox;
     const c = this.toScreen(p.x, hb.y + hb.height / 2);
     const z = c.zoom;
@@ -261,7 +262,7 @@ export class MicDropFx implements SpecialFx {
     }
   }
 
-  private resolveEnd(p: Projectile, now: number): void {
+  private resolveEnd(p: ProjectileSnapshot, now: number): void {
     const hb = p.hitbox;
     const y = hb.y + hb.height / 2;
     if (p.hitsLanded > 0) {

@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GROUND_Y } from '../../config';
-import type { Fighter } from '../../systems/combat/Fighter';
-import { type Projectile, STRIKE_CONTACT } from '../../systems/combat/Projectile';
+import type { FighterSnapshot, MatchState, ProjectileSnapshot } from '../../core/match/state';
+import { STRIKE_CONTACT } from '../../core/combat/Projectile';
 import type { ToScreen } from '../FighterView';
-import { floatText, FX_DEPTH, gather, puff, smooth, type SpecialFx } from './kit';
+import { finalState, floatText, FX_DEPTH, gather, puff, smooth, type SpecialFx } from './kit';
 
 const PURPLE = 0x7a2fd0;
 const SMOKE = 0x3a1560;
@@ -25,7 +25,7 @@ const hex = (n: number): string => `#${n.toString(16).padStart(6, '0')}`;
 export class JaaduFx implements SpecialFx {
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly g: Phaser.GameObjects.Graphics;
-  private tracked: Projectile | null = null;
+  private tracked: ProjectileSnapshot | null = null;
   private lastPhase = '';
   private lastHits = 0;
   private burst: { x: number; y: number; blocked: boolean; start: number; dir: 1 | -1 } | null = null;
@@ -35,24 +35,24 @@ export class JaaduFx implements SpecialFx {
 
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly fighter: Fighter,
+    private fighter: FighterSnapshot,
     private readonly toScreen: ToScreen,
   ) {
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD).setDepth(FX_DEPTH);
     this.g = scene.add.graphics().setDepth(FX_DEPTH);
   }
 
-  update(now: number, projectiles: readonly Projectile[]): void {
+  update(now: number, state: MatchState): void {
+    this.fighter = state.fighters[this.fighter.slot];
+    const projectiles = state.projectiles;
     this.glow.clear();
     this.g.clear();
     const doll = this.drawDoll(now);
 
-    const live = projectiles.find((p) => p.owner === this.fighter && p.data.fx === 'jaadu' && !p.dead);
+    const live = projectiles.find((p) => p.owner === this.fighter.slot && p.data.fx === 'jaadu' && !p.dead);
     if (live) {
-      if (live !== this.tracked) {
-        this.tracked = live;
-        this.lastHits = 0;
-      }
+      if (live.id !== this.tracked?.id) this.lastHits = 0;
+      this.tracked = live;
       this.drawCurse(live, live.holdMs, doll, now);
       if (live.hitsLanded > this.lastHits) {
         this.lastHits = live.hitsLanded;
@@ -60,7 +60,8 @@ export class JaaduFx implements SpecialFx {
         this.onHit(live);
       }
     } else if (this.tracked) {
-      if (this.tracked.hitsLanded === 0 && this.tracked.x > 0 && this.tracked.x < GAME_WIDTH) this.fizzle(this.tracked);
+      const last = finalState(this.tracked, state);
+      if (last.hitsLanded === 0 && last.x > 0 && last.x < GAME_WIDTH) this.fizzle(last);
       this.tracked = null;
     }
     if (this.burst) this.drawBurst(this.burst, now);
@@ -70,7 +71,7 @@ export class JaaduFx implements SpecialFx {
   private drawDoll(now: number): { x: number; y: number } | null {
     const f = this.fighter;
     const s = f.currentSpecial;
-    const phase = f.state === 'special' && s?.type === 'projectile' && s.fx === 'jaadu' ? f.phase : '';
+    const phase = f.action === 'special' && s?.type === 'projectile' && s.fx === 'jaadu' ? f.phase : '';
     const prev = this.lastPhase;
     this.lastPhase = phase;
     if (!phase) return null;
@@ -146,7 +147,7 @@ export class JaaduFx implements SpecialFx {
   }
 
   /** Rune circle under the target and ribbons of smoke linking the doll to it; `h` is 0 at the strike's start. */
-  private drawCurse(p: Projectile, h: number, doll: { x: number; y: number } | null, now: number): void {
+  private drawCurse(p: ProjectileSnapshot, h: number, doll: { x: number; y: number } | null, now: number): void {
     const v = p.data.volley!;
     const wait = v.delayMs ?? 0;
     const appear = wait > 0 ? smooth((h + wait) / (wait * 0.5)) : 1;
@@ -198,7 +199,7 @@ export class JaaduFx implements SpecialFx {
     }
   }
 
-  private onHit(p: Projectile): void {
+  private onHit(p: ProjectileSnapshot): void {
     const c = this.toScreen(p.x, p.hitbox.y + p.hitbox.height / 2);
     const z = c.zoom;
     puff(this.scene, c.x, c.y, 26 * z, 0xffffff, { grow: 4.4, ms: 300, additive: true });
@@ -216,7 +217,7 @@ export class JaaduFx implements SpecialFx {
     }
   }
 
-  private fizzle(p: Projectile): void {
+  private fizzle(p: ProjectileSnapshot): void {
     const c = this.toScreen(p.x, GROUND_Y - 40);
     puff(this.scene, c.x, c.y, 24 * c.zoom, SMOKE, { alpha: 0.7, grow: 3, ms: 600, dy: -40 * c.zoom });
     floatText(this.scene, c.x, c.y - 40 * c.zoom, 'FUSS!', '#c9b8ff', 18 * c.zoom, 28 * c.zoom, 700);

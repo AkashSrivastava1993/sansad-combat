@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { GROUND_Y } from '../../config';
-import type { Fighter } from '../../systems/combat/Fighter';
-import type { Projectile } from '../../systems/combat/Projectile';
+import type { FighterSnapshot, MatchState, ProjectileSnapshot } from '../../core/match/state';
 import type { ToScreen } from '../FighterView';
 import { clamp01, floatText, FX_DEPTH, gather, placer, puff, smooth, type Pt, type SpecialFx } from './kit';
 
@@ -38,27 +37,29 @@ export class ConstitutionFx implements SpecialFx {
 
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly fighter: Fighter,
+    private fighter: FighterSnapshot,
     private readonly toScreen: ToScreen,
   ) {
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD).setDepth(FX_DEPTH);
     this.g = scene.add.graphics().setDepth(FX_DEPTH);
   }
 
-  update(now: number, projectiles: readonly Projectile[]): void {
+  update(now: number, state: MatchState): void {
+    this.fighter = state.fighters[this.fighter.slot];
+    const projectiles = state.projectiles;
     const dt = this.lastNow === null ? 0 : Math.min(0.1, (now - this.lastNow) / 1000);
     this.lastNow = now;
     this.glow.clear();
     this.g.clear();
     this.updateBook(now, dt);
     for (const p of projectiles) {
-      if (p.owner === this.fighter && p.data.fx === 'constitution' && !p.dead) this.drawWave(p, now);
+      if (p.owner === this.fighter.slot && p.data.fx === 'constitution' && !p.dead) this.drawWave(p, now);
     }
   }
 
   private targetPose(): BookPose | null {
     const f = this.fighter;
-    if (f.state !== 'special' || f.currentSpecial?.type !== 'projectile') return null;
+    if (f.action !== 'special' || f.currentSpecial?.type !== 'projectile') return null;
     const t = f.phaseProgress;
     if (f.phase === 'startup') {
       const raise = smooth(t / 0.55);
@@ -84,7 +85,7 @@ export class ConstitutionFx implements SpecialFx {
 
     const at = this.toScreen(f.x + f.facing * b.fwd, f.y - b.up * f.data.body.height);
     const z = at.zoom;
-    const phase = f.state === 'special' ? f.phase : '';
+    const phase = f.action === 'special' ? f.phase : '';
     if (phase === 'active' && this.lastPhase !== 'active') this.release(at);
     this.lastPhase = phase;
 
@@ -175,7 +176,7 @@ export class ConstitutionFx implements SpecialFx {
     floatText(this.scene, at.x, at.y - 46 * z, 'WE THE PEOPLE', '#ffe7a0', 16 * z, 36 * z, 900);
   }
 
-  private drawWave(p: Projectile, now: number): void {
+  private drawWave(p: ProjectileSnapshot, now: number): void {
     const hb = p.hitbox;
     const H = GROUND_Y - hb.y;
     const W = hb.width;

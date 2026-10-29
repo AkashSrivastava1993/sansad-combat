@@ -1,5 +1,5 @@
-import type { HitProps, ProjectileExtras } from '../../characters/types';
-import { GAME_WIDTH, GROUND_Y } from '../../config';
+import type { HitProps, ProjectileExtras } from '../characters/types';
+import { GAME_WIDTH, GROUND_Y } from '../config';
 import type { Fighter } from './Fighter';
 import type { Rect } from './geometry';
 
@@ -25,7 +25,11 @@ const STRIKE_WINDOW_MS = 90;
 /** Volleys run out faster than they came in. */
 const LEAVE_SPEED_SCALE = 1.3;
 
+let nextId = 1;
+
 export class Projectile {
+  /** Stable across frames, so renderers can track one projectile through its life. */
+  readonly id = nextId++;
   dead = false;
   age = 0;
   /** Hits landed, for effects that react to contact. */

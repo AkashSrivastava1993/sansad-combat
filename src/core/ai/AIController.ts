@@ -1,7 +1,8 @@
-import type { MoveData } from '../../characters/types';
+import type { MoveData } from '../characters/types';
 import type { Fighter } from '../combat/Fighter';
 import type { Projectile } from '../combat/Projectile';
 import { emptyInput, type InputSource, type InputState } from '../input/InputState';
+import { GRAB } from '../config';
 import { AI_PROFILES, type AIProfile } from './difficulty';
 
 type Attack = 'light' | 'heavy';
@@ -28,6 +29,7 @@ export class AIController implements InputSource {
   private pendingAttack: Attack | null = null;
   private pendingJump = false;
   private pendingSpecial = false;
+  private pendingGrab = false;
   private timer = 0;
 
   constructor(
@@ -51,10 +53,12 @@ export class AIController implements InputSource {
       heavy: this.pendingAttack === 'heavy',
       jump: this.pendingJump,
       special: this.pendingSpecial,
+      grab: this.pendingGrab,
     };
     this.pendingAttack = null;
     this.pendingJump = false;
     this.pendingSpecial = false;
+    this.pendingGrab = false;
     return out;
   }
 
@@ -92,9 +96,9 @@ export class AIController implements InputSource {
     const heavyReach = this.reach(heavy);
 
     const opp = this.opponent;
-    const meleeThreat = opp.state === 'attack' && dist < Math.max(lightReach, heavyReach) + 40;
+    const meleeThreat = opp.action === 'attack' && dist < Math.max(lightReach, heavyReach) + 40;
     const specialThreat =
-      opp.state === 'special' && opp.currentSpecial?.type !== 'shield' && dist < SPECIAL_THREAT_DIST;
+      opp.action === 'special' && opp.currentSpecial?.type !== 'shield' && dist < SPECIAL_THREAT_DIST;
     const projectileThreat = this.projectiles.some(
       (p) =>
         p.owner === opp &&
@@ -121,6 +125,7 @@ export class AIController implements InputSource {
       this.pendingAttack = null;
       this.pendingJump = false;
       this.pendingSpecial = false;
+      this.pendingGrab = false;
       const next = this[this.state](c);
       if (next === this.state) return;
       this.state = next;
@@ -150,6 +155,12 @@ export class AIController implements InputSource {
     if (c.dist > c.lightReach * 1.15) return 'approach';
     if (this.shouldUseSpecial(c) && this.roll(this.profile.specialChance)) {
       this.pendingSpecial = true;
+      return 'attack';
+    }
+    // Grabs beat blocking, so they are tried more often against a blocker.
+    const grabRange = this.self.data.body.width / 2 + this.opponent.data.body.width / 2 + GRAB.reachPx - 8;
+    if (c.dist <= grabRange && this.roll(this.opponent.action === 'block' ? this.profile.grabChance * 3 : this.profile.grabChance)) {
+      this.pendingGrab = true;
       return 'attack';
     }
     if (!this.roll(this.profile.aggression)) return 'retreat';

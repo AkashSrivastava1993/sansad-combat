@@ -12,6 +12,7 @@
       "active": { "lean": 14, "headTilt": 2, "frontArm": [100, 0], "backArm": [70, 20], "frontLeg": [30, 20], "backLeg": [-25, 10] }
     }
   },
+  "figure": {"skin": "#dba076", "hair": {"style": "short", "color": "#17171d"}, "topi": {"color": "#d9262c", "band": "#17171d"}, "top": {"color": "#f4f1e8", "sleeves": "#f4f1e8", "length": "knee"}, "vest": "#14151c", "bottom": {"color": "#efeadb"}, "shoes": "#17171c"},
   "svg": {
     "id": "chote_neta_ji",
     "scale": 0.359,
@@ -61,7 +62,7 @@
     "spinTurns": 2,
     "cost": 45,
     "cooldownMs": 4500,
-    "damage": 14,
+    "damage": 21,
     "startupMs": 560,
     "activeMs": 60,
     "recoveryMs": 420,

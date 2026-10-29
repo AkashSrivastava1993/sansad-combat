@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GROUND_Y } from '../../config';
-import type { Fighter } from '../../systems/combat/Fighter';
-import { STRIKE_CONTACT, type Projectile } from '../../systems/combat/Projectile';
+import type { FighterSnapshot, MatchState, ProjectileSnapshot } from '../../core/match/state';
+import { STRIKE_CONTACT } from '../../core/combat/Projectile';
 import type { ToScreen } from '../FighterView';
 import { Changes, FX_DEPTH, floatText, placer, puff, smooth, type Pt, type SpecialFx } from './kit';
 
@@ -34,24 +34,26 @@ export class LathiFx implements SpecialFx {
 
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly fighter: Fighter,
+    private fighter: FighterSnapshot,
     private readonly toScreen: ToScreen,
   ) {
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD).setDepth(FX_DEPTH);
     this.g = scene.add.graphics().setDepth(FX_DEPTH);
   }
 
-  update(now: number, projectiles: readonly Projectile[]): void {
+  update(now: number, state: MatchState): void {
+    this.fighter = state.fighters[this.fighter.slot];
+    const projectiles = state.projectiles;
     this.glow.clear();
     this.g.clear();
     const f = this.fighter;
-    if (f.state === 'special' && f.currentSpecial?.type === 'projectile' && f.phase === 'startup') {
+    if (f.action === 'special' && f.currentSpecial?.type === 'projectile' && f.phase === 'startup') {
       this.drawWhistle(now, f.phaseProgress);
     } else {
       this.whistled = false;
     }
     for (const p of projectiles) {
-      if (p.owner !== f || p.data.fx !== 'lathi' || p.dead) continue;
+      if (p.owner !== f.slot || p.data.fx !== 'lathi' || p.dead) continue;
       if (this.phases.changed(p, p.volleyPhase, 'enter') && p.volleyPhase === 'strike') this.formUp(p);
       this.drawSquad(p, now);
     }
@@ -85,7 +87,7 @@ export class LathiFx implements SpecialFx {
   }
 
   /** Arrival flash and a call-out when the squad locks into formation. */
-  private formUp(p: Projectile): void {
+  private formUp(p: ProjectileSnapshot): void {
     const at = this.toScreen(p.x, GROUND_Y - 120);
     const z = at.zoom;
     puff(this.scene, at.x, at.y + 60 * z, 40 * z, 0xffd24a, { grow: 2.5, ms: 360, additive: true, alpha: 0.6 });
@@ -96,7 +98,7 @@ export class LathiFx implements SpecialFx {
     }
   }
 
-  private drawSquad(p: Projectile, now: number): void {
+  private drawSquad(p: ProjectileSnapshot, now: number): void {
     const v = p.data.volley!;
     const running = p.volleyPhase !== 'strike';
     const beat = Math.floor(p.holdMs / v.beatMs);

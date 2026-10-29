@@ -12,6 +12,7 @@
       "active": { "lean": 8, "headTilt": 0, "frontArm": [92, 0], "backArm": [10, 100] }
     }
   },
+  "figure": {"skin": "#b07a55", "bulk": 1.12, "beard": {"color": "#3a2a22", "length": "short"}, "earring": true, "top": {"color": "#f79a1e", "sleeves": "#f79a1e", "length": "knee"}, "stole": "#e0761a", "bottom": {"color": "#e28418"}, "shoes": "#7a5a3a"},
   "svg": {
     "id": "mistri_baba",
     "scale": 0.382,
@@ -60,7 +61,7 @@
     "impact": "CRUNCH!",
     "cost": 50,
     "cooldownMs": 5000,
-    "damage": 18,
+    "damage": 27,
     "startupMs": 650,
     "activeMs": 60,
     "recoveryMs": 450,

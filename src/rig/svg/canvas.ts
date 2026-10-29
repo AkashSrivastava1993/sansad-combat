@@ -1,4 +1,4 @@
-import type { FighterData } from '../../characters/types';
+import type { FighterData } from '../../core/characters/types';
 import type { AnimFrame } from '../animator';
 import { svgArt, svgImage, SVG_DRAW_ORDER } from './atlas';
 import { clothTarget, layoutSvg } from './layout';

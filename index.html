@@ -2,10 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <script>
+      // Full-bleed under the notch only when launched from the home screen; in a Safari tab the page must stay clear of the browser bars.
+      if (navigator.standalone || matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches) {
+        document.querySelector('meta[name="viewport"]').content += ', viewport-fit=cover';
+      }
+    </script>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#0b0d12" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -22,7 +27,7 @@
     />
   </head>
   <body>
-    <div id="game"></div>
+    <div id="game"><div id="game-box"></div></div>
     <div id="rotate-hint">Rotate your device to landscape</div>
     <script type="module" src="/src/main.ts"></script>
   </body>

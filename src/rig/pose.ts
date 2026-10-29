@@ -1,5 +1,5 @@
-import type { FighterData, PhasedPose, Pose, SpecialType, StaticPose } from '../characters/types';
-import { IDLE_POSE, KICK_POSE, PUNCH_POSE, SPECIAL_POSES, STATIC_POSES } from './defaults';
+import type { FighterData, PhasedPose, Pose, SpecialType, StaticPose } from '../core/characters/types';
+import { HIGH_KICK_POSE, IDLE_POSE, KICK_POSE, PUNCH_POSE, SPECIAL_POSES, STATIC_POSES } from './defaults';
 
 export type StaticName = keyof typeof STATIC_POSES;
 
@@ -18,7 +18,9 @@ export interface PhasedEntry {
 export interface ResolvedPoses {
   statics: Record<StaticName, StaticEntry>;
   punch: PhasedEntry;
+  /** The low kick. */
   kick: PhasedEntry;
+  highKick: PhasedEntry;
   special: PhasedEntry;
 }
 
@@ -93,6 +95,7 @@ export function resolvePoses(data: FighterData): ResolvedPoses {
     statics,
     punch: phasedEntry(PUNCH_POSE, o?.punch, rest),
     kick: phasedEntry(KICK_POSE, o?.kick, rest),
+    highKick: phasedEntry(HIGH_KICK_POSE, undefined, rest),
     special: phasedEntry(SPECIAL_POSES[type], o?.special, rest),
   };
   cache.set(data, resolved);

@@ -10,73 +10,64 @@ import {
   KNOCKDOWN_SHAKE,
   KO_FLASH_MS,
   KO_SHAKE,
-  KO_SLOWMO_MS,
-  KO_SLOWMO_SCALE,
-  P1_START_X,
-  P2_START_X,
-  ROUND_INTRO_MS,
-  ROUND_OUTRO_MS,
-  ROUND_TIME_MS,
-  ROUNDS_TO_WIN,
   SHAKE_REF_DAMAGE,
 } from '../config';
-import { Stage3D } from '../render3d/Stage3D';
-import { AIController } from '../systems/ai/AIController';
-import { AI_PROFILES } from '../systems/ai/difficulty';
-import { bindPhaserSfx, playSfx, preloadVoice } from '../systems/audio/sfx';
-import { CombatSystem, type HitEvent } from '../systems/combat/CombatSystem';
-import { Fighter, type FighterState } from '../systems/combat/Fighter';
+import { fill, texts } from '../content/texts';
+import { AI_PROFILES } from '../core/ai/difficulty';
+import { CompositeInput } from '../core/input/InputState';
+import { Match } from '../core/match/Match';
+import type { MatchEvent, MatchState, Slot } from '../core/match/state';
+import { createFightRenderer, type FightRenderer } from '../renderers/FightRenderer';
+import { bindPhaserSfx, playSfx, preloadVoice, startVoice, type VoiceHandle } from '../systems/audio/sfx';
 import { KeyboardInput, P1_KEYS, P2_KEYS } from '../systems/input/KeyboardInput';
-import { CompositeInput, emptyInput, type InputSource } from '../systems/input/InputState';
 import { touchControls } from '../systems/input/TouchControls';
 import { FighterView, type ScreenPoint } from '../ui/FighterView';
 import { gameChrome } from '../ui/GameChrome';
 import { HitSparks } from '../ui/HitSparks';
 import { Hud } from '../ui/Hud';
+import { HtmlOverlay } from '../ui/HtmlOverlay';
 import { createSpecialFx } from '../ui/specials';
 import type { SpecialFx } from '../ui/specials/kit';
 import { showTaunt } from '../ui/TauntBubble';
 import { textStyle } from '../ui/ui';
-import { SceneKey, type CharacterSelectData, type FightData, type ResultData } from './sceneData';
+import { getArena, SceneKey, type CharacterSelectData, type FightData, type ResultData } from './sceneData';
 
-type Phase = 'intro' | 'fight' | 'over';
+/** One special move in progress: its voice only keeps playing if the move lands. */
+interface Cast {
+  voice: VoiceHandle | null;
+  landed: boolean;
+}
 
+/** Draws and sounds the fight; all rules live in the core `Match`, which this scene steps and reads. */
 export class FightScene extends Phaser.Scene {
   private config!: FightData;
-  private round = 1;
-  private wins: [number, number] = [0, 0];
-  private fighters!: [Fighter, Fighter];
+  private match: Match | null = null;
+  private state!: MatchState;
   private views: FighterView[] = [];
   private specialFx: SpecialFx[] = [];
-  private inputs!: [InputSource, InputSource];
-  private hud!: Hud;
+  private hud: Hud | null = null;
+  private overlay: HtmlOverlay | null = null;
   private sparks!: HitSparks;
-  private banner!: Phaser.GameObjects.Text;
-  private readonly combat = new CombatSystem();
-  private phase: Phase = 'intro';
-  private timeLeft = ROUND_TIME_MS;
-  private slowMoMs = 0;
-  private prevStates: FighterState[] = ['idle', 'idle'];
-  private stage!: Stage3D;
+  private banner: Phaser.GameObjects.Text | null = null;
+  private casts: [Cast | null, Cast | null] = [null, null];
+  private fightRenderer!: FightRenderer;
 
   constructor() {
     super(SceneKey.Fight);
   }
 
   /** Screen position of a point on the fight plane. */
-  private readonly toScreen = (x: number, y: number): ScreenPoint => this.stage.project(x, y);
+  private readonly toScreen = (x: number, y: number): ScreenPoint => this.fightRenderer.project(x, y);
 
   init(data: FightData): void {
     this.config = data;
-    this.round = data.round ?? 1;
-    this.wins = [...(data.wins ?? [0, 0])];
-    this.phase = 'intro';
-    this.timeLeft = ROUND_TIME_MS;
-    this.slowMoMs = 0;
-    this.prevStates = ['idle', 'idle'];
+    this.match = null;
+    this.hud = null;
+    this.overlay = null;
+    this.banner = null;
+    this.casts = [null, null];
     this.views = [];
     this.specialFx = [];
-    this.combat.projectiles.length = 0;
   }
 
   create(): void {
@@ -90,57 +81,40 @@ export class FightScene extends Phaser.Scene {
       return;
     }
 
-    const stage = Stage3D.get();
-    if (!stage) {
-      this.add
-        .text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Fights need WebGL, which this browser has turned off.', { ...textStyle(24, '#ffd0d0'), align: 'center' })
-        .setOrigin(0.5);
-      this.time.delayedCall(2500, () => this.scene.start(SceneKey.Menu));
-      return;
-    }
-    this.stage = stage;
-    stage.begin(this.game.canvas);
-    // Darkens the busy backdrop behind the health bars.
-    this.add.graphics().fillGradientStyle(0x07080d, 0x07080d, 0x07080d, 0x07080d, 0.85, 0.85, 0, 0).fillRect(0, 0, GAME_WIDTH, 120);
-
-    const p1 = new Fighter(p1Data, P1_START_X, 1);
-    const p2 = new Fighter(p2Data, P2_START_X, -1);
-    this.fighters = [p1, p2];
-    this.fighters.forEach((f) => {
-      preloadVoice(f.data.id);
-      preloadVoice(`${f.data.id}-win`);
-    });
-    this.views = this.fighters.map((f) => new FighterView(this, f, stage.addFighter(f.data), this.toScreen));
-    this.specialFx = this.fighters.flatMap((f) => createSpecialFx(this, f, this.toScreen) ?? []);
-    this.sparks = new HitSparks(this);
-    this.hud = new Hud(this, this.fighters, this.wins);
+    this.fightRenderer = createFightRenderer(this);
+    const arena = getArena(this.registry);
+    this.fightRenderer.begin(this.game.canvas, arena);
 
     const cpu = this.config.mode === 'cpu';
-    this.inputs = [
-      new CompositeInput([new KeyboardInput(this, P1_KEYS, ...(cpu ? [P2_KEYS] : [])), touchControls]),
-      cpu
-        ? new AIController(p2, p1, AI_PROFILES[this.config.difficulty], this.combat.projectiles)
-        : new KeyboardInput(this, P2_KEYS),
-    ];
-
-    this.banner = this.add
-      .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, '', textStyle(96))
-      .setOrigin(0.5)
-      .setDepth(20);
-    this.showBanner(`ROUND ${this.round}`);
-    playSfx('roundStart');
-    for (const f of this.fighters) {
-      const line = f.data.taunts?.[Math.floor(Math.random() * f.data.taunts.length)];
-      if (line) showTaunt(this, this.toScreen(f.x, f.y).x, line, Phaser.Display.Color.HexStringToColor(f.data.color).color);
-    }
-    this.time.delayedCall(ROUND_INTRO_MS, () => {
-      this.phase = 'fight';
-      this.showBanner('FIGHT!');
-      playSfx('fight');
-      this.time.delayedCall(FIGHT_BANNER_MS, () => {
-        if (this.phase === 'fight') this.showBanner('');
-      });
+    this.match = new Match({
+      p1: p1Data,
+      p2: p2Data,
+      round: this.config.round,
+      wins: this.config.wins,
+      controllers: [
+        { kind: 'input', source: new CompositeInput([new KeyboardInput(this, P1_KEYS, ...(cpu ? [P2_KEYS] : [])), touchControls]) },
+        cpu
+          ? { kind: 'ai', profile: AI_PROFILES[this.config.difficulty] }
+          : { kind: 'input', source: new KeyboardInput(this, P2_KEYS) },
+      ],
     });
+    this.state = this.match.state;
+    for (const f of this.state.fighters) {
+      preloadVoice(f.data.id);
+      preloadVoice(`${f.data.id}-win`);
+    }
+    this.views = this.state.fighters.map((f) => new FighterView(this, f, this.fightRenderer.addFighter(f.data), this.toScreen));
+    this.specialFx = this.state.fighters.flatMap((f) => createSpecialFx(this, f, this.toScreen) ?? []);
+    this.sparks = new HitSparks(this);
+    if (this.fightRenderer.kind === 'three') {
+      this.overlay = new HtmlOverlay(this.game.canvas, this.state, arena);
+    } else {
+      this.hud = new Hud(this, this.state);
+      this.banner = this.add
+        .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, '', textStyle(96))
+        .setOrigin(0.5)
+        .setDepth(20);
+    }
 
     const unbindSfx = bindPhaserSfx(this);
     touchControls.show();
@@ -163,128 +137,135 @@ export class FightScene extends Phaser.Scene {
       unbindSfx();
       touchControls.hide();
       gameChrome.leaveFight();
-      this.inputs.forEach((i) => i.destroy?.());
-      this.stage.end();
+      this.casts.forEach((c) => {
+        if (!c?.landed) c?.voice?.stop();
+      });
+      this.match?.destroy();
+      this.overlay?.destroy();
+      this.fightRenderer.end();
     });
   }
 
   update(_time: number, delta: number): void {
-    if (!this.fighters) return;
-    const rawDt = Math.min(delta, 50);
-    let dt = rawDt;
-    if (this.slowMoMs > 0) {
-      this.slowMoMs -= rawDt;
-      dt = rawDt * KO_SLOWMO_SCALE;
-    }
-    const [a, b] = this.fighters;
-    const fighting = this.phase === 'fight';
+    if (!this.match) return;
+    const state = this.match.step(delta);
+    this.state = state;
+    for (const ev of state.events) this.onEvent(ev, state);
 
-    if (this.phase !== 'intro') {
-      const ia = fighting ? this.inputs[0].poll(dt) : emptyInput();
-      const ib = fighting ? this.inputs[1].poll(dt) : emptyInput();
-      a.update(dt, ia, b.x);
-      b.update(dt, ib, a.x);
-      this.combat.separate(a, b);
-      this.fighters.forEach((f, i) => this.announceActions(f, i));
-    }
-
-    if (fighting) {
-      for (const hit of this.combat.resolve(a, b, dt)) this.onHit(hit);
-      this.timeLeft -= dt;
-      if (a.health <= 0 || b.health <= 0 || this.timeLeft <= 0) this.endRound();
-    } else if (this.phase === 'over') {
-      // Summoned objects finish their exit but can no longer hit.
-      this.combat.coast(a, b, dt);
-    }
-
-    this.views.forEach((v) => v.update());
-    for (const fx of this.specialFx) fx.update(this.time.now, this.combat.projectiles);
-    this.stage.updateProjectiles(this.combat.projectiles);
-    this.stage.render(this.fighters.map((f) => ({ x: f.x, top: f.y - f.data.body.height })), delta);
-    this.hud.update(this.timeLeft);
+    this.views.forEach((v, i) => v.update(state.fighters[i]!, state.timeScale));
+    for (const fx of this.specialFx) fx.update(this.time.now, state);
+    this.fightRenderer.draw(state, delta);
+    this.hud?.update(state);
+    this.overlay?.update(state);
   }
 
-  private announceActions(f: Fighter, index: number): void {
-    const prev = this.prevStates[index];
-    if (f.state !== prev) {
-      if (f.state === 'attack') playSfx('attack');
-      else if (f.state === 'special') playSfx('special', { fighterId: f.data.id });
+  private onEvent(ev: MatchEvent, state: MatchState): void {
+    this.overlay?.onEvent(ev, state);
+    switch (ev.type) {
+      case 'roundStart':
+        this.showBanner(fill(texts.hud.roundStart, { round: ev.round }));
+        playSfx('roundStart');
+        for (const f of state.fighters) {
+          const line = f.data.taunts?.[Math.floor(Math.random() * f.data.taunts.length)];
+          if (line) showTaunt(this, this.toScreen(f.x, f.y).x, line, Phaser.Display.Color.HexStringToColor(f.data.color).color);
+        }
+        break;
+      case 'fightStart':
+        this.showBanner(texts.hud.fightStart);
+        playSfx('fight');
+        this.time.delayedCall(FIGHT_BANNER_MS, () => {
+          if (this.state.phase === 'fight') this.showBanner('');
+        });
+        break;
+      case 'attack':
+        playSfx('attack');
+        break;
+      case 'special':
+        playSfx('special');
+        this.casts[ev.slot]?.voice?.stop();
+        this.casts[ev.slot] = { voice: startVoice(state.fighters[ev.slot].data.id), landed: false };
+        break;
+      case 'specialEnd': {
+        // Once a special is over without landing a clean hit, its voice is cut off.
+        const cast = this.casts[ev.slot];
+        if (cast && !cast.landed) cast.voice?.stop();
+        this.casts[ev.slot] = null;
+        break;
+      }
+      case 'hit':
+        this.onHit(ev, state);
+        break;
+      case 'ko': {
+        const f = state.fighters[ev.slot];
+        const at = this.toScreen(f.x, f.y - f.data.body.height / 2);
+        this.sparks.burst(at.x, at.y, 'ko', f.facing === 1 ? -1 : 1, f.maxHealth / 4);
+        break;
+      }
+      case 'roundEnd':
+        this.onRoundEnd(ev);
+        break;
+      case 'nextRound':
+        this.scene.restart({ ...this.config, round: ev.round, wins: ev.wins } satisfies FightData);
+        break;
+      case 'matchEnd':
+        this.scene.start(SceneKey.Result, { ...this.config, wins: ev.wins, winner: ev.winner } satisfies ResultData);
+        break;
     }
-    this.prevStates[index] = f.state;
   }
 
-  private onHit(ev: HitEvent): void {
+  private onHit(ev: Extract<MatchEvent, { type: 'hit' }>, state: MatchState): void {
+    const attacker = state.fighters[ev.attacker];
+    const defender = state.fighters[ev.defender];
+    const cast = this.casts[ev.attacker];
+    if (ev.fromSpecial && cast && !ev.blocked && !ev.shielded) cast.landed = true;
     const kind = ev.shielded ? 'shield' : ev.blocked ? 'block' : 'hit';
     const shake = kind === 'hit' ? HIT_SHAKE : BLOCK_SHAKE;
-    const scale = Phaser.Math.Clamp(ev.hit.damage / SHAKE_REF_DAMAGE, 0.5, 1.5);
+    const scale = Phaser.Math.Clamp(ev.damage / SHAKE_REF_DAMAGE, 0.5, 1.5);
     this.shake(shake.ms, shake.intensity * scale);
     const at = this.toScreen(ev.x, ev.y);
-    this.sparks.burst(at.x, at.y, kind, ev.defender.x >= ev.attacker.x ? 1 : -1, ev.hit.damage);
+    this.sparks.burst(at.x, at.y, kind, defender.x >= attacker.x ? 1 : -1, ev.damage);
     if (kind === 'hit') {
-      if (ev.hit.impact) this.sparks.comic(at.x, at.y, ev.hit.impact, Phaser.Display.Color.HexStringToColor(ev.attacker.data.color).color, ev.hit.knockdown ? 1.2 : 0.8);
-      if (ev.defender.downed) {
+      if (ev.impact) this.sparks.comic(at.x, at.y, ev.impact, Phaser.Display.Color.HexStringToColor(attacker.data.color).color, ev.knockdown ? 1.2 : 0.8);
+      if (defender.downed) {
         this.shake(KNOCKDOWN_SHAKE.ms, KNOCKDOWN_SHAKE.intensity, true);
         this.cameras.main.flash(KNOCKDOWN_FLASH_MS, 255, 244, 214);
       }
-      this.stage.cheer(ev.hit.damage / 40);
+      this.fightRenderer.cheer(ev.damage / 40);
     }
-    playSfx(kind, { damage: ev.hit.damage });
+    playSfx(kind, { damage: ev.damage });
+  }
+
+  private onRoundEnd(ev: Extract<MatchEvent, { type: 'roundEnd' }>): void {
+    const outcome = (slot: Slot) => (ev.winner === null ? null : ev.winner === slot ? 'win' : 'lose');
+    this.views[0]?.setOutcome(outcome(0));
+    this.views[1]?.setOutcome(outcome(1));
+    if (ev.reason === 'ko') {
+      this.showBanner(texts.hud.ko, '#e5483f');
+      this.shake(KO_SHAKE.ms, KO_SHAKE.intensity, true);
+      this.cameras.main.flash(KO_FLASH_MS, 255, 255, 255);
+      this.fightRenderer.cheer(1);
+      playSfx('ko');
+    } else {
+      this.showBanner(texts.hud.timeUp);
+      playSfx('timeUp');
+    }
   }
 
   private shake(ms: number, intensity: number, force = false): void {
-    this.stage.shake(ms, intensity, force);
+    this.fightRenderer.shake(ms, intensity, force);
   }
 
   private showBanner(text: string, color = '#ffffff'): void {
-    this.tweens.killTweensOf(this.banner);
-    this.banner.setText(text).setColor(color).setScale(1).setAngle(0);
+    if (this.overlay) {
+      this.overlay.banner(text, color);
+      return;
+    }
+    const banner = this.banner;
+    if (!banner) return;
+    this.tweens.killTweensOf(banner);
+    banner.setText(text).setColor(color).setScale(1).setAngle(0);
     if (!text) return;
-    this.banner.setScale(2.2).setAngle(-6);
-    this.tweens.add({ targets: this.banner, scale: 1, angle: 0, duration: 240, ease: 'Back.easeOut' });
-  }
-
-  private playKoSequence(): void {
-    const cam = this.cameras.main;
-    this.shake(KO_SHAKE.ms, KO_SHAKE.intensity, true);
-    cam.flash(KO_FLASH_MS, 255, 255, 255);
-    this.slowMoMs = KO_SLOWMO_MS;
-    this.stage.cheer(1);
-    for (const f of this.fighters) {
-      if (f.health > 0) continue;
-      const at = this.toScreen(f.x, f.y - f.data.body.height / 2);
-      this.sparks.burst(at.x, at.y, 'ko', f.facing === 1 ? -1 : 1, f.data.stats.maxHealth / 4);
-    }
-    playSfx('ko');
-  }
-
-  private endRound(): void {
-    this.phase = 'over';
-    const [a, b] = this.fighters;
-    const roundWinner = a.health === b.health ? null : a.health > b.health ? 0 : 1;
-    // A drawn round counts for both players.
-    if (roundWinner === null) this.wins = [this.wins[0] + 1, this.wins[1] + 1];
-    else this.wins[roundWinner] += 1;
-
-    const ko = a.health <= 0 || b.health <= 0;
-    this.views[0]?.setOutcome(roundWinner === null ? null : roundWinner === 0 ? 'win' : 'lose');
-    this.views[1]?.setOutcome(roundWinner === null ? null : roundWinner === 1 ? 'win' : 'lose');
-    if (ko) {
-      this.showBanner('K.O.', '#e5483f');
-      this.playKoSequence();
-    } else {
-      this.showBanner('TIME');
-      playSfx('timeUp');
-    }
-
-    const p1Won = this.wins[0] >= ROUNDS_TO_WIN;
-    const p2Won = this.wins[1] >= ROUNDS_TO_WIN;
-    this.time.delayedCall(ROUND_OUTRO_MS, () => {
-      if (p1Won || p2Won) {
-        const winner: ResultData['winner'] = p1Won && p2Won ? null : p1Won ? 0 : 1;
-        this.scene.start(SceneKey.Result, { ...this.config, wins: this.wins, winner } satisfies ResultData);
-      } else {
-        this.scene.restart({ ...this.config, round: this.round + 1, wins: this.wins } satisfies FightData);
-      }
-    });
+    banner.setScale(2.2).setAngle(-6);
+    this.tweens.add({ targets: banner, scale: 1, angle: 0, duration: 240, ease: 'Back.easeOut' });
   }
 }

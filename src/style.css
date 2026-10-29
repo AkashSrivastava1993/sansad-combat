@@ -11,9 +11,43 @@ body {
   -webkit-touch-callout: none;
 }
 
+/* iPhone Safari tab: a scrollable page lets a swipe-up collapse the address bar; the game itself stays fixed. */
+html.hide-bars,
+html.hide-bars body,
+html.hide-bars #game canvas {
+  touch-action: pan-y !important;
+}
+
+html.hide-bars {
+  overflow-y: auto;
+}
+
+html.hide-bars body {
+  height: auto;
+  overflow: visible;
+}
+
+html.hide-bars body::after {
+  content: '';
+  display: block;
+  height: calc(100vh + 120px);
+}
+
+/* The page box follows the visible viewport (see fitToViewport); the game box inside it keeps clear of the notch. */
 #game {
   position: fixed;
-  inset: 0;
+  left: var(--app-l, 0px);
+  top: var(--app-t, 0px);
+  width: var(--app-w, 100%);
+  height: var(--app-h, 100%);
+}
+
+#game-box {
+  position: absolute;
+  left: env(safe-area-inset-left, 0px);
+  right: env(safe-area-inset-right, 0px);
+  top: env(safe-area-inset-top, 0px);
+  bottom: env(safe-area-inset-bottom, 0px);
 }
 
 #game canvas {
@@ -24,6 +58,8 @@ body {
 
 #game canvas.stage3d {
   position: absolute;
+  left: 0;
+  top: 0;
   z-index: 0;
   pointer-events: none;
 }
@@ -31,7 +67,10 @@ body {
 #rotate-hint {
   display: none;
   position: fixed;
-  inset: 0;
+  left: var(--app-l, 0px);
+  top: var(--app-t, 0px);
+  width: var(--app-w, 100%);
+  height: var(--app-h, 100%);
   z-index: 100;
   align-items: center;
   justify-content: center;
@@ -50,7 +89,10 @@ body {
 #touch-controls {
   display: none;
   position: fixed;
-  inset: 0;
+  left: var(--app-l, 0px);
+  top: var(--app-t, 0px);
+  width: var(--app-w, 100%);
+  height: var(--app-h, 100%);
   z-index: 10;
   pointer-events: none;
 }
@@ -79,7 +121,7 @@ body {
 
 .tc-pad-right {
   right: max(12px, env(safe-area-inset-right));
-  grid-template-columns: repeat(4, auto);
+  grid-template-columns: repeat(5, auto);
 }
 
 .tc-btn {
@@ -116,7 +158,8 @@ body {
   right: auto;
   left: 50%;
   transform: translateX(-50%);
-  bottom: max(10px, env(safe-area-inset-bottom));
+  /* Rides above the news ticker when the fight overlay is showing it. */
+  bottom: calc(max(10px, env(safe-area-inset-bottom)) + var(--fh-ticker, 0px));
 }
 
 #game-chrome:not(.fight) .gc-fight-only {
@@ -173,4 +216,197 @@ body {
   color: #fff;
   font: bold clamp(16px, 4.5vmin, 24px) sans-serif;
   touch-action: manipulation;
+}
+
+/* Fight HUD overlay: laid out in 960 x 540 logical px and scaled over the canvas. */
+.fh {
+  position: absolute;
+  z-index: 2;
+  width: 960px;
+  height: 540px;
+  transform-origin: 0 0;
+  pointer-events: none;
+  font: bold 18px Arial, Helvetica, sans-serif;
+  color: #fff;
+}
+
+.fh > * {
+  position: absolute;
+}
+
+.fh-shade {
+  /* Runs past the 960 px box so the shading has no edge on wide screens. */
+  inset: 0 -100vw auto -100vw;
+  height: 130px;
+  background: linear-gradient(rgba(7, 8, 13, 0.85), rgba(7, 8, 13, 0));
+}
+
+.fh-bar {
+  top: 24px;
+  width: 380px;
+  height: 24px;
+  background: #222;
+}
+
+.fh-energy {
+  top: 52px;
+  width: 260px;
+  height: 10px;
+  background: #222;
+}
+
+.fh .p1 {
+  left: 30px;
+}
+
+.fh .p2 {
+  right: 30px;
+}
+
+.fh-fill {
+  position: absolute;
+  inset: 0;
+  background: #e5483f;
+}
+
+.fh-bar.p1 .fh-fill,
+.fh-energy.p2 .fh-fill {
+  transform-origin: right;
+}
+
+.fh-bar.p2 .fh-fill,
+.fh-energy.p1 .fh-fill {
+  transform-origin: left;
+}
+
+.fh-energy .fh-fill {
+  background: #3fa7e5;
+}
+
+.fh-energy .fh-fill.ready {
+  background: #ffd24a;
+}
+
+.fh-tick {
+  position: absolute;
+  top: -2px;
+  width: 2px;
+  height: 14px;
+  background: #fff;
+}
+
+.fh-name {
+  top: 66px;
+  white-space: nowrap;
+}
+
+.fh-name.p2 {
+  text-align: right;
+}
+
+.fh-timer {
+  top: 20px;
+  left: 420px;
+  width: 120px;
+  font-size: 32px;
+  line-height: 32px;
+  text-align: center;
+}
+
+.fh-pip {
+  top: 64px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #8fa0ff;
+  border-radius: 50%;
+}
+
+.fh-pip.won {
+  border-color: #ffd24a;
+  background: #ffd24a;
+}
+
+.fh-banner {
+  left: 50%;
+  top: 230px;
+  transform: translate(-50%, -50%);
+  font-size: 96px;
+  white-space: nowrap;
+  text-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+}
+
+.fh-ticker {
+  bottom: 6px;
+  left: 30px;
+  right: 30px;
+  height: 26px;
+  display: flex;
+  background: rgba(10, 12, 22, 0.78);
+  border-bottom: 2px solid #e5483f;
+  font-size: 15px;
+  line-height: 26px;
+}
+
+.fh-ticker-label {
+  padding: 0 10px;
+  background: #e5483f;
+  letter-spacing: 1px;
+}
+
+.fh-ticker-track {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.fh-ticker-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+}
+
+.fh-cine {
+  left: -100vw;
+  right: -100vw;
+  height: 0;
+  background: #000;
+  transition: height 0.25s ease-out;
+}
+
+.fh-cine-top {
+  top: 0;
+}
+
+.fh-cine-bottom {
+  bottom: 0;
+}
+
+.fh.cine .fh-cine {
+  height: 40px;
+}
+
+.fh-vignette {
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.6) 100%);
+  transition: opacity 0.25s ease-out;
+}
+
+.fh.cine .fh-vignette {
+  opacity: 1;
+}
+
+.fh-model {
+  top: 132px;
+  left: 30px;
+  padding: 2px 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffd24a;
+  font-size: 13px;
+  white-space: pre-line;
+}
+
+.fh-model:empty {
+  display: none;
 }

@@ -1,33 +1,12 @@
-import type { SpecialType } from './characters/types';
+import type { SpecialType } from './core/characters/types';
 
-export const GAME_WIDTH = 960;
+// Stage geometry and meter sizes come from the game core; renderers import them from here.
+export { ENERGY_MAX, GAME_WIDTH, GROUND_Y, ROUNDS_TO_WIN } from './core/config';
+
+/** Phaser canvas height. */
 export const GAME_HEIGHT = 540;
 
-export const GROUND_Y = 470;
-export const GRAVITY = 2400;
-
-export const P1_START_X = 300;
-export const P2_START_X = 660;
-
-// Match flow
-export const ROUND_TIME_MS = 99_000;
-/** Best-of-3: first to this many round wins takes the match. */
-export const ROUNDS_TO_WIN = 2;
-export const ROUND_INTRO_MS = 1000;
 export const FIGHT_BANNER_MS = 600;
-export const ROUND_OUTRO_MS = 2000;
-
-// Combat
-export const BLOCK_CHIP_RATIO = 0.1;
-export const BLOCK_KNOCKBACK_RATIO = 0.4;
-/** Fraction of horizontal velocity kept after one second while grounded and not walking. */
-export const SLIDE_RETENTION = 0.002;
-
-// Energy meter
-export const ENERGY_MAX = 100;
-/** Energy gained per point of damage dealt / taken. */
-export const ENERGY_PER_DAMAGE_DEALT = 0.8;
-export const ENERGY_PER_DAMAGE_TAKEN = 1.2;
 
 // Screen shake on impact; intensity scales with damage relative to SHAKE_REF_DAMAGE (clamped to 0.5-1.5x).
 export const HIT_SHAKE = { ms: 90, intensity: 0.006 };
@@ -42,9 +21,6 @@ export const SPARK_LIFETIME_MS = 260;
 // K.O. presentation
 export const KO_SHAKE = { ms: 450, intensity: 0.016 };
 export const KO_FLASH_MS = 160;
-/** Real-time length of the slow-motion, and the speed multiplier during it. */
-export const KO_SLOWMO_MS = 800;
-export const KO_SLOWMO_SCALE = 0.25;
 export const KO_FALL_MS = 700;
 export const KO_LAUNCH_HEIGHT = 50;
 

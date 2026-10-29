@@ -12,6 +12,7 @@
       "active": { "lean": 14, "headTilt": 4, "frontArm": [92, 4], "backArm": [-30, 40], "frontLeg": [30, 20], "backLeg": [-28, 10] }
     }
   },
+  "figure": {"skin": "#d9a07a", "hair": {"style": "wavy", "color": "#5a3a22"}, "beard": {"color": "#5a4a3e", "length": "full"}, "moustache": "#3a2c22", "top": {"color": "#f4f3ee", "sleeves": "#f4f3ee", "length": "short"}, "bottom": {"color": "#c9b07a"}, "shoes": "#2c2f3a"},
   "svg": {
     "id": "padyatri_yuvraj_v2",
     "scale": 0.364,
@@ -60,7 +61,7 @@
     "impact": "BOOM!",
     "cost": 60,
     "cooldownMs": 5500,
-    "damage": 26,
+    "damage": 39,
     "startupMs": 720,
     "activeMs": 60,
     "recoveryMs": 600,

@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GROUND_Y } from '../../config';
-import type { Fighter } from '../../systems/combat/Fighter';
-import type { Projectile } from '../../systems/combat/Projectile';
+import type { FighterSnapshot, MatchState, ProjectileSnapshot } from '../../core/match/state';
 import type { ToScreen } from '../FighterView';
 import { Changes, FX_DEPTH, placer, puff, type Pt, type SpecialFx } from './kit';
 
@@ -32,20 +31,22 @@ export class BulldozerFx implements SpecialFx {
 
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly fighter: Fighter,
+    private fighter: FighterSnapshot,
     private readonly toScreen: ToScreen,
   ) {
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD).setDepth(FX_DEPTH);
     this.g = scene.add.graphics().setDepth(FX_DEPTH);
   }
 
-  update(now: number, projectiles: readonly Projectile[]): void {
+  update(now: number, state: MatchState): void {
+    this.fighter = state.fighters[this.fighter.slot];
+    const projectiles = state.projectiles;
     this.glow.clear();
     this.g.clear();
     const f = this.fighter;
-    if (f.state === 'special' && f.currentSpecial?.type === 'projectile' && f.phase === 'startup') this.drawWarning(now, f.phaseProgress);
+    if (f.action === 'special' && f.currentSpecial?.type === 'projectile' && f.phase === 'startup') this.drawWarning(now, f.phaseProgress);
     for (const p of projectiles) {
-      if (p.owner !== f || p.data.fx !== 'bulldozer' || p.dead) continue;
+      if (p.owner !== f.slot || p.data.fx !== 'bulldozer' || p.dead) continue;
       this.drawDozer(p, now);
       if (this.hits.changed(p, p.hitsLanded, 0)) this.crash(p);
     }
@@ -92,7 +93,7 @@ export class BulldozerFx implements SpecialFx {
     }
   }
 
-  private drawDozer(p: Projectile, now: number): void {
+  private drawDozer(p: ProjectileSnapshot, now: number): void {
     const base = this.toScreen(p.x, GROUND_Y);
     const z = base.zoom;
     const dist = (p.age / 1000) * p.data.speed;
@@ -182,7 +183,7 @@ export class BulldozerFx implements SpecialFx {
   }
 
   /** Dust and debris flung off the blade on contact. */
-  private crash(p: Projectile): void {
+  private crash(p: ProjectileSnapshot): void {
     const front = this.toScreen(p.x + p.dir * 100, GROUND_Y - 40);
     const z = front.zoom;
     for (let i = 0; i < 10; i++) {
