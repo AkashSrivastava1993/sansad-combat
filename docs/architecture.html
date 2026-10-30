@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sansad Combat: Architecture and Build Story</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm; }
+  * { box-sizing: border-box; }
+  body { font: 10.5pt/1.5 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color: #1c2230; margin: 0; }
+  h1 { font-size: 26pt; margin: 0 0 4px; letter-spacing: -0.5px; }
+  h2 { font-size: 15pt; margin: 22px 0 8px; padding-bottom: 4px; border-bottom: 2px solid #0e7c86; color: #0b4f56; break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 14px 0 4px; color: #0b4f56; break-after: avoid; }
+  p { margin: 5px 0; }
+  ul { margin: 4px 0 6px; padding-left: 18px; }
+  li { margin: 2px 0; }
+  code { font: 9pt ui-monospace, Menlo, monospace; background: #eef2f6; padding: 1px 4px; border-radius: 3px; }
+  .sub { color: #51607a; font-size: 12pt; margin-bottom: 14px; }
+  .hero { background: linear-gradient(135deg, #0b1d2a, #0e5560); color: #fff; padding: 22px 24px; border-radius: 10px; margin-bottom: 16px; }
+  .hero .sub { color: #bfe6ea; margin: 4px 0 0; }
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0; }
+  .stat { background: #f2f7f8; border: 1px solid #d3e3e6; border-radius: 8px; padding: 8px; text-align: center; }
+  .stat b { display: block; font-size: 17pt; color: #0e7c86; }
+  .stat span { font-size: 8.5pt; color: #51607a; }
+  table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: 9.5pt; }
+  th, td { border: 1px solid #d6dde6; padding: 5px 8px; text-align: left; vertical-align: top; }
+  th { background: #eaf3f4; }
+  .diagram { border: 1px solid #c9d6dc; border-radius: 10px; padding: 12px; background: #fafcfd; margin: 8px 0; break-inside: avoid; }
+  .layer { border-radius: 8px; padding: 8px 10px; margin: 6px 0; font-size: 9.5pt; }
+  .layer b { display: block; font-size: 10.5pt; margin-bottom: 2px; }
+  .row { display: flex; gap: 8px; }
+  .row > .layer { flex: 1; margin: 6px 0; }
+  .l-host { background: #e8eefc; border: 1px solid #b7c7ef; }
+  .l-core { background: #e2f5ea; border: 2px solid #2e9e5e; }
+  .l-render { background: #fdf0dc; border: 1px solid #e8c48a; }
+  .l-ui { background: #f6e6f4; border: 1px solid #d7a8d1; }
+  .l-data { background: #fff7cf; border: 1px solid #e6d77a; }
+  .arrow { text-align: center; color: #51607a; font-size: 9pt; margin: -2px 0; }
+  .flow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 9.5pt; margin: 8px 0; }
+  .flow span.box { background: #eaf3f4; border: 1px solid #b9d3d7; border-radius: 6px; padding: 4px 8px; }
+  .flow span.ar { color: #0e7c86; font-weight: bold; }
+  .callout { background: #fff8e6; border-left: 4px solid #e0a31c; padding: 8px 12px; margin: 10px 0; border-radius: 4px; break-inside: avoid; }
+  .qa { break-inside: avoid; margin: 8px 0; }
+  .qa b { color: #0b4f56; }
+  .page-break { break-before: page; }
+  .small { font-size: 9pt; color: #51607a; }
+  .pitch { background: #eef7f8; border: 1px solid #c3dde0; border-radius: 8px; padding: 10px 14px; break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Sansad Combat</h1>
+  <div class="sub">A browser fighting game with a framework-free simulation core, a 3D stage, and an AI-assisted build workflow</div>
+</div>
+
+<div class="stats">
+  <div class="stat"><b>~10.4k</b><span>lines of TypeScript</span></div>
+  <div class="stat"><b>9</b><span>data-driven fighters</span></div>
+  <div class="stat"><b>9</b><span>bespoke special-move FX</span></div>
+  <div class="stat"><b>3</b><span>3D arenas</span></div>
+  <div class="stat"><b>3</b><span>AI difficulty levels</span></div>
+</div>
+
+<h2>1. What it is</h2>
+<p>Sansad Combat is a satirical 2D-fighter-in-a-3D-world that runs in any browser, on desktop (keyboard) and on phones (touch controls, installable as a PWA). It has a roster of 9 fighters in two factions (NDA and INDI Alliance), VS CPU with three difficulty levels, local 2-player, three arenas, per-character specials, grabs and slams, voices, synthesised sound effects, and a shareable result card. It is deployed on Vercel.</p>
+
+<h2>2. Tech stack</h2>
+<table>
+  <tr><th style="width:24%">Concern</th><th>Choice</th><th>Why</th></tr>
+  <tr><td>Language</td><td>TypeScript (strict), ES modules</td><td>Types make the data-driven design safe to refactor</td></tr>
+  <tr><td>Build</td><td>Vite 6, manual chunks for Phaser and three</td><td>Fast dev loop, separate cacheable vendor bundles</td></tr>
+  <tr><td>Scenes, input, 2D</td><td>Phaser 3</td><td>Scene lifecycle, multi-touch input, scaling, 2D fallback renderer</td></tr>
+  <tr><td>3D stage</td><td>three.js</td><td>Arenas, crowd, lights, fog, camera work for specials, 3D fighters</td></tr>
+  <tr><td>Audio</td><td>Web Audio API (synthesised SFX) plus short voice clips</td><td>No heavy audio assets; unlocks on first user gesture for mobile</td></tr>
+  <tr><td>Characters</td><td>JSON plus JSON Schema, SVG art, optional GLB</td><td>New fighter is data, not code</td></tr>
+  <tr><td>Deploy</td><td>Vercel, immutable caching for assets, security headers</td><td>Zero-config static hosting</td></tr>
+</table>
+
+<h2>3. Architecture at a glance</h2>
+<div class="diagram">
+  <div class="layer l-host"><b>Host layer: Phaser Game (src/main.ts, src/scenes)</b>Boot, Menu, CharacterSelect, Fight, Result scenes. Viewport fitting, input devices (keyboard, touch), audio unlock.</div>
+  <div class="arrow">InputSource (keyboard, touch, AI)  &#8595; &nbsp;&nbsp;&nbsp; MatchState (read-only snapshot)  &#8593;</div>
+  <div class="layer l-core"><b>Simulation core: src/core (no DOM, no Phaser, no three)</b>
+    <code>Match.step(rawMs)</code> runs rounds, phases, hit-stop and slow-mo, using <code>CombatSystem</code>, <code>Fighter</code> state machine, <code>Projectile</code>, <code>specials</code>, <code>AIController</code> with difficulty profiles, and fighter-data validation. Emits an immutable <code>MatchState</code> every frame.</div>
+  <div class="arrow">MatchState &#8595;</div>
+  <div class="row">
+    <div class="layer l-render"><b>Renderers (src/renderers, src/render3d)</b>FightRenderer interface. Stage3D (three.js, default) and PhaserRenderer (flat 2D fallback). Arenas, crowd, figures, GLB models, cutouts, camera.</div>
+    <div class="layer l-ui"><b>Presentation (src/ui)</b>HTML HUD overlay, news ticker, taunt bubbles, hit sparks, 9 special-move FX classes, touch controls.</div>
+    <div class="layer l-host"><b>Systems and share</b>Synth SFX and voices, result-card canvas, native share or WhatsApp.</div>
+  </div>
+  <div class="layer l-data"><b>Data (src/characters/data, src/content, public/assets)</b>9 fighter JSON files (checked by a JSON Schema and a runtime validator), arena texts and palettes in <code>texts.json</code>, SVG art with a manifest, voices.</div>
+</div>
+<p><b>Key rule:</b> dependencies point one way. Everything outside <code>src/core</code> only reads <code>MatchState</code>. The compiler enforces it: <code>npm run build</code> runs <code>tsc -p src/core</code> with no DOM or engine types available, so a violation fails the build.</p>
+
+<h2>4. How a frame works</h2>
+<div class="flow">
+  <span class="box">Keyboard / Touch / AI</span><span class="ar">&#8594;</span>
+  <span class="box">InputState per fighter</span><span class="ar">&#8594;</span>
+  <span class="box">Match.step(dt)</span><span class="ar">&#8594;</span>
+  <span class="box">CombatSystem: hit, block, grab, slam</span><span class="ar">&#8594;</span>
+  <span class="box">MatchState snapshot + events</span><span class="ar">&#8594;</span>
+  <span class="box">Renderer, HUD, FX, SFX</span>
+</div>
+<ul>
+  <li><b>Frame clamp and hit-stop.</b> <code>MAX_FRAME_MS</code> bounds big frame gaps (tab switches); hit-stop and KO slow-motion are applied inside the core so every consumer stays in sync.</li>
+  <li><b>Controllers are pluggable.</b> A fighter is driven by an <code>InputSource</code> (keyboard, touch, or the <code>AIController</code>); the same interface leaves room for a network source.</li>
+  <li><b>AI.</b> A small state machine (approach, attack, defend, retreat) with perception of distance, reach and incoming threats, tuned by easy, normal and hard profiles (reaction time, aggression, block and special chances).</li>
+  <li><b>Events, not polling.</b> Hits, blocks, KOs and special start/end are emitted as events; SFX, sparks and camera shake subscribe to them.</li>
+</ul>
+
+<h2>5. Data-driven fighters</h2>
+<p>Each fighter is one JSON file: stats, body box, pose set, move frame data (startup, active, recovery, damage, hit-stun, block-stun, knockback, hitbox), special definition, taunts, win quote, faction, a 3D <code>figure</code> description, and an SVG rig description. <code>FighterRegistry</code> loads every file in the folder via a Vite glob and validates it against the schema; invalid data logs a warning instead of crashing. Balance and content changes need no engine code.</p>
+<h3>Three visual tiers per fighter</h3>
+<table>
+  <tr><th style="width:22%">Tier</th><th>Used when</th></tr>
+  <tr><td>GLB model</td><td>The JSON has a <code>model</code> block; animation clips are crossfaded by action, root motion stripped, capsule shown until the file loads</td></tr>
+  <tr><td>Procedural figure</td><td>The JSON has <code>figure</code>; a 3D body is built in code and posed from the rig frame</td></tr>
+  <tr><td>SVG cutout</td><td>Fallback; hand-authored SVG art sliced on a standard skeleton and animated by an angle-based rig</td></tr>
+</table>
+
+<h2>6. Rendering</h2>
+<ul>
+  <li><b>Layered canvases.</b> A transparent Phaser canvas sits over a three.js canvas. Phaser draws UI and 2D FX; three draws the world. <code>stage.project()</code> maps world points to screen so 2D overlays line up with 3D bodies (1 world unit = 100 game px).</li>
+  <li><b>Renderer abstraction.</b> <code>FightRenderer</code> is implemented by <code>Stage3D</code> and <code>PhaserRenderer</code>. The three renderer is the default; without WebGL the game falls back to Phaser automatically, and <code>?renderer=phaser</code> forces it.</li>
+  <li><b>Arenas.</b> Each arena (Sansad, India Gate, Jantar Mantar) is a builder returning an <code>Arena</code> object (scene root, background, fog, update, cheer, placards). They are built lazily and toggled by visibility. Placard and ticker text lives in <code>texts.json</code>.</li>
+  <li><b>Cinematics.</b> Specials trigger a cutscene camera and slow-motion through <code>windingUp(state)</code> from the core.</li>
+</ul>
+
+<h2>7. Special-move FX framework</h2>
+<p>Specials are projectile definitions with an <code>fx</code> id. A factory maps the id to a class (<code>ConstitutionFx</code>, <code>BulldozerFx</code>, <code>CycleFx</code>, <code>LathiFx</code>, <code>PanjaFx</code>, <code>BroomStormFx</code>, <code>MicDropFx</code>, <code>BaarishFx</code>, <code>JaaduFx</code>) built on shared helpers in <code>kit.ts</code> (puffs, gathers, floating text, <code>finalState</code>). Effects read state only and track projectiles by id, since a projectile is removed the frame it dies.</p>
+
+<h2>8. Mobile, PWA and deployment</h2>
+<ul>
+  <li>Landscape fullscreen web-app manifest, touch controls with multi-touch, fullscreen, pause and back buttons.</li>
+  <li>iPhone Safari bar hiding handled with a visual-viewport fit and a scroll trick; audio unlocked on the first gesture.</li>
+  <li>Vercel: <code>npm ci</code> then <code>npm run build</code>; <code>/assets/*</code> cached for a year as immutable (changed art is renamed, not overwritten), manifest always revalidated, <code>nosniff</code> and referrer-policy headers.</li>
+</ul>
+
+<h2 class="page-break">9. How it was built: an AI-assisted workflow</h2>
+<p>The game was built in stages by directing an AI coding agent (GitHub Copilot agent mode in VS Code), with me owning the product decisions, architecture rules, review and testing. The repository records this: staged commits, written architecture rules and reusable agent and skill files.</p>
+<h3>Timeline (git history, 27 to 29 Oct)</h3>
+<table>
+  <tr><th style="width:26%">Phase</th><th>What was built</th></tr>
+  <tr><td>Baseline commit</td><td>Snapshot of the working game: Phaser scenes, framework-free <code>src/core</code> (extracted by refactor and checked against the old code on 120 seeded AI-vs-AI matches), three.js stage, hall arena, crowd, HTML HUD, procedural 3D figures, optional GLB path, grab and slam, 3 arenas</td></tr>
+  <tr><td>Stage 1</td><td>Special-move FX framework, knockdown, multi-hit projectiles, Rahul's Constitution Shockwave</td></tr>
+  <tr><td>Stages 2 to 6</td><td>One cinematic special per character: Bulldozer Rush, Cycle Cyclone, Lathi Charge, Panja Power, Jhaadu Storm, Mic Drop, Chai Ki Baarish</td></tr>
+  <tr><td>Cleanup</td><td>Removed unused views and their code; renamed factions and characters; art ids made stable</td></tr>
+  <tr><td>Polish and ship</td><td>Rename to Sansad Combat, mobile chrome, synthesised SFX, voices, Didi (Jaadu special), iPhone Safari bar hiding, Vercel deploy</td></tr>
+</table>
+<h3>The agent setup in the repo</h3>
+<table>
+  <tr><th style="width:30%">File</th><th>Role</th></tr>
+  <tr><td><code>AGENTS.md</code></td><td>Always-on project brief: commands, architecture rules, conventions</td></tr>
+  <tr><td><code>.github/instructions/core-purity</code></td><td>Applies automatically when editing <code>src/core/**</code>: no DOM or engine imports</td></tr>
+  <tr><td><code>agents/architect-reviewer</code></td><td>Read-only reviewer for layer boundaries, per-frame cost, fallback renderer health</td></tr>
+  <tr><td><code>agents/fighter-designer</code></td><td>Edits fighter JSON and checks balance against existing roster</td></tr>
+  <tr><td><code>agents/qa-playtester</code></td><td>Runs build, headless simulations and Playwright smoke tests</td></tr>
+  <tr><td><code>skills/add-fighter</code></td><td>Step-by-step: JSON, art, manifest, voice, verify</td></tr>
+  <tr><td><code>skills/add-special-fx</code></td><td>FX class, registration, projectile tracking rules</td></tr>
+  <tr><td><code>skills/add-arena</code></td><td>Arena builder, registry, texts, verify</td></tr>
+</table>
+<h3>The loop I followed for every feature</h3>
+<div class="flow">
+  <span class="box">Spec the behaviour</span><span class="ar">&#8594;</span>
+  <span class="box">Agent implements in a small stage</span><span class="ar">&#8594;</span>
+  <span class="box">Typecheck + core boundary build</span><span class="ar">&#8594;</span>
+  <span class="box">Headless sim / Playwright run</span><span class="ar">&#8594;</span>
+  <span class="box">Screenshot review</span><span class="ar">&#8594;</span>
+  <span class="box">Commit and tag</span>
+</div>
+<p>Git tags (<code>before-cleanup</code>, <code>after-cleanup</code>, <code>after-rename</code>) mark safe rollback points before large changes.</p>
+
+<h2>10. Design decisions and trade-offs</h2>
+<table>
+  <tr><th style="width:30%">Decision</th><th>Reasoning</th></tr>
+  <tr><td>Simulation separated from rendering</td><td>Lets the AI and balance run headless, lets the renderer be swapped (3D to 2D fallback) and makes refactors checkable by comparing traces</td></tr>
+  <tr><td>Everything about a fighter in JSON</td><td>Adding or rebalancing a character is a data change; one schema validates all</td></tr>
+  <tr><td>Two canvases instead of one engine</td><td>Phaser is strong at scenes and input, three at 3D; the cost is projecting coordinates between them</td></tr>
+  <tr><td>Synthesised SFX</td><td>Small bundle and no licensing issues; only a block clip and voice lines are audio files</td></tr>
+  <tr><td>Immutable asset caching</td><td>Fast repeat loads; the cost is renaming files when art changes</td></tr>
+  <tr><td>Fallback renderer</td><td>Devices without WebGL still play; keeping it alive requires the interface discipline</td></tr>
+</table>
+
+<h2>11. Honest limitations</h2>
+<ul>
+  <li>No automated unit-test suite in the repo; verification is typecheck, build, headless simulations and Playwright smoke scripts.</li>
+  <li>The AI uses <code>Math.random</code> for reaction jitter, so AI matches are not bit-for-bit reproducible without seeding it.</li>
+  <li>Online multiplayer is not implemented; the <code>InputSource</code> abstraction is the intended hook.</li>
+  <li>Character names and faction names are satirical parody; this is an entertainment project.</li>
+</ul>
+
+<p class="small" style="margin-top:14px">Source: github.com/AkashSrivastava1993/sansad-combat &nbsp;|&nbsp; Live: sansad-combat.vercel.app</p>
+</body>
+</html>
